@@ -1,0 +1,142 @@
+.live-room-page {
+  background-color: #f5f5f5;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.loading {
+  text-align: center;
+  color: #909399;
+}
+
+.room-content {
+  padding: 16px;
+  padding-bottom: 120px;
+}
+
+.video-section {
+  margin-bottom: 16px;
+}
+
+.video-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.auction-info-section {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.current-price, .countdown-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.current-price .label, .countdown-section .label {
+  color: #909399;
+  font-size: 14px;
+}
+
+.current-price .price {
+  font-size: 28px;
+  font-weight: bold;
+  color: #F56C6C;
+}
+
+.leading-indicator {
+  background: linear-gradient(135deg, #f64f59 0%, #c471ed 100%);
+  color: white;
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #909399;
+}
+
+.status-dot.connected {
+  background: #67C23A;
+}
+
+.status-dot.connecting {
+  background: #E6A23C;
+  animation: pulse 1s infinite;
+}
+
+.status-dot.error, .status-dot.disconnected {
+  background: #F56C6C;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.ranking-section {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.bid-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 16px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+@media screen and (min-width: 768px) {
+  .room-content {
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  
+  .bid-section {
+    max-width: 750px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

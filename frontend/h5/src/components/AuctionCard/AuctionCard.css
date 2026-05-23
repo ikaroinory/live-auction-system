@@ -1,0 +1,47 @@
+.auction-card {
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.auction-card:hover {
+  transform: translateY(-2px);
+}
+
+.auction-card:active {
+  transform: scale(0.98);
+}
+
+.status-tag {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.auction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-row .label {
+  color: #909399;
+  font-size: 14px;
+}
+
+.info-row .value {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.info-row .value.price {
+  color: #F56C6C;
+  font-size: 18px;
+  font-weight: bold;
+}

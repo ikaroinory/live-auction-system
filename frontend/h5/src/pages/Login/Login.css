@@ -1,0 +1,57 @@
+.login-page {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.login-content {
+  padding: 40px 20px;
+}
+
+.logo {
+  text-align: center;
+  color: white;
+  margin-bottom: 60px;
+}
+
+.logo h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.logo p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.form {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.form-item {
+  margin-bottom: 24px;
+}
+
+.form-item label {
+  display: block;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.code-input {
+  display: flex;
+  gap: 12px;
+}
+
+.code-input .adm-input {
+  flex: 1;
+}
+
+.form .adm-button {
+  flex-shrink: 0;
+}

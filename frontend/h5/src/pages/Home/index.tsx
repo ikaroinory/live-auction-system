@@ -1,0 +1,96 @@
+import { useNavigate } from 'react-router-dom';
+import { Card, List, Empty } from 'antd-mobile';
+import type { Auction } from '../../types/auction.d';
+import './Home.css';
+
+interface HomeProps {
+  auctions?: Auction[];
+  loading?: boolean;
+}
+
+export const Home = ({ auctions = [], loading = false }: HomeProps) => {
+  const navigate = useNavigate();
+
+  const getStatusText = (status: number) => {
+    switch (status) {
+      case 0: return '未开始';
+      case 1: return '进行中';
+      case 2: return '已结束';
+      case 3: return '已取消';
+      default: return '未知';
+    }
+  };
+
+  const getStatusColor = (status: number) => {
+    switch (status) {
+      case 0: return '#909399';
+      case 1: return '#67C23A';
+      case 2: return '#E6A23C';
+      case 3: return '#F56C6C';
+      default: return '#909399';
+    }
+  };
+
+  return (
+    <div className="home-page page-container">
+      <div className="header">
+        <h1>实时竞拍大师</h1>
+        <p>抖音电商直播竞拍系统</p>
+      </div>
+
+      {loading ? (
+        <div className="loading">加载中...</div>
+      ) : auctions.length === 0 ? (
+        <Empty description="暂无竞拍商品" />
+      ) : (
+        <List header="竞拍商品列表">
+          {auctions.map((auction) => (
+            <List.Item
+              key={auction.id}
+              onClick={() => navigate(`/auction/${auction.id}`)}
+              extra={
+                <span 
+                  className="status-tag"
+                  style={{ color: getStatusColor(auction.status) }}
+                >
+                  {getStatusText(auction.status)}
+                </span>
+              }
+            >
+              <Card>
+                <Card.Header title={auction.title} />
+                <Card.Body>
+                  <div className="auction-info">
+                    <div className="price">
+                      <span className="label">当前价:</span>
+                      <span className="value">¥{auction.startPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="increment">
+                      <span className="label">加价幅度:</span>
+                      <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </List.Item>
+          ))}
+        </List>
+      )}
+
+      <div className="bottom-nav safe-area-bottom">
+        <div className="nav-item active">
+          <span>首页</span>
+        </div>
+        <div className="nav-item" onClick={() => navigate('/my/bids')}>
+          <span>我的出价</span>
+        </div>
+        <div className="nav-item" onClick={() => navigate('/my/orders')}>
+          <span>我的订单</span>
+        </div>
+        <div className="nav-item" onClick={() => navigate('/profile')}>
+          <span>我的</span>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,41 @@
+.countdown {
+  display: flex;
+  align-items: baseline;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.countdown.urgent {
+  color: #F56C6C;
+  animation: pulse 1s infinite;
+}
+
+.countdown.ended {
+  color: #909399;
+}
+
+.countdown-unit {
+  display: inline-flex;
+}
+
+.countdown .value {
+  min-width: 24px;
+  text-align: center;
+}
+
+.countdown .separator {
+  margin: 0 2px;
+}
+
+.countdown .ms {
+  font-size: 14px;
+  color: #909399;
+  margin-left: 2px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

@@ -1,0 +1,79 @@
+.bid-button-container {
+  position: relative;
+  width: 100%;
+}
+
+.bid-button {
+  height: 56px;
+  font-size: 18px;
+  border-radius: 28px;
+}
+
+.bid-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bid-content .label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.bid-content .price {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.bid-button-container.animating {
+  pointer-events: none;
+}
+
+.bid-button-container.animating .bid-button {
+  animation: shake 0.3s;
+}
+
+.bid-button-container.animating.success .bid-button {
+  background: #67C23A !important;
+}
+
+.bid-button-container.animating.fail .bid-button {
+  background: #F56C6C !important;
+}
+
+.animation-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  animation: fadeInOut 1s forwards;
+  z-index: 10;
+}
+
+.animation-overlay.success {
+  background: rgba(103, 194, 58, 0.95);
+  color: white;
+}
+
+.animation-overlay.fail {
+  background: rgba(245, 108, 108, 0.95);
+  color: white;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}

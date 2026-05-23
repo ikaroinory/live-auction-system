@@ -1,0 +1,70 @@
+.toast-notification-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+}
+
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  animation: slideDown 0.3s ease-out;
+  color: white;
+}
+
+.toast-notification.success {
+  background: linear-gradient(135deg, #67C23A 0%, #5daf34 100%);
+}
+
+.toast-notification.error {
+  background: linear-gradient(135deg, #F56C6C 0%, #f56c6c 100%);
+}
+
+.toast-notification.warning {
+  background: linear-gradient(135deg, #E6A23C 0%, #ebb563 100%);
+}
+
+.toast-notification.info {
+  background: linear-gradient(135deg, #409EFF 0%, #66b1ff 100%);
+}
+
+.toast-icon {
+  font-size: 20px;
+  font-weight: bold;
+  width: 24px;
+  text-align: center;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .toast-notification-container {
+    top: 40px;
+  }
+}
