@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	authHandler "live-auction-system/backend/src/api/v1"
 	"live-auction-system/backend/src/middleware"
+	"live-auction-system/backend/src/models"
 )
 
+// SetupRouter 设置API路由
 func SetupRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -14,12 +16,8 @@ func SetupRouter() *gin.Engine {
 	router.Use(middleware.Recovery())
 	router.Use(middleware.CORS())
 
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"code":    200,
-			"message": "service is healthy",
-		})
-	})
+	// Health Check
+	router.GET("/health", healthCheck)
 
 	apiV1 := router.Group("/api/v1")
 	{
@@ -50,4 +48,19 @@ func SetupRouter() *gin.Engine {
 	}
 
 	return router
+}
+
+// healthCheck 健康检查接口
+// @Summary 健康检查
+// @Description 检查服务是否正常运行
+// @Tags 系统
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Response
+// @Router /health [get]
+func healthCheck(c *gin.Context) {
+	c.JSON(200, models.Response{
+		Code:    200,
+		Message: "service is healthy",
+	})
 }
