@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Empty } from 'antd-mobile';
+import { Empty, Toast } from 'antd-mobile';
 import { Layout } from '../../components/Layout';
 import { LiveStreamCard } from './components/LiveStreamCard';
 import type { Auction } from '../../types/auction';
@@ -39,6 +39,10 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     const isDownSwipe = distance < -minSwipeDistance;
 
     if (isUpSwipe && !isTransitioning) {
+      if (currentIndex >= activeAuctions.length - 1) {
+        Toast.show('已经是最后一个直播间了');
+        return;
+      }
       setCurrentIndex((prev) => {
         const next = Math.min(prev + 1, activeAuctions.length - 1);
         return next;
@@ -47,13 +51,17 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     }
     
     if (isDownSwipe && !isTransitioning) {
+      if (currentIndex <= 0) {
+        Toast.show('已经是第一个直播间了');
+        return;
+      }
       setCurrentIndex((prev) => {
         const next = Math.max(prev - 1, 0);
         return next;
       });
       setIsTransitioning(true);
     }
-  }, [touchStart, touchEnd, isTransitioning, activeAuctions.length]);
+  }, [touchStart, touchEnd, isTransitioning, currentIndex, activeAuctions.length]);
 
   useEffect(() => {
     if (isTransitioning) {
