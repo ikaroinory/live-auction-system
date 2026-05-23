@@ -20,12 +20,6 @@ export const LiveStreamCard = ({
     <div className={`live-stream-card ${isActive ? 'active' : ''}`}>
       <div className="video-container">
         <VideoPlayer />
-        
-        {/* 直播标签 */}
-        <div className="live-tag">
-          <span className="live-dot"></span>
-          <span>直播中</span>
-        </div>
 
         {/* 右侧操作按钮 */}
         <div className="video-actions">
@@ -52,7 +46,7 @@ export const LiveStreamCard = ({
 
             <div className="auction-details">
               <div className="detail-item">
-                <span className="detail-label">当前价</span>
+                <span className="detail-label">当前价格</span>
                 <span className="detail-value price">¥{auction.startPrice.toFixed(2)}</span>
               </div>
               <div className="detail-item">
