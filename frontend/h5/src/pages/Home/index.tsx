@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Empty } from 'antd-mobile';
-import { BottomNav } from '../../components/BottomNav';
+import { Layout } from '../../components/Layout';
 import { LiveStreamCard } from './components/LiveStreamCard';
 import type { Auction } from '../../types/auction';
 import './Home.scss';
@@ -17,7 +17,6 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const activeAuctions = auctions.filter(a => a.status === 1);
 
@@ -79,67 +78,70 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
 
   if (loading) {
     return (
-      <div className="home-page page-container">
-        <div className="loading-container">
-          <span className="loading-text">加载中...</span>
+      <Layout>
+        <div className="home-page">
+          <div className="loading-container">
+            <span className="loading-text">加载中...</span>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (activeAuctions.length === 0) {
     return (
-      <div className="home-page page-container">
-        <div className="empty-container">
-          <Empty 
-            description="暂无直播中的竞拍" 
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+      <Layout>
+        <div className="home-page">
+          <div className="empty-container">
+            <Empty 
+              description="暂无直播中的竞拍" 
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          </div>
         </div>
-        <BottomNav />
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="home-page page-container" ref={containerRef}>
-      <div 
-        className="live-streams-container"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
+    <Layout>
+      <div className="home-page">
         <div 
-          className="live-streams-wrapper"
-          style={{
-            transform: `translateY(${-currentIndex * 100}%)`,
-            transition: isTransitioning ? 'transform 0.3s ease-out' : 'none'
-          }}
+          className="live-streams-container"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
-          {activeAuctions.map((auction, index) => (
-            <div key={auction.id} className="live-stream-item">
-              <LiveStreamCard
-                auction={auction}
-                isActive={index === currentIndex}
-                onEnterLiveRoom={handleEnterLiveRoom}
-                onViewDetails={handleViewDetails}
-              />
-            </div>
-          ))}
+          <div 
+            className="live-streams-wrapper"
+            style={{
+              transform: `translateY(${-currentIndex * 100}%)`,
+              transition: isTransitioning ? 'transform 0.3s ease-out' : 'none'
+            }}
+          >
+            {activeAuctions.map((auction, index) => (
+              <div key={auction.id} className="live-stream-item">
+                <LiveStreamCard
+                  auction={auction}
+                  isActive={index === currentIndex}
+                  onEnterLiveRoom={handleEnterLiveRoom}
+                  onViewDetails={handleViewDetails}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="page-indicator">
+          <span className="current-page">{currentIndex + 1}</span>
+          <span className="separator">/</span>
+          <span className="total-pages">{activeAuctions.length}</span>
+        </div>
+
+        <div className="swipe-hint">
+          <span className="hint-text">上滑查看更多直播</span>
         </div>
       </div>
-
-      <div className="page-indicator">
-        <span className="current-page">{currentIndex + 1}</span>
-        <span className="separator">/</span>
-        <span className="total-pages">{activeAuctions.length}</span>
-      </div>
-
-      <div className="swipe-hint">
-        <span className="hint-text">上滑查看更多直播</span>
-      </div>
-
-      <BottomNav />
-    </div>
+    </Layout>
   );
 };

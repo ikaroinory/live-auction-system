@@ -1,9 +1,10 @@
 .home-page {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #1a1a2e;
   overflow: hidden;
+  position: relative;
 }
 
 .live-streams-container {
@@ -42,7 +43,7 @@
 }
 
 .page-indicator {
-  position: fixed;
+  position: absolute;
   top: 50%;
   right: 16px;
   transform: translateY(-50%);
@@ -71,8 +72,8 @@
 }
 
 .swipe-hint {
-  position: fixed;
-  bottom: 90px;
+  position: absolute;
+  bottom: 20px;
   left: 0;
   right: 0;
   display: flex;
@@ -101,9 +102,3 @@
   }
 }
 
-@media screen and (min-width: 768px) {
-  .home-page {
-    max-width: 750px;
-    margin: 0 auto;
-  }
-}

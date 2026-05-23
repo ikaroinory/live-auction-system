@@ -1,19 +1,5 @@
 .bottom-tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-
-.bottom-tab-bar {
   --adm-tab-bar-border-top: 1px solid #f0f0f0;
+  width: 100%;
 }
 
-@media screen and (min-width: 768px) {
-  .bottom-tab-bar {
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 750px;
-  }
-}
