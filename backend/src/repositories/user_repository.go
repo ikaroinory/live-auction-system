@@ -1,14 +1,14 @@
 package repositories
 
 import (
-	"database/sql"
 	"errors"
-	"time"
-
-	"golang.org/x/crypto/bcrypt"
+	"strings"
 
 	"live-auction-system/backend/src/config"
 	"live-auction-system/backend/src/models"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 )
 
 type UserRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
 func NewUserRepository() *UserRepository {
@@ -31,117 +31,56 @@ func (r *UserRepository) Create(user *models.User) error {
 	if err != nil {
 		return err
 	}
+	user.Password = hashedPassword
 
-	query := `
-		INSERT INTO users (username, password, email, role, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`
-
-	now := time.Now()
-	result, err := r.db.Exec(query, user.Username, hashedPassword, user.Email, user.Role, now, now)
-	if err != nil {
+	if err := r.db.Create(user).Error; err != nil {
 		if isUniqueConstraintError(err) {
 			return ErrUserAlreadyExists
 		}
 		return err
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	user.ID = id
-	user.CreatedAt = now
-	user.UpdatedAt = now
-	user.Password = ""
 	return nil
 }
 
 func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
-	query := `SELECT id, username, password, email, role, created_at, updated_at FROM users WHERE username = ?`
-
-	user := &models.User{}
-	err := r.db.QueryRow(query, username).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Password,
-		&user.Email,
-		&user.Role,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
-	if err == sql.ErrNoRows {
-		return nil, ErrUserNotFound
-	}
-	if err != nil {
+	var user models.User
+	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
-
-	return user, nil
+	return &user, nil
 }
 
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
-	query := `SELECT id, username, password, email, role, created_at, updated_at FROM users WHERE email = ?`
-
-	user := &models.User{}
-	err := r.db.QueryRow(query, email).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Password,
-		&user.Email,
-		&user.Role,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
-	if err == sql.ErrNoRows {
-		return nil, ErrUserNotFound
-	}
-	if err != nil {
+	var user models.User
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
-
-	return user, nil
+	return &user, nil
 }
 
 func (r *UserRepository) FindByID(id int64) (*models.User, error) {
-	query := `SELECT id, username, password, email, role, created_at, updated_at FROM users WHERE id = ?`
-
-	user := &models.User{}
-	err := r.db.QueryRow(query, id).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Password,
-		&user.Email,
-		&user.Role,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
-	if err == sql.ErrNoRows {
-		return nil, ErrUserNotFound
-	}
-	if err != nil {
+	var user models.User
+	if err := r.db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
-
-	return user, nil
+	return &user, nil
 }
 
 func (r *UserRepository) Update(user *models.User) error {
-	query := `UPDATE users SET username = ?, email = ?, role = ?, updated_at = ? WHERE id = ?`
-
-	user.UpdatedAt = time.Now()
-	_, err := r.db.Exec(query, user.Username, user.Email, user.Role, user.UpdatedAt, user.ID)
-	return err
+	return r.db.Save(user).Error
 }
 
 func (r *UserRepository) Delete(id int64) error {
-	query := `DELETE FROM users WHERE id = ?`
-	_, err := r.db.Exec(query, id)
-	return err
+	return r.db.Delete(&models.User{}, id).Error
 }
 
 func (r *UserRepository) CheckPassword(user *models.User, password string) bool {
@@ -149,13 +88,12 @@ func (r *UserRepository) CheckPassword(user *models.User, password string) bool 
 }
 
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hashedBytes), err
 }
 
 func checkPassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
 func isUniqueConstraintError(err error) bool {
@@ -163,15 +101,6 @@ func isUniqueConstraintError(err error) bool {
 		return false
 	}
 	errStr := err.Error()
-	return contains(errStr, "UNIQUE constraint failed") ||
-		contains(errStr, "Duplicate entry")
-}
-
-func contains(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
+	return strings.Contains(errStr, "UNIQUE constraint failed") ||
+		strings.Contains(errStr, "Duplicate entry")
 }

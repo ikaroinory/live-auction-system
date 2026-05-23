@@ -1,14 +1,16 @@
 package config
 
 import (
-	"database/sql"
 	"os"
 	"path/filepath"
 
-	_ "github.com/mattn/go-sqlite3"
+	"live-auction-system/backend/src/models"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func InitDatabase() error {
 	cfg := GetConfig()
@@ -17,42 +19,24 @@ func InitDatabase() error {
 		return err
 	}
 
-	db, err := sql.Open(cfg.Database.Driver, cfg.Database.Path)
+	var err error
+	DB, err = gorm.Open(sqlite.Open(cfg.Database.Path), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	if err := db.Ping(); err != nil {
-		return err
-	}
-
-	DB = db
-
-	if err := createTables(); err != nil {
+	if err := AutoMigrate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func createTables() error {
-	usersTable := `
-	CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		username VARCHAR(50) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL,
-		email VARCHAR(100) UNIQUE NOT NULL,
-		role VARCHAR(20) NOT NULL DEFAULT 'user',
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-
-	_, err := DB.Exec(usersTable)
-	return err
+func AutoMigrate() error {
+	return DB.AutoMigrate(&models.User{})
 }
 
-func GetDB() *sql.DB {
+func GetDB() *gorm.DB {
 	if DB == nil {
 		InitDatabase()
 	}
@@ -61,7 +45,11 @@ func GetDB() *sql.DB {
 
 func CloseDatabase() error {
 	if DB != nil {
-		return DB.Close()
+		sqlDB, err := DB.DB()
+		if err != nil {
+			return err
+		}
+		return sqlDB.Close()
 	}
 	return nil
 }

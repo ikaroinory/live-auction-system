@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type UserRole string
 
@@ -11,13 +15,14 @@ const (
 )
 
 type User struct {
-	ID        int64     `json:"id" example:"1"`
-	Username  string    `json:"username" example:"testuser"`
-	Password  string    `json:"-"`
-	Email     string    `json:"email" example:"test@example.com"`
-	Role      UserRole  `json:"role" example:"user"`
-	CreatedAt time.Time `json:"created_at" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt time.Time `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	ID        int64          `json:"id" gorm:"primaryKey;autoIncrement" example:"1"`
+	Username  string         `json:"username" gorm:"size:50;uniqueIndex;not null" example:"testuser"`
+	Password  string         `json:"-" gorm:"size:255;not null"`
+	Email     string         `json:"email" gorm:"size:100;uniqueIndex;not null" example:"test@example.com"`
+	Role      UserRole       `json:"role" gorm:"size:20;not null;default:'user'" example:"user"`
+	CreatedAt time.Time      `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt time.Time      `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type RegisterRequest struct {
