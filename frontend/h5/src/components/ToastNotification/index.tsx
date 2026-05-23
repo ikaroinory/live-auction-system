@@ -1,5 +1,5 @@
 import { useNotificationStore } from '../../store/useNotificationStore';
-import './ToastNotification.css';
+import './ToastNotification.scss';
 
 export const ToastNotification = () => {
   const { notifications, removeNotification } = useNotificationStore();

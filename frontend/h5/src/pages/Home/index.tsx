@@ -4,7 +4,7 @@ import { Empty } from 'antd-mobile';
 import { BottomNav } from '../../components/BottomNav';
 import { LiveStreamCard } from './components/LiveStreamCard';
 import type { Auction } from '../../types/auction';
-import './Home.css';
+import './Home.scss';
 
 interface HomeProps {
   auctions?: Auction[];

@@ -10,7 +10,7 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { formatPrice } from '../../utils/format';
-import './LiveRoom.css';
+import './LiveRoom.scss';
 
 export const LiveRoom = () => {
   const { id } = useParams<{ id: string }>();

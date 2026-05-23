@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { NavBar, Button, Card, Empty } from 'antd-mobile';
 import { useAuctionRoomStore } from '../../store/useAuctionRoomStore';
-import './AuctionDetail.css';
+import './AuctionDetail.scss';
 
 export const AuctionDetail = () => {
   const { id } = useParams<{ id: string }>();

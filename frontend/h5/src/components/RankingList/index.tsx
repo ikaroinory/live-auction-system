@@ -1,5 +1,5 @@
 import type { RankingItem } from '../../types/auction';
-import './RankingList.css';
+import './RankingList.scss';
 
 interface RankingListProps {
   rankings: RankingItem[];

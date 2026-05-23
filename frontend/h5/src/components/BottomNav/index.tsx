@@ -8,7 +8,7 @@ import {
   ShopbagOutline,
   UserOutline,
 } from 'antd-mobile-icons';
-import './BottomNav.css';
+import './BottomNav.scss';
 
 export const BottomNav = () => {
   const navigate = useNavigate();

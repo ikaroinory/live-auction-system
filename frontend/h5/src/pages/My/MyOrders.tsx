@@ -1,6 +1,6 @@
 import { List } from 'antd-mobile';
 import { BottomNav } from '../../components/BottomNav';
-import './My.css';
+import './My.scss';
 
 export const MyOrders = () => {
   return (

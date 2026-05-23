@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './Countdown.css';
+import './Countdown.scss';
 
 interface CountdownProps {
   remainingMs: number;

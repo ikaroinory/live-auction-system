@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Auction } from '../../../types/auction';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
-import './LiveStreamCard.css';
+import './LiveStreamCard.scss';
 
 interface LiveStreamCardProps {
   auction: Auction;

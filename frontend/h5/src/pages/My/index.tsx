@@ -1,5 +1,5 @@
 import { BottomNav } from '../../components/BottomNav';
-import './My.css';
+import './My.scss';
 
 export const My = () => {
   return (

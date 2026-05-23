@@ -1,6 +1,6 @@
 import { Card } from 'antd-mobile';
 import type { Auction } from '../../types/auction';
-import './AuctionCard.css';
+import './AuctionCard.scss';
 
 interface AuctionCardProps {
   auction: Auction;

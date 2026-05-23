@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
-import './Login.css';
+import './Login.scss';
 
 export const Login = () => {
   const navigate = useNavigate();

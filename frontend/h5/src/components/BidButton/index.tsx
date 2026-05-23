@@ -1,6 +1,6 @@
 import { Button } from 'antd-mobile';
 import { formatPrice } from '../../utils/format';
-import './BidButton.css';
+import './BidButton.scss';
 
 interface BidButtonProps {
   onClick: () => void;

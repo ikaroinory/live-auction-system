@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import './VideoPlayer.css';
+import './VideoPlayer.scss';
 
 export const VideoPlayer = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
