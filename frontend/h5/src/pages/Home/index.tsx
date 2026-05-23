@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, List, Empty } from 'antd-mobile';
+import { BottomNav } from '../../components/BottomNav';
 import type { Auction } from '../../types/auction';
 import './Home.css';
 
@@ -74,20 +75,7 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
         </List>
       )}
 
-      <div className="bottom-nav safe-area-bottom">
-        <div className="nav-item active">
-          <span>首页</span>
-        </div>
-        <div className="nav-item" onClick={() => navigate('/my/bids')}>
-          <span>我的出价</span>
-        </div>
-        <div className="nav-item" onClick={() => navigate('/my/orders')}>
-          <span>我的订单</span>
-        </div>
-        <div className="nav-item" onClick={() => navigate('/profile')}>
-          <span>我的</span>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

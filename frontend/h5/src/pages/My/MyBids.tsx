@@ -1,4 +1,5 @@
 import { List } from 'antd-mobile';
+import { BottomNav } from '../../components/BottomNav';
 import './My.css';
 
 export const MyBids = () => {
@@ -31,6 +32,8 @@ export const MyBids = () => {
           </div>
         </List.Item>
       </List>
+
+      <BottomNav />
     </div>
   );
 };

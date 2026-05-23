@@ -1,3 +1,6 @@
+import { BottomNav } from '../../components/BottomNav';
+import './My.css';
+
 export const My = () => {
   return (
     <div className="my-page page-container">
@@ -7,6 +10,7 @@ export const My = () => {
       <div className="content">
         <p>个人中心页面</p>
       </div>
+      <BottomNav />
     </div>
   );
 };
