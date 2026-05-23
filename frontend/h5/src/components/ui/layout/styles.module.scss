@@ -1,0 +1,19 @@
+.layoutContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.layoutContent {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.layoutFooter {
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+  z-index: 100;
+}

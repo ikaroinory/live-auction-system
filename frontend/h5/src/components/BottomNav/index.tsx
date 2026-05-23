@@ -16,22 +16,22 @@ export const BottomNav = () => {
 
   const tabs = [
     {
-      key: '/',
+      key: '/home',
       title: '首页',
       icon: <AppOutline />,
     },
     {
-      key: '/my/bids',
+      key: '/bids',
       title: '我的出价',
       icon: <UnorderedListOutline />,
     },
     {
-      key: '/my/orders',
+      key: '/orders',
       title: '我的订单',
       icon: <ShopbagOutline />,
     },
     {
-      key: '/my',
+      key: '/profile',
       title: '我的',
       icon: <UserOutline />,
     },

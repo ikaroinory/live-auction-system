@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Empty, Toast } from 'antd-mobile';
-import { Layout } from '../../components/Layout';
 import { LiveStreamCard } from './components/LiveStreamCard';
 import type { Auction } from '../../types/auction';
 import './Home.scss';
@@ -86,33 +85,28 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="home-page">
-          <div className="loading-container">
-            <span className="loading-text">加载中...</span>
-          </div>
+      <div className="home-page">
+        <div className="loading-container">
+          <span className="loading-text">加载中...</span>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (activeAuctions.length === 0) {
     return (
-      <Layout>
-        <div className="home-page">
-          <div className="empty-container">
-            <Empty 
-              description="暂无直播中的竞拍" 
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          </div>
+      <div className="home-page">
+        <div className="empty-container">
+          <Empty 
+            description="暂无直播中的竞拍" 
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="home-page">
         <div 
           className="live-streams-container"
@@ -140,6 +134,5 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
           </div>
         </div>
       </div>
-    </Layout>
   );
 };
