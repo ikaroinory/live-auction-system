@@ -4,8 +4,8 @@ import {
   UserOutline, 
   UnorderedListOutline, 
   ShopbagOutline,
-  SettingOutline,
-  ClockOutline
+  SetOutline,
+  ClockCircleOutline
 } from 'antd-mobile-icons';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
@@ -26,12 +26,12 @@ export const Me = () => {
       path: '/orders',
     },
     {
-      icon: <ClockOutline />,
+      icon: <ClockCircleOutline />,
       title: '浏览历史',
       path: '/me/history',
     },
     {
-      icon: <SettingOutline />,
+      icon: <SetOutline />,
       title: '设置',
       path: '/me/settings',
     },
