@@ -20,11 +20,6 @@ export const LiveStreamCard = ({
     <div className={`live-stream-card ${isActive ? 'active' : ''}`}>
       <div className="video-container">
         <VideoPlayer />
-        
-        <div className="live-badge">
-          <span className="live-dot"></span>
-          <span className="live-text">LIVE</span>
-        </div>
 
         <div className="video-actions">
           <div className="action-button" onClick={onViewDetails}>
