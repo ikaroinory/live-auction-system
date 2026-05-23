@@ -31,8 +31,8 @@ export const BottomNav = () => {
       icon: <ShopbagOutline />,
     },
     {
-      key: '/profile',
-      title: '我的',
+      key: '/me',
+      title: '我',
       icon: <UserOutline />,
     },
   ];

@@ -9,9 +9,21 @@ interface UserState {
   logout: () => void;
 }
 
+// 模拟用户数据
+const mockUser: User = {
+  id: 10001,
+  username: 'user001',
+  nickname: '竞拍达人',
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face',
+  phone: '138****8888',
+  vipLevel: 3,
+  vipName: '黄金会员',
+  createdAt: '2023-01-01T00:00:00Z',
+};
+
 export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  isLoggedIn: false,
+  user: mockUser,
+  isLoggedIn: true,
   setUser: (user) => set({ user, isLoggedIn: !!user }),
   login: (user) => set({ user, isLoggedIn: true }),
   logout: () => set({ user: null, isLoggedIn: false }),

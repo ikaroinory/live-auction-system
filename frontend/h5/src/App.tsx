@@ -2,9 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { LiveRoom } from './pages/LiveRoom';
 import { AuctionDetail } from './pages/AuctionDetail';
-import { MyBids } from './pages/My/MyBids';
-import { MyOrders } from './pages/My/MyOrders';
-import My from './pages/My';
+import { MeBids } from './pages/Me/MeBids';
+import { MeOrders } from './pages/Me/MeOrders';
+import Me from './pages/Me';
 import { Login } from './pages/Login';
 import type { Auction } from './types/auction';
 
@@ -76,10 +76,13 @@ function App() {
         <Route path="/" element={<Home auctions={mockAuctions} />} />
         <Route path="/auction/:id" element={<AuctionDetail />} />
         <Route path="/live/:id" element={<LiveRoom />} />
-        <Route path="/my/bids" element={<MyBids />} />
-        <Route path="/my/orders" element={<MyOrders />} />
-        <Route path="/my" element={<My />} />
-        <Route path="/profile" element={<My />} />
+        <Route path="/me/bids" element={<MeBids />} />
+        <Route path="/me/orders" element={<MeOrders />} />
+        <Route path="/me" element={<Me />} />
+        <Route path="/profile" element={<Navigate to="/me" replace />} />
+        <Route path="/my" element={<Navigate to="/me" replace />} />
+        <Route path="/my/bids" element={<Navigate to="/me/bids" replace />} />
+        <Route path="/my/orders" element={<Navigate to="/me/orders" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

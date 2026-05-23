@@ -1,9 +1,9 @@
 import { List } from 'antd-mobile';
-import './My.scss';
+import './Me.scss';
 
-export const MyOrders = () => {
+export const MeOrders = () => {
   return (
-    <div className="my-orders-page">
+    <div className="me-orders-page">
       <div className="header">
         <h1>我的订单</h1>
       </div>

@@ -1,10 +1,10 @@
 import { List } from 'antd-mobile';
-import './My.scss';
+import './Me.scss';
 
-export const MyBids = () => {
+export const MeBids = () => {
   
   return (
-    <div className="my-bids-page">
+    <div className="me-bids-page">
       <div className="header">
         <h1>我的出价</h1>
       </div>

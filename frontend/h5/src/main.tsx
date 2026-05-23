@@ -6,9 +6,9 @@ import { Layout } from './components/ui'
 import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
 import { Auction } from './types/auction'
-import My from './pages/My'
-import { MyOrders } from './pages/My/MyOrders'
-import { MyBids } from './pages/My/MyBids'
+import Me from './pages/Me'
+import { MeOrders } from './pages/Me/MeOrders'
+import { MeBids } from './pages/Me/MeBids'
 
 function MainFramework() {
   return (
@@ -88,9 +88,11 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to={"/home"} replace /> },
 
       { path: "/home", element: <Home auctions={mockAuctions} /> },
-      { path: "/bids", element: <MyBids /> },
-      { path: "/orders", element: <MyOrders /> },
-      { path: "/profile", element: <My /> }
+      { path: "/bids", element: <MeBids /> },
+      { path: "/orders", element: <MeOrders /> },
+      { path: "/me", element: <Me /> },
+      { path: "/profile", element: <Navigate to={"/me"} replace /> },
+      { path: "/my", element: <Navigate to={"/me"} replace /> }
     ]
   }
 ])
