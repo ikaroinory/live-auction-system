@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Auction, RankingItem, Bid } from '../types/auction.d';
+import type { Auction, RankingItem, Bid } from '../types/auction';
 
 interface AuctionRoomState {
   currentAuction: Auction | null;

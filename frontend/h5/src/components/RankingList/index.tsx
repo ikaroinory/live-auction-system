@@ -1,4 +1,4 @@
-import type { RankingItem } from '../../types/auction.d';
+import type { RankingItem } from '../../types/auction';
 import './RankingList.css';
 
 interface RankingListProps {

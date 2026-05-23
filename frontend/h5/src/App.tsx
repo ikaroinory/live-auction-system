@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { LiveRoom } from './pages/LiveRoom';
 import { AuctionDetail } from './pages/AuctionDetail';
-import { MyBids, MyOrders, My } from './pages/My';
+import { MyBids } from './pages/My/MyBids';
+import { MyOrders } from './pages/My/MyOrders';
+import My from './pages/My';
 import { Login } from './pages/Login';
 
 function App() {

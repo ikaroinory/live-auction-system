@@ -1,5 +1,5 @@
 import { Card } from 'antd-mobile';
-import type { Auction } from '../../types/auction.d';
+import type { Auction } from '../../types/auction';
 import './AuctionCard.css';
 
 interface AuctionCardProps {
@@ -30,30 +30,29 @@ export const AuctionCard = ({ auction, onClick }: AuctionCardProps) => {
 
   return (
     <div className="auction-card" onClick={onClick}>
-      <Card>
-        <Card.Header 
-          title={auction.title}
-          extra={
+      <Card
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{auction.title}</span>
             <span 
               className="status-tag"
               style={{ color: getStatusColor(auction.status) }}
             >
               {getStatusText(auction.status)}
             </span>
-          }
-        />
-        <Card.Body>
-          <div className="auction-info">
-            <div className="info-row">
-              <span className="label">当前价</span>
-              <span className="value price">¥{auction.startPrice.toFixed(2)}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">加价幅度</span>
-              <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
-            </div>
           </div>
-        </Card.Body>
+        }
+      >
+        <div className="auction-info">
+          <div className="info-row">
+            <span className="label">当前价</span>
+            <span className="value price">¥{auction.startPrice.toFixed(2)}</span>
+          </div>
+          <div className="info-row">
+            <span className="label">加价幅度</span>
+            <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
+          </div>
+        </div>
       </Card>
     </div>
   );

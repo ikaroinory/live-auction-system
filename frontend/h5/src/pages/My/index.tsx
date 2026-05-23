@@ -10,3 +10,5 @@ export const My = () => {
     </div>
   );
 };
+
+export default My;

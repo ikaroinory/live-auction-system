@@ -9,7 +9,7 @@ import type {
   RankingUpdatePayload,
   CountdownTickPayload,
   AuctionEndPayload
-} from '../types/websocket.d';
+} from '../types/websocket';
 
 class WebSocketService {
   private socket: Socket | null = null;

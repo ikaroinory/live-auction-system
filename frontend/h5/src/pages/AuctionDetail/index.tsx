@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { NavBar, Button, Card, List, Empty } from 'antd-mobile';
+import { NavBar, Button, Card, Empty } from 'antd-mobile';
 import { useAuctionRoomStore } from '../../store/useAuctionRoomStore';
 import './AuctionDetail.css';
 
@@ -24,46 +24,40 @@ export const AuctionDetail = () => {
       <NavBar onBack={() => navigate(-1)}>竞拍详情</NavBar>
       
       <div className="detail-content">
-        <Card>
-          <Card.Header title="商品信息" />
-          <Card.Body>
-            <div className="info-item">
-              <span className="label">商品名称</span>
-              <span className="value">{currentAuction.title}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">商品描述</span>
-              <span className="value">{currentAuction.description}</span>
-            </div>
-          </Card.Body>
+        <Card title="商品信息">
+          <div className="info-item">
+            <span className="label">商品名称</span>
+            <span className="value">{currentAuction.title}</span>
+          </div>
+          <div className="info-item">
+            <span className="label">商品描述</span>
+            <span className="value">{currentAuction.description}</span>
+          </div>
         </Card>
 
-        <Card>
-          <Card.Header title="竞拍规则" />
-          <Card.Body>
+        <Card title="竞拍规则">
+          <div className="info-item">
+            <span className="label">起拍价</span>
+            <span className="value">¥{currentAuction.startPrice.toFixed(2)}</span>
+          </div>
+          <div className="info-item">
+            <span className="label">加价幅度</span>
+            <span className="value">¥{currentAuction.minIncrement.toFixed(2)}</span>
+          </div>
+          {currentAuction.maxPrice && (
             <div className="info-item">
-              <span className="label">起拍价</span>
-              <span className="value">¥{currentAuction.startPrice.toFixed(2)}</span>
+              <span className="label">封顶价</span>
+              <span className="value">¥{currentAuction.maxPrice.toFixed(2)}</span>
             </div>
-            <div className="info-item">
-              <span className="label">加价幅度</span>
-              <span className="value">¥{currentAuction.minIncrement.toFixed(2)}</span>
-            </div>
-            {currentAuction.maxPrice && (
-              <div className="info-item">
-                <span className="label">封顶价</span>
-                <span className="value">¥{currentAuction.maxPrice.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="info-item">
-              <span className="label">竞拍时长</span>
-              <span className="value">{currentAuction.durationSeconds}秒</span>
-            </div>
-            <div className="info-item">
-              <span className="label">延时机制</span>
-              <span className="value">自动延长{currentAuction.autoExtendSeconds}秒</span>
-            </div>
-          </Card.Body>
+          )}
+          <div className="info-item">
+            <span className="label">竞拍时长</span>
+            <span className="value">{currentAuction.durationSeconds}秒</span>
+          </div>
+          <div className="info-item">
+            <span className="label">延时机制</span>
+            <span className="value">自动延长{currentAuction.autoExtendSeconds}秒</span>
+          </div>
         </Card>
 
         <div className="action-section safe-area-bottom">

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, NavBar, Toast } from 'antd-mobile';
+import { NavBar, Toast } from 'antd-mobile';
 import { useAuctionRoomStore } from '../../store/useAuctionRoomStore';
 import { useUserStore } from '../../store/useUserStore';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -34,7 +34,7 @@ export const LiveRoom = () => {
     autoConnect: true,
   });
 
-  const { remainingMs: displayMs, start, pause, reset } = useCountdown(remainingMs);
+  const { remainingMs: displayMs } = useCountdown(remainingMs);
 
   const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation();
 

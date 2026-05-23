@@ -2,15 +2,14 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface AnimationOptions {
   duration?: number;
-  easing?: (t: number) => number;
 }
 
 export const useBidAnimation = (options: AnimationOptions = {}) => {
-  const { duration = 300, easing = (t) => t } = options;
+  const { duration = 300 } = options;
   
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationType, setAnimationType] = useState<'success' | 'fail' | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const playSuccess = useCallback(() => {
     if (timeoutRef.current) {

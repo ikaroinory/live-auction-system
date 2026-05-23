@@ -1,4 +1,4 @@
-import type { Bid } from '../../../types/auction.d';
+import type { Bid } from '../../../types/auction';
 import { formatPrice, formatDate } from '../../../utils/format';
 
 interface BidHistoryProps {

@@ -1,9 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { List, Tabs, Card } from 'antd-mobile';
+import { List } from 'antd-mobile';
 import './My.css';
 
 export const MyBids = () => {
-  const navigate = useNavigate();
   
   return (
     <div className="my-bids-page page-container">

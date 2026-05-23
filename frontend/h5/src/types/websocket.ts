@@ -13,9 +13,9 @@ export type WebSocketMessageType =
   | 'PING'
   | 'PONG';
 
-export interface WebSocketMessage {
+export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;
-  payload: any;
+  payload: T;
   timestamp: number;
 }
 

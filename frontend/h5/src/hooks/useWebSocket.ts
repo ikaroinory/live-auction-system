@@ -5,12 +5,10 @@ interface UseWebSocketOptions {
   auctionId?: number;
   userId?: number;
   autoConnect?: boolean;
-  onConnected?: () => void;
-  onDisconnected?: () => void;
 }
 
 export const useWebSocket = (options: UseWebSocketOptions = {}) => {
-  const { auctionId, userId, autoConnect = true, onConnected, onDisconnected } = options;
+  const { auctionId, userId, autoConnect = true } = options;
   const hasJoinedRef = useRef(false);
 
   const connect = useCallback(() => {

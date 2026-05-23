@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, List, Empty } from 'antd-mobile';
-import type { Auction } from '../../types/auction.d';
+import type { Auction } from '../../types/auction';
 import './Home.css';
 
 interface HomeProps {
@@ -57,20 +57,17 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
                 </span>
               }
             >
-              <Card>
-                <Card.Header title={auction.title} />
-                <Card.Body>
-                  <div className="auction-info">
-                    <div className="price">
-                      <span className="label">当前价:</span>
-                      <span className="value">¥{auction.startPrice.toFixed(2)}</span>
-                    </div>
-                    <div className="increment">
-                      <span className="label">加价幅度:</span>
-                      <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
-                    </div>
+              <Card title={auction.title}>
+                <div className="auction-info">
+                  <div className="price">
+                    <span className="label">当前价:</span>
+                    <span className="value">¥{auction.startPrice.toFixed(2)}</span>
                   </div>
-                </Card.Body>
+                  <div className="increment">
+                    <span className="label">加价幅度:</span>
+                    <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
+                  </div>
+                </div>
               </Card>
             </List.Item>
           ))}
