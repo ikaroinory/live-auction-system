@@ -1,7 +1,6 @@
-import { List, Avatar, Space, Tag } from 'antd-mobile';
+import { List, Avatar, Tag } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { 
-  UserOutline, 
   UnorderedListOutline, 
   ShopbagOutline,
   SetOutline,
@@ -49,7 +48,7 @@ export const Me = () => {
         <div className="user-info">
           <Avatar 
             src={user?.avatar} 
-            style={{ '--size': '80px' }}
+            style={{ '--size': '72px' }}
           />
           <div className="user-details">
             <div className="user-name">
@@ -63,6 +62,22 @@ export const Me = () => {
                 {user?.vipName || '普通会员'}
               </Tag>
             </div>
+          </div>
+        </div>
+        
+        {/* 统计信息 */}
+        <div className="stats-section">
+          <div className="stat-item">
+            <div className="stat-number">12</div>
+            <div className="stat-label">出价次数</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number">3</div>
+            <div className="stat-label">成功竞拍</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number">8</div>
+            <div className="stat-label">浏览记录</div>
           </div>
         </div>
       </div>
@@ -81,22 +96,6 @@ export const Me = () => {
             </List.Item>
           ))}
         </List>
-      </div>
-
-      {/* 统计信息 */}
-      <div className="stats-section">
-        <div className="stat-item">
-          <div className="stat-number">12</div>
-          <div className="stat-label">出价次数</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">3</div>
-          <div className="stat-label">成功竞拍</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">8</div>
-          <div className="stat-label">浏览记录</div>
-        </div>
       </div>
     </div>
   );
