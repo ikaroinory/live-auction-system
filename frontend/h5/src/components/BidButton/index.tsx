@@ -1,4 +1,3 @@
-import { Button } from 'antd-mobile';
 import { formatPrice } from '../../utils/format';
 import './BidButton.scss';
 
@@ -19,10 +18,7 @@ export const BidButton = ({
 }: BidButtonProps) => {
   return (
     <div className={`bid-button-container ${isAnimating ? `animating ${animationType}` : ''}`}>
-      <Button
-        block
-        color="danger"
-        size="large"
+      <button
         onClick={onClick}
         disabled={disabled}
         className="bid-button"
@@ -31,17 +27,17 @@ export const BidButton = ({
           <span className="label">立即出价</span>
           <span className="price">{formatPrice(nextPrice)}</span>
         </div>
-      </Button>
+      </button>
       
       {isAnimating && animationType === 'success' && (
         <div className="animation-overlay success">
-          <span>出价成功!</span>
+          <span>成功!</span>
         </div>
       )}
       
       {isAnimating && animationType === 'fail' && (
         <div className="animation-overlay fail">
-          <span>出价失败</span>
+          <span>失败</span>
         </div>
       )}
     </div>

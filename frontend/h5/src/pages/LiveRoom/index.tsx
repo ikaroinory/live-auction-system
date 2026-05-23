@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { NavBar, Toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 import { useAuctionRoomStore } from '../../store/useAuctionRoomStore';
 import { useUserStore } from '../../store/useUserStore';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -65,8 +65,7 @@ export const LiveRoom = () => {
 
   if (!currentAuction) {
     return (
-      <div className="live-room-page page-container">
-        <NavBar onBack={() => navigate(-1)}>加载中...</NavBar>
+      <div className="live-room-page">
         <div className="loading-container">
           <div className="loading">正在加载竞拍信息...</div>
         </div>
@@ -75,18 +74,31 @@ export const LiveRoom = () => {
   }
 
   return (
-    <div className="live-room-page page-container">
-      <NavBar onBack={() => navigate(-1)}>{currentAuction.title}</NavBar>
-      
+    <div className="live-room-page">
       <div className="room-content">
         <div className="video-section">
           <div className="video-placeholder">
             <div className="video-overlay">
-              <span>直播间</span>
+              <span>{currentAuction.title}</span>
             </div>
           </div>
         </div>
 
+        {/* 连接状态 */}
+        <div className="connection-status">
+          <span className={`status-dot ${connectionStatus}`}></span>
+          <span className="status-text">
+            {connectionStatus === 'connected' ? '已连接' : 
+             connectionStatus === 'connecting' ? '连接中...' : '未连接'}
+          </span>
+        </div>
+
+        {/* 排行榜 */}
+        <div className="ranking-section">
+          <RankingList rankings={rankings} />
+        </div>
+
+        {/* 竞拍信息 */}
         <div className="auction-info-section">
           <div className="current-price">
             <span className="label">当前价格</span>
@@ -108,20 +120,9 @@ export const LiveRoom = () => {
               🎉 您当前领先！
             </div>
           )}
-
-          <div className="connection-status">
-            <span className={`status-dot ${connectionStatus}`}></span>
-            <span className="status-text">
-              {connectionStatus === 'connected' ? '已连接' : 
-               connectionStatus === 'connecting' ? '连接中...' : '未连接'}
-            </span>
-          </div>
         </div>
 
-        <div className="ranking-section">
-          <RankingList rankings={rankings} />
-        </div>
-
+        {/* 出价按钮 */}
         <div className="bid-section safe-area-bottom">
           <BidButton
             onClick={handleBid}

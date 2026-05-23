@@ -1,5 +1,9 @@
 .bottom-tab-bar {
-  --adm-tab-bar-border-top: 1px solid #f0f0f0;
+  --adm-tab-bar-border-top: 1px solid rgba(255, 255, 255, 0.1);
+  --adm-tab-bar-item-color: rgba(255, 255, 255, 0.6);
+  --adm-tab-bar-item-active-color: #fe2c55;
+  --adm-tab-bar-background: rgba(0, 0, 0, 0.9);
   width: 100%;
+  backdrop-filter: blur(20px);
 }
 

@@ -9,6 +9,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --douyin-primary: #fe2c55;
+  --douyin-secondary: #25f4ee;
+  --douyin-bg: #000000;
+  --douyin-bg-light: #161823;
+  --douyin-text: #ffffff;
+  --douyin-text-secondary: rgba(255, 255, 255, 0.6);
+  --douyin-text-tertiary: rgba(255, 255, 255, 0.3);
 }
 
 * {
@@ -27,7 +34,8 @@ html, body {
 
 body {
   margin: 0;
-  background-color: #f5f5f5;
+  background-color: var(--douyin-bg);
+  color: var(--douyin-text);
   position: fixed;
   top: 0;
   left: 0;
@@ -66,7 +74,7 @@ img {
   width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: #f5f5f5;
+  background-color: var(--douyin-bg);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -82,6 +90,6 @@ img {
   body {
     max-width: 750px;
     margin: 0 auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
 }

@@ -5,25 +5,55 @@
 
 .bid-button {
   height: 56px;
-  font-size: 18px;
+  font-size: 16px;
   border-radius: 28px;
+  background: linear-gradient(135deg, #fe2c55 0%, #ff5877 100%);
+  border: none;
+  box-shadow: 0 4px 20px rgba(254, 44, 85, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.bid-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.bid-button:active {
+  transform: scale(0.98);
+}
+
+.bid-button:disabled {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
 }
 
 .bid-content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .bid-content .label {
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
 }
 
 .bid-content .price {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 800;
+  color: white;
 }
 
 .bid-button-container.animating {
@@ -35,11 +65,13 @@
 }
 
 .bid-button-container.animating.success .bid-button {
-  background: #67C23A !important;
+  background: linear-gradient(135deg, #25f4ee 0%, #00d4cc 100%) !important;
+  box-shadow: 0 4px 20px rgba(37, 244, 238, 0.4);
 }
 
 .bid-button-container.animating.fail .bid-button {
-  background: #F56C6C !important;
+  background: linear-gradient(135deg, #666 0%, #444 100%) !important;
+  box-shadow: none;
 }
 
 .animation-overlay {
@@ -47,22 +79,25 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: bold;
+  padding: 12px 28px;
+  border-radius: 24px;
+  font-weight: 800;
   font-size: 16px;
   animation: fadeInOut 1s forwards;
   z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .animation-overlay.success {
-  background: rgba(103, 194, 58, 0.95);
-  color: white;
+  background: linear-gradient(135deg, #25f4ee 0%, #00d4cc 100%);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(37, 244, 238, 0.4);
 }
 
 .animation-overlay.fail {
-  background: rgba(245, 108, 108, 0.95);
-  color: white;
+  background: linear-gradient(135deg, #444 0%, #222 100%);
+  color: #fff;
 }
 
 @keyframes shake {

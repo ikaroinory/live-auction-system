@@ -1,5 +1,8 @@
 .live-room-page {
-  background-color: #f5f5f5;
+  background-color: #000;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .loading-container {
@@ -7,27 +10,32 @@
   justify-content: center;
   align-items: center;
   min-height: 60vh;
+  background: #000;
 }
 
 .loading {
   text-align: center;
-  color: #909399;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
 }
 
 .room-content {
-  padding: 16px;
-  padding-bottom: 120px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
 .video-section {
-  margin-bottom: 16px;
+  flex: 1;
+  position: relative;
 }
 
 .video-placeholder {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+  height: 100%;
+  background: linear-gradient(180deg, #1a1a2e 0%, #000 100%);
   position: relative;
   overflow: hidden;
 }
@@ -44,78 +52,110 @@
 }
 
 .auction-info-section {
-  background: white;
-  border-radius: 12px;
+  position: absolute;
+  bottom: 100px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
   padding: 16px;
-  margin-bottom: 16px;
+  padding-top: 40px;
+  border-radius: 16px;
 }
 
-.current-price, .countdown-section {
+.current-price {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  align-items: flex-end;
 }
 
-.current-price .label, .countdown-section .label {
-  color: #909399;
+.current-price .label {
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
 
 .current-price .price {
-  font-size: 28px;
-  font-weight: bold;
-  color: #F56C6C;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fe2c55;
+  text-shadow: 0 2px 8px rgba(254, 44, 85, 0.4);
+}
+
+.countdown-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.countdown-section .label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
 }
 
 .leading-indicator {
-  background: linear-gradient(135deg, #f64f59 0%, #c471ed 100%);
+  background: linear-gradient(135deg, #fe2c55 0%, #ff6b8a 100%);
   color: white;
   text-align: center;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(254, 44, 85, 0.3);
 }
 
 .connection-status {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #909399;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  z-index: 10;
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #909399;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .status-dot.connected {
-  background: #67C23A;
+  background: #25f4ee;
+  box-shadow: 0 0 8px rgba(37, 244, 238, 0.6);
 }
 
 .status-dot.connecting {
-  background: #E6A23C;
+  background: #ffcc00;
   animation: pulse 1s infinite;
 }
 
 .status-dot.error, .status-dot.disconnected {
-  background: #F56C6C;
+  background: #fe2c55;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.9); }
 }
 
 .ranking-section {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  max-width: 150px;
+  z-index: 10;
 }
 
 .bid-section {
@@ -123,20 +163,19 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.95));
   padding: 16px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 20;
 }
 
 @media screen and (min-width: 768px) {
-  .room-content {
-    max-width: 750px;
-    margin: 0 auto;
-  }
-  
   .bid-section {
     max-width: 750px;
     left: 50%;
     transform: translateX(-50%);
+  }
+  .ranking-section {
+    right: calc(50% - 360px);
   }
 }
