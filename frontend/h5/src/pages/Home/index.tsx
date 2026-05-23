@@ -139,16 +139,6 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
             ))}
           </div>
         </div>
-
-        <div className="page-indicator">
-          <span className="current-page">{currentIndex + 1}</span>
-          <span className="separator">/</span>
-          <span className="total-pages">{activeAuctions.length}</span>
-        </div>
-
-        <div className="swipe-hint">
-          <span className="hint-text">上滑查看更多直播</span>
-        </div>
       </div>
     </Layout>
   );
