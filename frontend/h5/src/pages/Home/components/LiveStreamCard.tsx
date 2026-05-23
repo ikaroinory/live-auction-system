@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Button } from 'antd-mobile';
+import { useState } from 'react';
 import type { Auction } from '../../../types/auction';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
 import './LiveStreamCard.css';
@@ -18,7 +17,6 @@ export const LiveStreamCard = ({
   onViewDetails,
 }: LiveStreamCardProps) => {
   const [viewerCount] = useState(Math.floor(Math.random() * 10000) + 1000);
-  const [isLive] = useState(true);
 
   return (
     <div className={`live-stream-card ${isActive ? 'active' : ''}`}>
@@ -49,11 +47,6 @@ export const LiveStreamCard = ({
       <div className="auction-info">
         <div className="auction-header">
           <h2 className="auction-title">{auction.title}</h2>
-          {isLive && (
-            <span className="auction-status">
-              🔴 直播中
-            </span>
-          )}
         </div>
 
         <p className="auction-description">
@@ -75,25 +68,6 @@ export const LiveStreamCard = ({
               <span className="detail-value">¥{auction.maxPrice.toFixed(2)}</span>
             </div>
           )}
-        </div>
-
-        <div className="action-buttons">
-          <Button 
-            color="primary" 
-            size="large" 
-            block
-            onClick={onEnterLiveRoom}
-          >
-            进入直播间参与竞拍
-          </Button>
-          <Button 
-            color="default" 
-            size="large" 
-            block
-            onClick={onViewDetails}
-          >
-            查看详情
-          </Button>
         </div>
       </div>
     </div>
