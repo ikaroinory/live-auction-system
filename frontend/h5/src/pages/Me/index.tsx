@@ -55,9 +55,6 @@ export const Me = () => {
             <div className="user-name">
               {user?.nickname || user?.username}
             </div>
-            <div className="user-phone">
-              {user?.phone}
-            </div>
             <div className="user-vip">
               <Tag 
                 color={user ? getVipColor(user.vipLevel) : '#909399'} 
