@@ -1,28 +1,37 @@
-import { PrismaClient } from '@prisma/client';
+import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import config from './config';
+import { swaggerSpec } from './config/swagger';
+import apiRouter from './api';
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+const app = express();
 
-async function main() {
-  console.log('直播竞拍系统后端服务启动中...');
-  
-  // 测试数据库连接
-  try {
-    await prisma.$connect();
-    console.log('数据库连接成功');
-  } catch (error) {
-    console.error('数据库连接失败:', error);
-  }
-}
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// API Routes
+app.use('/api', apiRouter);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Error handler
+app.use(errorHandler);
+
+// Start server
+app.listen(config.port, () => {
+  console.log(`🚀 服务器运行在 http://localhost:${config.port}`);
+  console.log(`📚 API 文档: http://localhost:${config.port}/api-docs`);
+});
