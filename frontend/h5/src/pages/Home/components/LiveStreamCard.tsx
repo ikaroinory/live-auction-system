@@ -7,31 +7,17 @@ interface LiveStreamCardProps {
   auction: AuctionWithSeller;
   isActive: boolean;
   onEnterLiveRoom: () => void;
-  onViewDetails: () => void;
 }
 
 export const LiveStreamCard = ({
   auction,
   isActive,
   onEnterLiveRoom,
-  onViewDetails,
 }: LiveStreamCardProps) => {
   return (
     <div className={`live-stream-card ${isActive ? 'active' : ''}`}>
       <div className="video-container">
         <VideoPlayer />
-
-        {/* 右侧操作按钮 */}
-        <div className="video-actions">
-          <div className="action-button" onClick={onViewDetails}>
-            <span className="action-icon">📋</span>
-            <span className="action-label">详情</span>
-          </div>
-          <div className="action-button" onClick={onEnterLiveRoom}>
-            <span className="action-icon">🎯</span>
-            <span className="action-label">抢购</span>
-          </div>
-        </div>
 
         {/* 底部信息区域 */}
         <div className="video-overlay">

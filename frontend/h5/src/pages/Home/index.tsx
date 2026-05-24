@@ -77,12 +77,6 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     }
   };
 
-  const handleViewDetails = () => {
-    if (currentAuction) {
-      navigate(`/auction/${currentAuction.id}`);
-    }
-  };
-
   if (loading) {
     return (
       <div className="home-page">
@@ -127,7 +121,6 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
                   auction={auction}
                   isActive={index === currentIndex}
                   onEnterLiveRoom={handleEnterLiveRoom}
-                  onViewDetails={handleViewDetails}
                 />
               </div>
             ))}
