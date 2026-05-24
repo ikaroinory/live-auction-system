@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        BigInt    @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  nickname  String?
+  avatar    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  // 关联关系
+  auctions  Auction[] @relation("sellerAuctions")
+  bids      Bid[]
+  orders    Order[]   @relation("userOrders")
+  wonAuctions Auction[] @relation("winnerAuctions")
+}
+
+model Auction {
+  id               BigInt      @id @default(autoincrement())
+  sellerId         BigInt
+  title            String
+  description      String?
+  images           Json?
+  startPrice       Decimal     @db.Decimal(10, 2)
+  minIncrement     Decimal     @db.Decimal(10, 2)
+  maxPrice         Decimal?    @db.Decimal(10, 2)
+  durationSeconds  Int
+  autoExtendSeconds Int        @default(15)
+  status           Int         @default(0) // 0:未开始 1:进行中 2:已结束 3:已取消
+  startTime        DateTime?
+  endTime          DateTime?
+  finalPrice       Decimal?    @db.Decimal(10, 2)
+  winnerId         BigInt?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  
+  // 关联关系
+  seller           User        @relation("sellerAuctions", fields: [sellerId], references: [id])
+  winner           User?       @relation("winnerAuctions", fields: [winnerId], references: [id])
+  bids             Bid[]
+  order            Order?
+  
+  @@index([status])
+  @@index([startTime])
+}
+
+model Bid {
+  id        BigInt   @id @default(autoincrement())
+  auctionId BigInt
+  userId    BigInt
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @db.DateTime(3)
+  
+  // 关联关系
+  auction   Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([auctionId, userId, price])
+  @@index([auctionId, createdAt])
+}
+
+model Order {
+  id         BigInt    @id @default(autoincrement())
+  auctionId  BigInt    @unique
+  userId     BigInt
+  sellerId   BigInt
+  finalPrice Decimal   @db.Decimal(10, 2)
+  status     Int       @default(0) // 0:待支付 1:已支付 2:已取消
+  paidAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  // 关联关系
+  auction    Auction   @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  user       User      @relation("userOrders", fields: [userId], references: [id])
+  seller     User      @relation(fields: [sellerId], references: [id])
+}

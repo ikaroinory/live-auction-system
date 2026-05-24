@@ -1,34 +1,20 @@
-# Binaries
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-auction-server
+# Dependencies
+node_modules/
 
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool
-*.out
-
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Database
-data/
-*.db
+# Build outputs
+dist/
 
 # Environment variables
 .env
 .env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Prisma
+prisma/migrations/
