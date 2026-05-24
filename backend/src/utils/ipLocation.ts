@@ -17,7 +17,7 @@ function getClientIp(req: Request): string {
 
 function getLocationByIp(ip: string): string {
   if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
-    return '中国·广东·深圳';
+    return '未知';
   }
   
   const ipSegments = ip.split('.');

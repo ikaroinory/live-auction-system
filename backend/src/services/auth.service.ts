@@ -38,7 +38,7 @@ export class AuthService {
         nickname: nickname || phone,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '中国·广东·深圳'
+        location: location || '未知'
       }
     });
     
@@ -142,7 +142,7 @@ export class AuthService {
         nickname: `用户${phone.slice(-4)}`,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '中国·广东·深圳'
+        location: location || '未知'
       }
     });
 
