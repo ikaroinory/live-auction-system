@@ -1,15 +1,13 @@
-import { ReactNode, createContext, useContext, isValidElement } from 'react'
-import styles from './styles.module.scss'
-import { ChildrenProps } from '../interfaces'
+import { createContext, ReactNode } from 'react'
 import { isElementOfType } from '../utils'
+import styles from './styles.module.scss'
 
-interface ListProps extends ChildrenProps {
-  className?: string
-}
+interface ListProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-interface ListItemProps extends ChildrenProps {
-  className?: string
-  onClick?: () => void
+interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  label?: ReactNode
+  value?: ReactNode
+  extra?: ReactNode
 }
 
 const ListContext = createContext({})
@@ -27,14 +25,24 @@ export function List(props: ListProps) {
 }
 
 function Item(props: ListItemProps) {
-  const { children, className = '', onClick } = props
+  const { children, className = '', onClick, label, value, extra } = props
 
   return (
     <div 
       className={`${styles.listItem} ${className}`}
       onClick={onClick}
     >
-      {children}
+      {(label !== undefined || value !== undefined || extra !== undefined) ? (
+        <>
+          {label !== undefined && <div className={styles.listItemLabel}>{label}</div>}
+          <div className={styles.listItemContent}>
+            {value !== undefined && <div className={styles.listItemValue}>{value}</div>}
+            {extra !== undefined && <div className={styles.listItemExtra}>{extra}</div>}
+          </div>
+        </>
+      ) : (
+        children
+      )}
     </div>
   )
 }

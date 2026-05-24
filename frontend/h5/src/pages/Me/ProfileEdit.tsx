@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
-import { ChevronRightIcon, Layout, List } from '@/components/ui';
+import { CameraIcon, ChevronRightIcon, Layout, List } from '@/components/ui';
 import './ProfileEdit.scss';
 
 export const ProfileEdit = () => {
@@ -78,31 +78,27 @@ export const ProfileEdit = () => {
 
         <List className="profile-form">
           {menuItems.map((item) => (
-            <List.Item key={item.key} onClick={() => Toast.show(`编辑${item.label}`)}>
-              <span className="form-label">{item.label}</span>
-              <div className="form-content">
-                <span className="form-value">{item.value}</span>
-                <ChevronRightIcon className="form-arrow" />
-              </div>
-            </List.Item>
+            <List.Item 
+              key={item.key} 
+              onClick={() => Toast.show(`编辑${item.label}`)}
+              label={item.label}
+              value={item.value}
+              extra={<ChevronRightIcon />}
+            />
           ))}
         </List>
 
-        <List className="service-section">
-          <List.Item>
-            <span className="service-label">服务挂件</span>
-            <div className="service-content">
-              <span className="service-value">直播预告、公开群</span>
-              <ChevronRightIcon className="service-arrow" />
-            </div>
-          </List.Item>
-          <List.Item>
-            <span className="service-label">挂件中心</span>
-            <div className="service-content">
-              <span className="service-value">管理头像挂件</span>
-              <ChevronRightIcon className="service-arrow" />
-            </div>
-          </List.Item>
+        <List style={{ margin: '0 16px' }}>
+          <List.Item 
+            label="服务挂件"
+            value="直播预告、公开群"
+            extra={<ChevronRightIcon />}
+          />
+          <List.Item 
+            label="挂件中心"
+            value="管理头像挂件"
+            extra={<ChevronRightIcon />}
+          />
         </List>
       </Layout.Main>
     </Layout>
