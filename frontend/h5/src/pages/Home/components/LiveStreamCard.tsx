@@ -14,8 +14,24 @@ export const LiveStreamCard = ({
   isActive,
   onEnterLiveRoom,
 }: LiveStreamCardProps) => {
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handleClick = () => {
+    if (isActive) {
+      onEnterLiveRoom();
+    }
+  };
+
   return (
-    <div className={`live-stream-card ${isActive ? 'active' : ''}`}>
+    <div 
+      className={`live-stream-card ${isActive ? 'active' : ''} ${isPressed ? 'pressed' : ''}`}
+      onClick={handleClick}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
+      onTouchStart={() => setIsPressed(true)}
+      onTouchEnd={() => setIsPressed(false)}
+    >
       <div className="video-container">
         <VideoPlayer />
 
@@ -46,6 +62,13 @@ export const LiveStreamCard = ({
                 </div>
               )}
             </div>
+
+            {/* 点击进入直播间提示 */}
+            {isActive && (
+              <div className="enter-hint">
+                点击进入直播间
+              </div>
+            )}
           </div>
         </div>
       </div>
