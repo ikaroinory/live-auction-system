@@ -3,6 +3,11 @@ export interface User {
   phone: string;
   nickname?: string;
   avatar?: string;
+  bio?: string;
+  gender?: string;
+  birthday?: string;
+  location?: string;
+  douyinId?: string;
   createdAt: string;
 }
 
@@ -20,4 +25,13 @@ export interface LoginParams {
 export interface LoginResult {
   token: string;
   user: User;
+}
+
+export interface UpdateProfileParams {
+  nickname?: string;
+  bio?: string;
+  gender?: string;
+  birthday?: string;
+  location?: string;
+  douyinId?: string;
 }

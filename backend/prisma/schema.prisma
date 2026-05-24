@@ -13,6 +13,11 @@ model User {
   password  String
   nickname  String?
   avatar    String?  @db.LongText
+  bio       String?  @db.Text
+  gender    String?
+  birthday  DateTime?
+  location  String?
+  douyinId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -81,6 +86,6 @@ model Order {
 
   // 关联关系
   auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
-  user    User    @relation("userOrders", fields: [userId], references: [id])
-  seller  User    @relation("sellerOrders", fields: [sellerId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  seller  User    @relation(fields: [sellerId], references: [id])
 }

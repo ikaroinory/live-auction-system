@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
+import { authAPI } from '../../services/api';
 import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton } from '@/components/ui';
 import './ProfileEdit.scss';
 
@@ -11,29 +12,44 @@ export const ProfileEdit = () => {
 
   const [profileData, setProfileData] = useState({
     nickname: user?.nickname || '',
-    bio: '',
-    gender: '男',
-    birthday: user?.birthday || '2002-03-25',
-    location: '中国·广东·深圳',
-    douyinId: 'ikaroinory',
+    bio: user?.bio || '',
+    gender: user?.gender || '',
+    birthday: user?.birthday || '',
+    location: user?.location || '',
+    douyinId: user?.douyinId || '',
   });
 
-  const handleSave = () => {
-    setUser({
-      ...user!,
-      nickname: profileData.nickname,
-    });
-    Toast.show('资料已保存');
-    navigate(-1);
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        nickname: user.nickname || '',
+        bio: user.bio || '',
+        gender: user.gender || '',
+        birthday: user.birthday || '',
+        location: user.location || '',
+        douyinId: user.douyinId || '',
+      });
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    try {
+      const updatedUser = await authAPI.updateProfile(profileData);
+      setUser(updatedUser);
+      Toast.show('资料已保存');
+      navigate(-1);
+    } catch (error: any) {
+      Toast.show(error.message || '保存失败');
+    }
   };
 
   const menuItems = [
-    { label: '名字', value: profileData.nickname, key: 'nickname' },
+    { label: '名字', value: profileData.nickname || '未设置', key: 'nickname' },
     { label: '简介', value: profileData.bio || 'hypocrisy.', key: 'bio' },
-    { label: '性别', value: profileData.gender, key: 'gender' },
-    { label: '生日', value: profileData.birthday, key: 'birthday' },
-    { label: '所在地', value: profileData.location, key: 'location' },
-    { label: '抖音号', value: profileData.douyinId, key: 'douyinId' },
+    { label: '性别', value: profileData.gender || '男', key: 'gender' },
+    { label: '生日', value: profileData.birthday || '2002-03-25', key: 'birthday' },
+    { label: '所在地', value: profileData.location || '中国·广东·深圳', key: 'location' },
+    { label: '抖音号', value: profileData.douyinId || 'ikaroinory', key: 'douyinId' },
   ];
 
   return (

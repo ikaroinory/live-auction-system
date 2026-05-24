@@ -130,6 +130,11 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
         phone: true,
         nickname: true,
         avatar: true,
+        bio: true,
+        gender: true,
+        birthday: true,
+        location: true,
+        douyinId: true,
         createdAt: true
       }
     });
@@ -138,7 +143,11 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
       return res.status(404).json({ message: '用户不存在' });
     }
     
-    res.json(user);
+    res.json({
+      ...user,
+      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
+      createdAt: user.createdAt.toISOString()
+    });
   } catch (error) {
     next(error);
   }
@@ -217,11 +226,63 @@ router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, ne
         phone: true,
         nickname: true,
         avatar: true,
+        bio: true,
+        gender: true,
+        birthday: true,
+        location: true,
+        douyinId: true,
         createdAt: true
       }
     });
 
-    res.json(user);
+    res.json({
+      ...user,
+      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
+      createdAt: user.createdAt.toISOString()
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: '未认证' });
+    }
+
+    const { nickname, bio, gender, birthday, location, douyinId } = req.body;
+
+    const updateData: any = {};
+    if (nickname !== undefined) updateData.nickname = nickname;
+    if (bio !== undefined) updateData.bio = bio;
+    if (gender !== undefined) updateData.gender = gender;
+    if (birthday !== undefined) updateData.birthday = birthday ? new Date(birthday) : null;
+    if (location !== undefined) updateData.location = location;
+    if (douyinId !== undefined) updateData.douyinId = douyinId;
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: updateData,
+      select: {
+        id: true,
+        phone: true,
+        nickname: true,
+        avatar: true,
+        bio: true,
+        gender: true,
+        birthday: true,
+        location: true,
+        douyinId: true,
+        createdAt: true
+      }
+    });
+
+    res.json({
+      ...user,
+      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
+      createdAt: user.createdAt.toISOString()
+    });
   } catch (error) {
     next(error);
   }
