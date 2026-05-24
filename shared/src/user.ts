@@ -10,10 +10,10 @@ export interface User {
   nickname?: string;
   avatar?: string;
   bio?: string;
-  gender?: Gender;
+  gender: Gender;
   birthday?: string;
-  location?: string;
-  douyinId?: string;
+  location: string;
+  douyinId: string;
   createdAt: string;
 }
 

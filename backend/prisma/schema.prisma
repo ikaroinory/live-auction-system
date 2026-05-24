@@ -20,10 +20,10 @@ model User {
   nickname  String?
   avatar    String?  @db.LongText
   bio       String?  @db.Text
-  gender    Gender?
+  gender    Gender   @default(UNKNOWN)
   birthday  DateTime?
-  location  String?
-  douyinId  String?  @unique
+  location  String   @default("中国·广东·深圳")
+  douyinId  String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
