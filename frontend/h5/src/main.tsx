@@ -10,6 +10,32 @@ import Me from './pages/Me'
 import { MeOrders } from './pages/Me/MeOrders'
 import { MeBids } from './pages/Me/MeBids'
 import { Login } from './pages/Login'
+import { useUserStore } from './store/useUserStore'
+import { useEffect } from 'react'
+
+function AppInitializer({ children }: { children: React.ReactNode }) {
+  const { fetchUser, isLoading } = useUserStore()
+
+  useEffect(() => {
+    fetchUser()
+  }, [fetchUser])
+
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        加载中...
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
 
 function MainFramework() {
   return (
@@ -102,6 +128,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AppInitializer>
+      <RouterProvider router={router} />
+    </AppInitializer>
   </React.StrictMode>
 )
