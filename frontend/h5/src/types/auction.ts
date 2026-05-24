@@ -1,6 +1,6 @@
 export interface Auction {
-  id: number;
-  sellerId: number;
+  id: string;
+  sellerId: string;
   title: string;
   description: string;
   images: string[];
@@ -13,22 +13,23 @@ export interface Auction {
   startTime: string | null;
   endTime: string | null;
   finalPrice: number | null;
-  winnerId: number | null;
+  winnerId: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Bid {
-  id: number;
-  auctionId: number;
-  userId: number;
+  id: string;
+  auctionId: string;
+  userId: string;
   price: number;
   createdAt: string;
 }
 
 export interface RankingItem {
-  userId: number;
-  username: string;
+  userId: string;
+  username?: string;
+  phone?: string;
   price: number;
   rank: number;
   isCurrentUser?: boolean;

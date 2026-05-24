@@ -30,7 +30,7 @@ export const RankingList = ({ rankings }: RankingListProps) => {
                 )}
               </div>
               <div className="info">
-                <div className="username">{item.username}</div>
+                <div className="username">{item.phone || item.username}</div>
                 <div className="price">¥{item.price.toFixed(2)}</div>
               </div>
               {item.isCurrentUser && (

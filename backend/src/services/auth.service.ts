@@ -4,32 +4,32 @@ import { prisma } from '../lib/prisma';
 import config from '../config';
 
 export class AuthService {
-  async register(username: string, password: string, nickname?: string) {
+  async register(phone: string, password: string, nickname?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const user = await prisma.user.create({
       data: {
-        username,
+        phone,
         password: hashedPassword,
-        nickname: nickname || username
+        nickname: nickname || phone
       }
     });
     
-    const token = this.generateToken(user.id, user.username);
+    const token = this.generateToken(user.id, user.phone);
     
     return {
       user: {
         id: user.id,
-        username: user.username,
+        phone: user.phone,
         nickname: user.nickname
       },
       token
     };
   }
   
-  async login(username: string, password: string) {
+  async login(phone: string, password: string) {
     const user = await prisma.user.findUnique({
-      where: { username }
+      where: { phone }
     });
     
     if (!user) {
@@ -42,21 +42,21 @@ export class AuthService {
       throw new Error('密码错误');
     }
     
-    const token = this.generateToken(user.id, user.username);
+    const token = this.generateToken(user.id, user.phone);
     
     return {
       user: {
         id: user.id,
-        username: user.username,
+        phone: user.phone,
         nickname: user.nickname
       },
       token
     };
   }
   
-  private generateToken(userId: string, username: string) {
+  private generateToken(userId: string, phone: string) {
     return jwt.sign(
-      { id: userId, username },
+      { id: userId, phone },
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn }
     );

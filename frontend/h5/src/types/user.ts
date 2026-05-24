@@ -1,9 +1,8 @@
 export interface User {
-  id: number;
-  username: string;
+  id: number | string;
+  phone: string;
   nickname?: string;
   avatar?: string;
-  phone?: string;
   vipLevel: number;
   vipName?: string;
   createdAt: string;

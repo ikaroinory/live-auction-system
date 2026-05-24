@@ -20,41 +20,42 @@ export interface WebSocketMessage<T = any> {
 }
 
 export interface JoinRoomPayload {
-  auctionId: number;
-  userId: number;
+  auctionId: string;
+  userId: string;
 }
 
 export interface BidPayload {
-  auctionId: number;
-  userId: number;
+  auctionId: string;
+  userId: string;
   price: number;
 }
 
 export interface PriceUpdatePayload {
-  auctionId: number;
+  auctionId: string;
   currentPrice: number;
-  bidderId: number;
+  bidderId: string;
   bidderName: string;
 }
 
 export interface RankingUpdatePayload {
-  auctionId: number;
+  auctionId: string;
   rankings: Array<{
-    userId: number;
-    username: string;
+    userId: string;
+    username?: string;
+    phone?: string;
     price: number;
     rank: number;
   }>;
 }
 
 export interface CountdownTickPayload {
-  auctionId: number;
+  auctionId: string;
   remainingMs: number;
 }
 
 export interface AuctionEndPayload {
-  auctionId: number;
+  auctionId: string;
   finalPrice: number;
-  winnerId: number;
+  winnerId: string;
   winnerName: string;
 }

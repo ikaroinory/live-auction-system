@@ -81,14 +81,14 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
         seller: {
           select: {
             id: true,
-            username: true,
+            phone: true,
             nickname: true
           }
         },
         winner: {
           select: {
             id: true,
-            username: true,
+            phone: true,
             nickname: true
           }
         },
@@ -134,14 +134,14 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
         seller: {
           select: {
             id: true,
-            username: true,
+            phone: true,
             nickname: true
           }
         },
         winner: {
           select: {
             id: true,
-            username: true,
+            phone: true,
             nickname: true
           }
         },
@@ -150,7 +150,7 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
             user: {
               select: {
                 id: true,
-                username: true,
+                phone: true,
                 nickname: true
               }
             }

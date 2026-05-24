@@ -52,7 +52,7 @@ export const Me = () => {
           />
           <div className="user-details">
             <div className="user-name">
-              {user?.nickname || user?.username}
+              {user?.nickname || user?.phone}
             </div>
             <div className="user-vip">
               <Tag 

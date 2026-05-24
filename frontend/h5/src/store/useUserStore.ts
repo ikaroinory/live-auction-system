@@ -11,11 +11,10 @@ interface UserState {
 
 // 模拟用户数据
 const mockUser: User = {
-  id: 10001,
-  username: 'user001',
+  id: '10001',
+  phone: '138****8888',
   nickname: '竞拍达人',
   avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix',
-  phone: '138****8888',
   vipLevel: 3,
   vipName: '黄金会员',
   createdAt: '2023-01-01T00:00:00Z',

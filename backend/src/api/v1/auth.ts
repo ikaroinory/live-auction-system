@@ -20,12 +20,12 @@ const authService = new AuthService();
  *           schema:
  *             type: object
  *             required:
- *               - username
+ *               - phone
  *               - password
  *             properties:
- *               username:
+ *               phone:
  *                 type: string
- *                 description: 用户名
+ *                 description: 手机号
  *               password:
  *                 type: string
  *                 description: 密码
@@ -38,17 +38,17 @@ const authService = new AuthService();
  *       400:
  *         description: 参数错误
  *       409:
- *         description: 用户名已存在
+ *         description: 手机号已存在
  */
 router.post('/register', async (req: Request, res: Response, next: Function) => {
   try {
-    const { username, password, nickname } = req.body;
+    const { phone, password, nickname } = req.body;
     
-    if (!username || !password) {
-      return res.status(400).json({ message: '用户名和密码不能为空' });
+    if (!phone || !password) {
+      return res.status(400).json({ message: '手机号和密码不能为空' });
     }
     
-    const result = await authService.register(username, password, nickname);
+    const result = await authService.register(phone, password, nickname);
     
     res.status(201).json(result);
   } catch (error) {
@@ -70,12 +70,12 @@ router.post('/register', async (req: Request, res: Response, next: Function) => 
  *           schema:
  *             type: object
  *             required:
- *               - username
+ *               - phone
  *               - password
  *             properties:
- *               username:
+ *               phone:
  *                 type: string
- *                 description: 用户名
+ *                 description: 手机号
  *               password:
  *                 type: string
  *                 description: 密码
@@ -89,13 +89,13 @@ router.post('/register', async (req: Request, res: Response, next: Function) => 
  */
 router.post('/login', async (req: Request, res: Response, next: Function) => {
   try {
-    const { username, password } = req.body;
+    const { phone, password } = req.body;
     
-    if (!username || !password) {
-      return res.status(400).json({ message: '用户名和密码不能为空' });
+    if (!phone || !password) {
+      return res.status(400).json({ message: '手机号和密码不能为空' });
     }
     
-    const result = await authService.login(username, password);
+    const result = await authService.login(phone, password);
     
     res.json(result);
   } catch (error) {
@@ -127,7 +127,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
       where: { id: req.user.id },
       select: {
         id: true,
-        username: true,
+        phone: true,
         nickname: true,
         avatar: true,
         createdAt: true
