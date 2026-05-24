@@ -43,6 +43,9 @@ func (s *AuthService) Register(req *models.RegisterRequest) (*models.AuthRespons
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
+		Nickname: req.Nickname,
+		Avatar:   req.Avatar,
+		Phone:    req.Phone,
 		Role:     role,
 	}
 
