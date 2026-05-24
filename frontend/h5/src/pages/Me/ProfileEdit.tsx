@@ -68,19 +68,11 @@ export const ProfileEdit = () => {
     <Layout>
       <Layout.Main>
         <div className="top-bar">
-          <BubbleButton onClick={() => navigate(-1)}>
-            <ChevronLeftIcon />
-          </BubbleButton>
-          <button className="save-btn" onClick={handleSave}>保存</button>
+          <BubbleButton onClick={() => navigate(-1)}><ChevronLeftIcon /></BubbleButton>
         </div>
         
         <div className="cover-section">
-          <div className="cover-image">
-            <button className="change-cover-btn">
-              <CameraIcon />
-              更换封面
-            </button>
-          </div>
+          <div className="cover-image" />
           
           <div className="avatar-container">
             <div className="avatar-wrapper">
