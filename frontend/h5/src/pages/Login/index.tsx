@@ -36,15 +36,7 @@ export const Login = () => {
       
       localStorage.setItem('token', response.token);
       
-      login({
-        id: response.user.id,
-        phone: response.user.phone,
-        nickname: response.user.nickname,
-        avatar: response.user.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + response.user.id,
-        vipLevel: 1,
-        vipName: '普通会员',
-        createdAt: new Date().toISOString(),
-      });
+      login(response.user);
 
       Toast.show(response.isNewUser ? '注册成功' : '登录成功');
       navigate('/');

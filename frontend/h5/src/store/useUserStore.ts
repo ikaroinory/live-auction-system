@@ -1,29 +1,46 @@
 import { create } from 'zustand';
 import type { User } from '../types/user';
+import { authAPI } from '../services/api';
 
 interface UserState {
   user: User | null;
   isLoggedIn: boolean;
+  isLoading: boolean;
   setUser: (user: User | null) => void;
   login: (user: User) => void;
   logout: () => void;
+  fetchUser: () => Promise<void>;
 }
 
-// 模拟用户数据
-const mockUser: User = {
-  id: '10001',
-  phone: '138****8888',
-  nickname: '竞拍达人',
-  avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix',
-  vipLevel: 3,
-  vipName: '黄金会员',
-  createdAt: '2023-01-01T00:00:00Z',
-};
-
 export const useUserStore = create<UserState>((set) => ({
-  user: mockUser,
-  isLoggedIn: true,
+  user: null,
+  isLoggedIn: false,
+  isLoading: false,
+  
   setUser: (user) => set({ user, isLoggedIn: !!user }),
+  
   login: (user) => set({ user, isLoggedIn: true }),
-  logout: () => set({ user: null, isLoggedIn: false }),
+  
+  logout: () => {
+    localStorage.removeItem('token');
+    set({ user: null, isLoggedIn: false });
+  },
+  
+  fetchUser: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      set({ user: null, isLoggedIn: false, isLoading: false });
+      return;
+    }
+
+    set({ isLoading: true });
+    
+    try {
+      const userData = await authAPI.getCurrentUser();
+      set({ user: userData, isLoggedIn: true, isLoading: false });
+    } catch (error) {
+      localStorage.removeItem('token');
+      set({ user: null, isLoggedIn: false, isLoading: false });
+    }
+  },
 }));

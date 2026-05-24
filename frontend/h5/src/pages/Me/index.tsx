@@ -1,28 +1,29 @@
-import { List, Avatar, Tag } from 'antd-mobile';
+import { List, Avatar, Button } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { 
   UnorderedListOutline, 
   ShopbagOutline,
   SetOutline,
-  ClockCircleOutline
+  ClockCircleOutline,
+  LogoutOutline
 } from 'antd-mobile-icons';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
 
 export const Me = () => {
   const navigate = useNavigate();
-  const { user } = useUserStore();
+  const { user, logout } = useUserStore();
 
   const menuItems = [
     {
       icon: <UnorderedListOutline />,
       title: '我的出价',
-      path: '/bids',
+      path: '/me/bids',
     },
     {
       icon: <ShopbagOutline />,
       title: '我的订单',
-      path: '/orders',
+      path: '/me/orders',
     },
     {
       icon: <ClockCircleOutline />,
@@ -36,10 +37,17 @@ export const Me = () => {
     },
   ];
 
-  const getVipColor = (level: number) => {
-    const colors = ['#909399', '#409EFF', '#67C23A', '#E6A23C', '#F56C6C'];
-    return colors[Math.min(level - 1, colors.length - 1)];
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const displayName = user?.nickname || user?.phone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+  const avatarUrl = user?.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.id || 'default'}`;
 
   return (
     <div className="me-page">
@@ -47,36 +55,33 @@ export const Me = () => {
       <div className="user-header">
         <div className="user-info">
           <Avatar 
-            src={user?.avatar} 
+            src={avatarUrl} 
             style={{ '--size': '72px' }}
           />
           <div className="user-details">
             <div className="user-name">
-              {user?.nickname || user?.phone}
+              {displayName || '未登录'}
             </div>
-            <div className="user-vip">
-              <Tag 
-                color={user ? getVipColor(user.vipLevel) : '#909399'} 
-                fill="outline"
-              >
-                {user?.vipName || '普通会员'}
-              </Tag>
-            </div>
+            {user && (
+              <div className="user-phone">
+                {user.phone}
+              </div>
+            )}
           </div>
         </div>
         
         {/* 统计信息 */}
         <div className="stats-section">
           <div className="stat-item">
-            <div className="stat-number">12</div>
+            <div className="stat-number">{user ? '12' : '-'}</div>
             <div className="stat-label">出价次数</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">3</div>
+            <div className="stat-number">{user ? '3' : '-'}</div>
             <div className="stat-label">成功竞拍</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">8</div>
+            <div className="stat-number">{user ? '8' : '-'}</div>
             <div className="stat-label">浏览记录</div>
           </div>
         </div>
@@ -89,13 +94,36 @@ export const Me = () => {
             <List.Item
               key={item.path}
               prefix={item.icon}
-              clickable
-              onClick={() => navigate(item.path)}
+              clickable={!!user}
+              onClick={() => user && navigate(item.path)}
             >
               {item.title}
             </List.Item>
           ))}
         </List>
+
+        {/* 登录/登出按钮 */}
+        <div style={{ padding: '20px' }}>
+          {user ? (
+            <Button 
+              block 
+              color="danger" 
+              fill="outline"
+              onClick={handleLogout}
+              icon={<LogoutOutline />}
+            >
+              退出登录
+            </Button>
+          ) : (
+            <Button 
+              block 
+              color="primary" 
+              onClick={handleLogin}
+            >
+              立即登录
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
