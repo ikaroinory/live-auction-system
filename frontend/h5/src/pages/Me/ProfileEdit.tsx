@@ -25,6 +25,7 @@ export const ProfileEdit = () => {
   const [editModalValue, setEditModalValue] = useState('');
   const [editModalKey, setEditModalKey] = useState('');
   const [genderModalVisible, setGenderModalVisible] = useState(false);
+  const [tempGender, setTempGender] = useState<Gender>(profileData.gender);
 
   useEffect(() => {
     if (user) {
@@ -36,6 +37,7 @@ export const ProfileEdit = () => {
         location: user.location || '',
         douyinId: user.douyinId || '',
       });
+      setTempGender(user.gender || Gender.MALE);
     }
   }, [user]);
 
@@ -72,11 +74,16 @@ export const ProfileEdit = () => {
   };
 
   const handleEditGender = () => {
+    setTempGender(profileData.gender);
     setGenderModalVisible(true);
   };
 
-  const selectGender = async (g: Gender) => {
-    const newData = { ...profileData, gender: g };
+  const selectGender = (g: Gender) => {
+    setTempGender(g);
+  };
+
+  const handleGenderConfirm = async () => {
+    const newData = { ...profileData, gender: tempGender };
     setProfileData(newData);
     setGenderModalVisible(false);
     try {
@@ -224,7 +231,7 @@ export const ProfileEdit = () => {
               {genderOptions.map((opt) => (
                 <div 
                   key={opt.value} 
-                  className={`gender-option ${profileData.gender === opt.value ? 'active' : ''}`}
+                  className={`gender-option ${tempGender === opt.value ? 'active' : ''}`}
                   onClick={() => selectGender(opt.value)}
                 >
                   {opt.label}
@@ -232,10 +239,10 @@ export const ProfileEdit = () => {
               ))}
             </div>
           }
-          onConfirm={() => setGenderModalVisible(false)}
+          onConfirm={handleGenderConfirm}
           onCancel={() => setGenderModalVisible(false)}
-          confirmText="取消"
-          cancelText=""
+          confirmText="保存"
+          cancelText="取消"
         />
       </Layout.Main>
     </Layout>

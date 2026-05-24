@@ -10,10 +10,22 @@ interface DialogProps {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
+  showCancelButton?: boolean;
+  showConfirmButton?: boolean;
 }
 
 export function Dialog(props: DialogProps) {
-  const { visible, title, content, onConfirm, onCancel, confirmText = '确定', cancelText = '取消' } = props;
+  const { 
+    visible, 
+    title, 
+    content, 
+    onConfirm, 
+    onCancel, 
+    confirmText = '确定', 
+    cancelText = '取消',
+    showCancelButton = true,
+    showConfirmButton = true
+  } = props;
 
   useEffect(() => {
     if (visible) {
@@ -34,12 +46,16 @@ export function Dialog(props: DialogProps) {
         {title && <div className={styles.dialogTitle}>{title}</div>}
         {content && <div className={styles.dialogContent}>{content}</div>}
         <div className={styles.dialogActions}>
-          <button className={styles.cancelBtn} onClick={onCancel}>
-            {cancelText}
-          </button>
-          <button className={styles.confirmBtn} onClick={onConfirm}>
-            {confirmText}
-          </button>
+          {showCancelButton && (
+            <button className={styles.cancelBtn} onClick={onCancel}>
+              {cancelText}
+            </button>
+          )}
+          {showConfirmButton && (
+            <button className={styles.confirmBtn} onClick={onConfirm}>
+              {confirmText}
+            </button>
+          )}
         </div>
       </div>
     </div>,
