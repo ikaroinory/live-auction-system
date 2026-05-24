@@ -4,7 +4,7 @@ import config from '../config';
 
 export interface AuthRequest extends Request {
   user?: {
-    id: number;
+    id: string;
     username: string;
   };
 }
@@ -23,7 +23,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
       return res.status(401).json({ message: '认证令牌格式错误' });
     }
     
-    const decoded = jwt.verify(token, config.jwt.secret) as { id: number; username: string };
+    const decoded = jwt.verify(token, config.jwt.secret) as { id: string; username: string };
     
     req.user = decoded;
     next();

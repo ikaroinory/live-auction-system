@@ -12,9 +12,9 @@ const router = Router();
  *       type: object
  *       properties:
  *         id:
- *           type: number
+ *           type: string
  *         sellerId:
- *           type: number
+ *           type: string
  *         title:
  *           type: string
  *         description:
@@ -44,7 +44,7 @@ const router = Router();
  *         finalPrice:
  *           type: number
  *         winnerId:
- *           type: number
+ *           type: string
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -116,7 +116,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: number
+ *           type: string
  *         description: 竞拍ID
  *     responses:
  *       200:
@@ -129,7 +129,7 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
     const { id } = req.params;
     
     const auction = await prisma.auction.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
       include: {
         seller: {
           select: {

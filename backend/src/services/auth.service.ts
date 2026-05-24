@@ -54,7 +54,7 @@ export class AuthService {
     };
   }
   
-  private generateToken(userId: number, username: string) {
+  private generateToken(userId: string, username: string) {
     return jwt.sign(
       { id: userId, username },
       config.jwt.secret,

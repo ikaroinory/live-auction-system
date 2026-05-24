@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { prisma } from '../../lib/prisma';
 import { AuthService } from '../../services/auth.service';
 import { authMiddleware, AuthRequest } from '../../middleware/auth';
 
