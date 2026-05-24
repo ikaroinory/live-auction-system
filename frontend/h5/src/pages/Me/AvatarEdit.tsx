@@ -22,20 +22,23 @@ export const AvatarEdit = () => {
   }, [user]);
 
   const handleUploadAndSave = async (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setPreviewUrl(event.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-
     setIsUploading(true);
     setIsSaved(false);
 
+    const reader = new FileReader();
+
     try {
-      const dataUrl = await new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = () => {
+          reject(new Error('图片读取失败'));
+        };
         reader.readAsDataURL(file);
       });
+
+      setPreviewUrl(dataUrl);
 
       const updatedUser = await authAPI.updateAvatar(dataUrl);
       setUser(updatedUser);
@@ -43,7 +46,7 @@ export const AvatarEdit = () => {
       setIsSaved(true);
       Toast.show('头像已更新');
     } catch (error: any) {
-      Toast.show(error.response?.data?.message || '头像上传失败');
+      Toast.show(error.message || '头像上传失败');
       setIsSaved(false);
     } finally {
       setIsUploading(false);
@@ -108,18 +111,6 @@ export const AvatarEdit = () => {
             <span className="action-text">保存头像</span>
             <span className="action-arrow">›</span>
           </div>
-        </div>
-
-        <div className="save-button-container">
-          <Button
-            block
-            color="primary"
-            size="large"
-            disabled={isSaved}
-            onClick={() => navigate(-1)}
-          >
-            {isSaved ? '已保存' : '保存头像'}
-          </Button>
         </div>
 
         <input
