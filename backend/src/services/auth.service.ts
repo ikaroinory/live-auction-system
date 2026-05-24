@@ -53,6 +53,48 @@ export class AuthService {
       token
     };
   }
+
+  async loginOrRegisterByPhone(phone: string, code: string) {
+    const existingUser = await prisma.user.findUnique({
+      where: { phone }
+    });
+
+    if (existingUser) {
+      const token = this.generateToken(existingUser.id, existingUser.phone);
+      return {
+        user: {
+          id: existingUser.id,
+          phone: existingUser.phone,
+          nickname: existingUser.nickname,
+          avatar: existingUser.avatar
+        },
+        token,
+        isNewUser: false
+      };
+    }
+
+    const defaultPassword = await bcrypt.hash('sms_login_' + phone, 10);
+    const newUser = await prisma.user.create({
+      data: {
+        phone,
+        password: defaultPassword,
+        nickname: `用户${phone.slice(-4)}`
+      }
+    });
+
+    const token = this.generateToken(newUser.id, newUser.phone);
+    
+    return {
+      user: {
+        id: newUser.id,
+        phone: newUser.phone,
+        nickname: newUser.nickname,
+        avatar: newUser.avatar
+      },
+      token,
+      isNewUser: true
+    };
+  }
   
   private generateToken(userId: string, phone: string) {
     return jwt.sign(

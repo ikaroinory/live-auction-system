@@ -1,15 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
+import { authAPI } from '../../services/api';
 import './Login.scss';
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login } = useUserStore();
+  const { login, user } = useUserStore();
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async () => {
     if (!phone || !code) {
@@ -17,22 +24,32 @@ export const Login = () => {
       return;
     }
 
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      Toast.show('请输入正确的手机号');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authAPI.smsLogin(phone, code);
+      
+      localStorage.setItem('token', response.token);
       
       login({
-        id: Date.now(),
-        username: `用户${phone.slice(-4)}`,
-        phone,
+        id: response.user.id,
+        phone: response.user.phone,
+        nickname: response.user.nickname,
+        avatar: response.user.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + response.user.id,
+        vipLevel: 1,
+        vipName: '普通会员',
         createdAt: new Date().toISOString(),
       });
 
-      Toast.show('登录成功');
+      Toast.show(response.isNewUser ? '注册成功' : '登录成功');
       navigate('/');
-    } catch (error) {
-      Toast.show('登录失败，请稍后重试');
+    } catch (error: any) {
+      Toast.show(error.response?.data?.message || '登录失败，请稍后重试');
     } finally {
       setLoading(false);
     }

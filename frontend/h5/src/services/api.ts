@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { useUserStore } from '../store/useUserStore';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -11,9 +13,9 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const user = useUserStore.getState().user;
-    if (user) {
-      config.headers.Authorization = `Bearer ${user.id}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -32,5 +34,14 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const authAPI = {
+  smsLogin: (phone: string, code: string) => {
+    return apiClient.post('/v1/auth/sms-login', { phone, code });
+  },
+  getCurrentUser: () => {
+    return apiClient.get('/v1/auth/me');
+  },
+};
 
 export default apiClient;
