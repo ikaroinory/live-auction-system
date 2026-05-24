@@ -1,5 +1,6 @@
 import type { Bid } from '../../../types/auction';
 import { formatPrice, formatDate } from '../../../utils/format';
+import './BidHistory.scss';
 
 interface BidHistoryProps {
   bids: Bid[];

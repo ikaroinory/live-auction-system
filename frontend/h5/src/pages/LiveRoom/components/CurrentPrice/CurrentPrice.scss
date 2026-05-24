@@ -1,0 +1,30 @@
+.current-price-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.current-price-display .label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.current-price-display .price {
+  font-size: 36px;
+  font-weight: 800;
+  color: #fe2c55;
+  text-shadow: 0 2px 8px rgba(254, 44, 85, 0.4);
+  animation: pricePop 0.3s ease-out;
+}
+
+@keyframes pricePop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

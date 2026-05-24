@@ -1,4 +1,5 @@
 import { formatPrice } from '../../../utils/format';
+import './CurrentPrice.scss';
 
 interface CurrentPriceProps {
   price: number;

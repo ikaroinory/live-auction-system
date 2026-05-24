@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, NavBar, Toast } from 'antd-mobile';
+import { NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
-import { CameraOutline } from 'antd-mobile-icons';
+import { CameraIcon, ChevronRightIcon, DownloadIcon, Layout } from '@/components/ui';
 import './AvatarEdit.scss';
-import { Layout } from '@/components/ui';
 
 export const AvatarEdit = () => {
   const navigate = useNavigate();
@@ -101,15 +100,15 @@ export const AvatarEdit = () => {
 
         <div className="action-list">
           <div className="action-item" onClick={handleUpload} disabled={isUploading}>
-            <CameraOutline className="action-icon" />
+            <CameraIcon className="action-icon" />
             <span className="action-text">更换头像</span>
-            <span className="action-arrow">›</span>
+            <ChevronRightIcon className="action-arrow" />
           </div>
 
           <div className="action-item" onClick={handleSaveToGallery}>
-            <span className="action-icon save-icon">↓</span>
+            <DownloadIcon className="action-icon" />
             <span className="action-text">保存头像</span>
-            <span className="action-arrow">›</span>
+            <ChevronRightIcon className="action-arrow" />
           </div>
         </div>
 
