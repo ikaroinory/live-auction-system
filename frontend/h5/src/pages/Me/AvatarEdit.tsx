@@ -1,86 +1,131 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, NavBar, Toast, Radio, Space } from 'antd-mobile';
+import { Button, NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
+import { CameraOutline } from 'antd-mobile-icons';
 import './AvatarEdit.scss';
-
-const AVATAR_OPTIONS = [
-  '/default-avatar.svg',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=1',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=2',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=3',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=4',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=5',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=6',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=7',
-  'https://api.dicebear.com/9.x/avataaars/svg?seed=8',
-];
 
 export const AvatarEdit = () => {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
-  const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar || '/default-avatar.svg');
-  const [loading, setLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user?.avatar) {
+      setPreviewUrl(user.avatar);
+    }
+  }, [user]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreviewUrl(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpload = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleSave = async () => {
-    setLoading(true);
+    if (!previewUrl || previewUrl === '/default-avatar.svg') {
+      Toast.show('请先上传头像');
+      return;
+    }
+
+    setIsUploading(true);
     try {
-      const updatedUser = await authAPI.updateAvatar(selectedAvatar);
+      const updatedUser = await authAPI.updateAvatar(previewUrl);
       setUser(updatedUser);
       Toast.show('头像更新成功');
       navigate(-1);
     } catch (error: any) {
       Toast.show(error.response?.data?.message || '头像更新失败');
     } finally {
-      setLoading(false);
+      setIsUploading(false);
     }
+  };
+
+  const handleSaveToGallery = () => {
+    if (!previewUrl || previewUrl === '/default-avatar.svg') {
+      Toast.show('没有可保存的头像');
+      return;
+    }
+
+    const link = document.createElement('a');
+    link.href = previewUrl;
+    link.download = 'avatar.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    Toast.show('头像已保存');
   };
 
   return (
     <div className="avatar-edit-page">
-      <NavBar onBack={() => navigate(-1)}>修改头像</NavBar>
+      <NavBar
+        onBack={() => navigate(-1)}
+        rightContent={
+          <button className="nav-close" onClick={() => navigate(-1)}>
+            ×
+          </button>
+        }
+      />
 
-      <div className="avatar-edit-content">
-        <div className="avatar-preview">
-          <Avatar src={selectedAvatar} style={{ '--size': '120px' }} />
+      <div className="avatar-preview-container">
+        <img
+          src={previewUrl}
+          alt="头像预览"
+          className="avatar-preview-image"
+        />
+      </div>
+
+      <div className="action-list">
+        <div className="action-item" onClick={handleUpload}>
+          <CameraOutline className="action-icon" />
+          <span className="action-text">更换头像</span>
+          <span className="action-arrow">›</span>
         </div>
 
-        <div className="avatar-options">
-          <div className="options-title">选择头像</div>
-          <Radio.Group
-            value={selectedAvatar}
-            onChange={setSelectedAvatar}
-          >
-            <div className="avatar-grid">
-              {AVATAR_OPTIONS.map((avatar) => (
-                <div
-                  key={avatar}
-                  className={`avatar-option ${selectedAvatar === avatar ? 'selected' : ''}`}
-                  onClick={() => setSelectedAvatar(avatar)}
-                >
-                  <Avatar src={avatar} style={{ '--size': '60px' }} />
-                  {selectedAvatar === avatar && (
-                    <div className="selected-indicator">✓</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Radio.Group>
+        <div className="action-item" onClick={handleSaveToGallery}>
+          <span className="action-icon save-icon">↓</span>
+          <span className="action-text">保存头像</span>
+          <span className="action-arrow">›</span>
         </div>
 
-        <div className="save-button">
-          <Button
-            block
-            color="primary"
-            size="large"
-            loading={loading}
-            onClick={handleSave}
-          >
-            保存头像
-          </Button>
+        <div className="action-item">
+          <span className="action-icon qrcode-icon">▦</span>
+          <span className="action-text">查看抖音码</span>
+          <span className="action-arrow">›</span>
         </div>
       </div>
+
+      <div className="save-button-container">
+        <Button
+          block
+          color="primary"
+          size="large"
+          loading={isUploading}
+          onClick={handleSave}
+        >
+          保存头像
+        </Button>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="file-input"
+      />
     </div>
   );
 };
