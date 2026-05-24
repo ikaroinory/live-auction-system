@@ -46,7 +46,7 @@ export const Me = () => {
   };
 
   const displayName = user?.nickname || user?.phone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
-  const avatarUrl = user?.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.id || 'default'}`;
+  const avatarUrl = user?.avatar || '/default-avatar.svg';
 
   return (
     <div className="me-page">
