@@ -6,6 +6,7 @@ import { LiveRoom } from './pages/LiveRoom';
 import { AuctionDetail } from './pages/AuctionDetail';
 import { MeBids } from './pages/Me/MeBids';
 import { MeOrders } from './pages/Me/MeOrders';
+import { ProfileEdit } from './pages/Me/ProfileEdit';
 import Me from './pages/Me';
 import { Login } from './pages/Login';
 import { useUserStore } from './store/useUserStore';
@@ -58,6 +59,7 @@ function App() {
         <Route path="/live/:id" element={<LiveRoom />} />
         <Route path="/me/bids" element={<MeBids />} />
         <Route path="/me/orders" element={<MeOrders />} />
+        <Route path="/me/profile" element={<ProfileEdit />} />
         <Route path="/me" element={<Me />} />
         <Route path="/profile" element={<Navigate to="/me" replace />} />
         <Route path="/my" element={<Navigate to="/me" replace />} />

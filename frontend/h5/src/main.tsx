@@ -120,13 +120,12 @@ const router = createBrowserRouter([
       { path: "/bids", element: <MeBids /> },
       { path: "/orders", element: <MeOrders /> },
       { path: "/me", element: <Me /> },
-
-      { path: '/live/:id', element: <LiveRoom /> }
     ]
   },
 
   { path: "/login", element: <Login /> },
-  { path: "/me/avatar", element: <AvatarEdit /> }
+  { path: "/me/avatar", element: <AvatarEdit /> },
+  { path: '/live/:id', element: <LiveRoom /> }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

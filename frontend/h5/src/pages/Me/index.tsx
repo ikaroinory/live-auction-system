@@ -20,6 +20,12 @@ export const Me = () => {
     }
   };
 
+  const handleNicknameClick = () => {
+    if (user) {
+      navigate('/me/profile');
+    }
+  };
+
   const menuItems = [
     {
       icon: <UnorderedListOutline />,
@@ -62,7 +68,10 @@ export const Me = () => {
         <div className="user-info" onClick={handleAvatarClick}>
           <Avatar url={ avatarUrl }  defaultUrl='/default-avatar.svg' />
           <div className="user-details">
-            <div className="user-name">
+            <div 
+              className="user-name" 
+              onClick={(e) => { e.stopPropagation(); handleNicknameClick(); }}
+            >
               {displayName || '未登录'}
             </div>
             {user && (
