@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Toast, Picker, DatePicker, Input } from 'antd-mobile';
+import { Toast, DatePicker, Input } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
 import { Gender } from '../../../../../shared/src/user';
@@ -24,6 +24,7 @@ export const ProfileEdit = () => {
   const [editModalTitle, setEditModalTitle] = useState('');
   const [editModalValue, setEditModalValue] = useState('');
   const [editModalKey, setEditModalKey] = useState('');
+  const [genderModalVisible, setGenderModalVisible] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -49,7 +50,7 @@ export const ProfileEdit = () => {
     }
   };
 
-  const genderColumns = [
+  const genderOptions = [
     { label: '男', value: Gender.MALE },
     { label: '女', value: Gender.FEMALE },
     { label: '未知', value: Gender.UNKNOWN },
@@ -71,22 +72,20 @@ export const ProfileEdit = () => {
   };
 
   const handleEditGender = () => {
-    Picker.show({
-      columns: [genderColumns],
-      value: [profileData.gender],
-      onConfirm: async (val) => {
-        const newGender = val[0] as Gender;
-        const newData = { ...profileData, gender: newGender };
-        setProfileData(newData);
-        try {
-          const updatedUser = await authAPI.updateProfile(newData);
-          setUser(updatedUser);
-          Toast.show('已保存');
-        } catch (error: any) {
-          Toast.show(error.message || '保存失败');
-        }
-      },
-    });
+    setGenderModalVisible(true);
+  };
+
+  const selectGender = async (g: Gender) => {
+    const newData = { ...profileData, gender: g };
+    setProfileData(newData);
+    setGenderModalVisible(false);
+    try {
+      const updatedUser = await authAPI.updateProfile(newData);
+      setUser(updatedUser);
+      Toast.show('已保存');
+    } catch (error: any) {
+      Toast.show(error.message || '保存失败');
+    }
   };
 
   const handleEditBirthday = () => {
@@ -215,6 +214,28 @@ export const ProfileEdit = () => {
           onCancel={() => setEditModalVisible(false)}
           confirmText="确定"
           cancelText="取消"
+        />
+
+        <Dialog
+          visible={genderModalVisible}
+          title="选择性别"
+          content={
+            <div className="gender-options">
+              {genderOptions.map((opt) => (
+                <div 
+                  key={opt.value} 
+                  className={`gender-option ${profileData.gender === opt.value ? 'active' : ''}`}
+                  onClick={() => selectGender(opt.value)}
+                >
+                  {opt.label}
+                </div>
+              ))}
+            </div>
+          }
+          onConfirm={() => setGenderModalVisible(false)}
+          onCancel={() => setGenderModalVisible(false)}
+          confirmText="取消"
+          cancelText=""
         />
       </Layout.Main>
     </Layout>

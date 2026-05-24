@@ -16,15 +16,6 @@
   padding-top: calc(16px + env(safe-area-inset-top));
 }
 
-.save-btn {
-  background: none;
-  border: none;
-  color: #fe2c55;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 0 12px;
-}
-
 .cover-section {
   position: relative;
   padding-top: 0;
@@ -137,4 +128,29 @@
 
 .profile-form {
   margin: 16px;
+}
+
+.gender-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gender-option {
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &.active {
+    background: linear-gradient(135deg, #fe2c55 0%, #ff4d6d 100%);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
 }
