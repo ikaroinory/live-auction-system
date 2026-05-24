@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
+import { Gender } from '@live-auction/shared';
 import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton } from '@/components/ui';
 import './ProfileEdit.scss';
 
@@ -13,7 +14,7 @@ export const ProfileEdit = () => {
   const [profileData, setProfileData] = useState({
     nickname: user?.nickname || '',
     bio: user?.bio || '',
-    gender: user?.gender || '',
+    gender: user?.gender || Gender.MALE,
     birthday: user?.birthday || '',
     location: user?.location || '',
     douyinId: user?.douyinId || '',
@@ -24,13 +25,24 @@ export const ProfileEdit = () => {
       setProfileData({
         nickname: user.nickname || '',
         bio: user.bio || '',
-        gender: user.gender || '',
+        gender: user.gender || Gender.MALE,
         birthday: user.birthday || '',
         location: user.location || '',
         douyinId: user.douyinId || '',
       });
     }
   }, [user]);
+
+  const getGenderDisplay = (g?: Gender) => {
+    switch (g) {
+      case Gender.MALE:
+        return '男';
+      case Gender.FEMALE:
+        return '女';
+      default:
+        return '未知';
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -46,7 +58,7 @@ export const ProfileEdit = () => {
   const menuItems = [
     { label: '名字', value: profileData.nickname || '未设置', key: 'nickname' },
     { label: '简介', value: profileData.bio || 'hypocrisy.', key: 'bio' },
-    { label: '性别', value: profileData.gender || '男', key: 'gender' },
+    { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender' },
     { label: '生日', value: profileData.birthday || '2002-03-25', key: 'birthday' },
     { label: '所在地', value: profileData.location || '中国·广东·深圳', key: 'location' },
     { label: '抖音号', value: profileData.douyinId || 'ikaroinory', key: 'douyinId' },

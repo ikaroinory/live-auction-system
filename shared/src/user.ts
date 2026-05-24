@@ -1,10 +1,16 @@
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  UNKNOWN = 'UNKNOWN',
+}
+
 export interface User {
   id: string;
   phone: string;
   nickname?: string;
   avatar?: string;
   bio?: string;
-  gender?: string;
+  gender?: Gender;
   birthday?: string;
   location?: string;
   douyinId?: string;
@@ -30,7 +36,7 @@ export interface LoginResult {
 export interface UpdateProfileParams {
   nickname?: string;
   bio?: string;
-  gender?: string;
+  gender?: Gender;
   birthday?: string;
   location?: string;
   douyinId?: string;
