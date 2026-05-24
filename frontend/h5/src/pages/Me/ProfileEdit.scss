@@ -115,28 +115,7 @@
 }
 
 .profile-form {
-  background: rgba(255, 255, 255, 0.05);
   margin: 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.form-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
-  &:active {
-    background: rgba(255, 255, 255, 0.05);
-  }
 }
 
 .form-label {
@@ -160,28 +139,7 @@
 }
 
 .service-section {
-  background: rgba(255, 255, 255, 0.05);
   margin: 0 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.service-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
-  &:active {
-    background: rgba(255, 255, 255, 0.05);
-  }
 }
 
 .service-label {

@@ -14,6 +14,7 @@ import { Login } from './pages/Login'
 import { useUserStore } from './store/useUserStore'
 import { useEffect } from 'react'
 import { LiveRoom } from './pages/LiveRoom'
+import ProfileEdit from './pages/Me/ProfileEdit'
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { fetchUser, isLoading } = useUserStore()
@@ -124,7 +125,10 @@ const router = createBrowserRouter([
   },
 
   { path: "/login", element: <Login /> },
+
   { path: "/me/avatar", element: <AvatarEdit /> },
+  { path: "/me/profile", element: <ProfileEdit /> },
+
   { path: '/live/:id', element: <LiveRoom /> }
 ])
 

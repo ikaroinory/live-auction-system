@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
-import { ChevronRightIcon, Layout } from '@/components/ui';
+import { ChevronRightIcon, Layout, List } from '@/components/ui';
 import './ProfileEdit.scss';
 
 export const ProfileEdit = () => {
@@ -50,10 +50,7 @@ export const ProfileEdit = () => {
               alt="封面" 
             />
             <button className="change-cover-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2 3h6l2-3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-              </svg>
+              <CameraIcon />
               更换封面
             </button>
           </div>
@@ -66,10 +63,7 @@ export const ProfileEdit = () => {
                 className="avatar-image"
               />
               <div className="change-avatar-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2 3h6l2-3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
+                <CameraIcon />
                 <span>更换头像</span>
               </div>
             </div>
@@ -82,34 +76,34 @@ export const ProfileEdit = () => {
           </div>
         </div>
 
-        <div className="profile-form">
+        <List className="profile-form">
           {menuItems.map((item) => (
-            <div key={item.key} className="form-item" onClick={() => Toast.show(`编辑${item.label}`)}>
+            <List.Item key={item.key} onClick={() => Toast.show(`编辑${item.label}`)}>
               <span className="form-label">{item.label}</span>
               <div className="form-content">
                 <span className="form-value">{item.value}</span>
                 <ChevronRightIcon className="form-arrow" />
               </div>
-            </div>
+            </List.Item>
           ))}
-        </div>
+        </List>
 
-        <div className="service-section">
-          <div className="service-item">
+        <List className="service-section">
+          <List.Item>
             <span className="service-label">服务挂件</span>
             <div className="service-content">
               <span className="service-value">直播预告、公开群</span>
               <ChevronRightIcon className="service-arrow" />
             </div>
-          </div>
-          <div className="service-item">
+          </List.Item>
+          <List.Item>
             <span className="service-label">挂件中心</span>
             <div className="service-content">
               <span className="service-value">管理头像挂件</span>
               <ChevronRightIcon className="service-arrow" />
             </div>
-          </div>
-        </div>
+          </List.Item>
+        </List>
       </Layout.Main>
     </Layout>
   );
