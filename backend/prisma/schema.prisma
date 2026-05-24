@@ -12,7 +12,7 @@ model User {
   phone     String   @unique
   password  String
   nickname  String?
-  avatar    String?
+  avatar    String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
