@@ -9,6 +9,7 @@ import { Auction } from './types/auction'
 import Me from './pages/Me'
 import { MeOrders } from './pages/Me/MeOrders'
 import { MeBids } from './pages/Me/MeBids'
+import { AvatarEdit } from './pages/Me/AvatarEdit'
 import { Login } from './pages/Login'
 import { useUserStore } from './store/useUserStore'
 import { useEffect } from 'react'
@@ -123,7 +124,8 @@ const router = createBrowserRouter([
     ]
   },
 
-  { path: "/login", element: <Login /> }
+  { path: "/login", element: <Login /> },
+  { path: "/me/avatar", element: <AvatarEdit /> }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

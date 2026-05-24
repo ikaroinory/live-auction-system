@@ -197,4 +197,34 @@ router.post('/sms-login', async (req: Request, res: Response, next: Function) =>
   }
 });
 
+router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: '未认证' });
+    }
+
+    const { avatar } = req.body;
+
+    if (!avatar) {
+      return res.status(400).json({ message: '头像 URL 不能为空' });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { avatar },
+      select: {
+        id: true,
+        phone: true,
+        nickname: true,
+        avatar: true,
+        createdAt: true
+      }
+    });
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

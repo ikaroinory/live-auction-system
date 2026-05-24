@@ -13,6 +13,12 @@ export const Me = () => {
   const navigate = useNavigate();
   const { user, logout } = useUserStore();
 
+  const handleAvatarClick = () => {
+    if (user) {
+      navigate('/me/avatar');
+    }
+  };
+
   const menuItems = [
     {
       icon: <UnorderedListOutline />,
@@ -52,7 +58,7 @@ export const Me = () => {
     <div className="me-page">
       {/* 用户信息头部 */}
       <div className="user-header">
-        <div className="user-info">
+        <div className="user-info" onClick={handleAvatarClick}>
           <Avatar 
             src={avatarUrl} 
             style={{ '--size': '72px' }}

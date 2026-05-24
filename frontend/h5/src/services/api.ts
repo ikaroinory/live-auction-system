@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 import type {
   User,
@@ -50,6 +49,9 @@ export const authAPI = {
   },
   getCurrentUser: (): Promise<User> => {
     return apiClient.get('/v1/auth/me');
+  },
+  updateAvatar: (avatar: string): Promise<User> => {
+    return apiClient.put('/v1/auth/avatar', { avatar });
   },
 };
 

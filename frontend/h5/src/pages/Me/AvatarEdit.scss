@@ -1,0 +1,77 @@
+.avatar-edit-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.avatar-edit-content {
+  padding: 20px;
+}
+
+.avatar-preview {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.avatar-options {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.options-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.avatar-option {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.avatar-option:hover {
+  background-color: #f5f5f5;
+}
+
+.avatar-option.selected {
+  border-color: #1677ff;
+  background-color: #e6f4ff;
+}
+
+.selected-indicator {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background-color: #1677ff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.save-button {
+  padding: 0 10px;
+}
