@@ -6,8 +6,8 @@ import './LiveStreamCard.scss';
 interface LiveStreamCardProps {
   auction: AuctionWithSeller;
   isActive: boolean;
-  onEnterLiveRoom: () =&gt; void;
-  onViewDetails: () =&gt; void;
+  onEnterLiveRoom: () => void;
+  onViewDetails: () => void;
 }
 
 export const LiveStreamCard = ({

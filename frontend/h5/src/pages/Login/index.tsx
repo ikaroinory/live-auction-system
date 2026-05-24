@@ -19,7 +19,7 @@ export const Login = () => {
     }
   }, [user, navigate]);
 
-  const handleLogin = async () =&gt; {
+  const handleLogin = async () => {
     if (!phone || !code) {
       Toast.show('请填写手机号和验证码');
       return;
