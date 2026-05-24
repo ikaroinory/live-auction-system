@@ -2,11 +2,11 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Empty, Toast } from 'antd-mobile';
 import { LiveStreamCard } from './components/LiveStreamCard';
-import type { Auction } from '../../types/auction';
+import type { AuctionWithSeller } from '@live-auction/shared';
 import './Home.scss';
 
 interface HomeProps {
-  auctions?: Auction[];
+  auctions?: AuctionWithSeller[];
   loading?: boolean;
 }
 

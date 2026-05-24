@@ -19,7 +19,7 @@ export const Login = () => {
     }
   }, [user, navigate]);
 
-  const handleLogin = async () => {
+  const handleLogin = async () =&gt; {
     if (!phone || !code) {
       Toast.show('请填写手机号和验证码');
       return;
@@ -33,13 +33,13 @@ export const Login = () => {
     setLoading(true);
     
     try {
-      const response = await authAPI.smsLogin(phone, code);
+      const response = await authAPI.smsLogin({ phone, code });
       
       localStorage.setItem('token', response.token);
       
       login(response.user);
 
-      Toast.show(response.isNewUser ? '注册成功' : '登录成功');
+      Toast.show('登录成功');
       navigate('/');
     } catch (error: any) {
       Toast.show(error.response?.data?.message || '登录失败，请稍后重试');

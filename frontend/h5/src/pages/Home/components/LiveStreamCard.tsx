@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import type { Auction } from '../../../types/auction';
+import type { AuctionWithSeller } from '@live-auction/shared';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
 import './LiveStreamCard.scss';
 
 interface LiveStreamCardProps {
-  auction: Auction;
+  auction: AuctionWithSeller;
   isActive: boolean;
-  onEnterLiveRoom: () => void;
-  onViewDetails: () => void;
+  onEnterLiveRoom: () =&gt; void;
+  onViewDetails: () =&gt; void;
 }
 
 export const LiveStreamCard = ({

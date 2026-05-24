@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Auction, RankingItem, Bid } from '../types/auction';
+import type { Auction, RankingItem, Bid } from '@live-auction/shared';
 
 interface AuctionRoomState {
   currentAuction: Auction | null;
