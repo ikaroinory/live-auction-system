@@ -13,11 +13,11 @@ interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
 const ListContext = createContext({})
 
 export function List(props: ListProps) {
-  const { children, className = '' } = props
+  const { children, className = '', style } = props
   
   return (
     <ListContext.Provider value={{}}>
-      <div className={`${styles.list} ${className}`}>
+      <div className={`${styles.list} ${className}`} style={style}>
         {children}
       </div>
     </ListContext.Provider>

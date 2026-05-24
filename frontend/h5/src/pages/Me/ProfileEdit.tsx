@@ -49,10 +49,6 @@ export const ProfileEdit = () => {
               src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=beautiful%20night%20sky%20with%20stars%20and%20a%20red%20rose%20silhouette&image_size=landscape_16_9" 
               alt="封面" 
             />
-            <button className="change-cover-btn">
-              <CameraIcon />
-              更换封面
-            </button>
           </div>
           
           <div className="avatar-container">
