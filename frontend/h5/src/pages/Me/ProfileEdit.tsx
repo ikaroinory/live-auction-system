@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Toast } from 'antd-mobile';
+import { Toast, Picker, DatePicker, Input, Modal } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
-import { Gender } from '@live-auction/shared';
+import { Gender } from '../../../../../shared/src/user';
 import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton } from '@/components/ui';
 import './ProfileEdit.scss';
 
@@ -19,6 +19,11 @@ export const ProfileEdit = () => {
     location: user?.location || '',
     douyinId: user?.douyinId || '',
   });
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editModalTitle, setEditModalTitle] = useState('');
+  const [editModalValue, setEditModalValue] = useState('');
+  const [editModalKey, setEditModalKey] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -44,6 +49,61 @@ export const ProfileEdit = () => {
     }
   };
 
+  const genderColumns = [
+    { label: '男', value: Gender.MALE },
+    { label: '女', value: Gender.FEMALE },
+    { label: '未知', value: Gender.UNKNOWN },
+  ];
+
+  const showEditModal = (title: string, value: string, key: string) => {
+    setEditModalTitle(title);
+    setEditModalValue(value);
+    setEditModalKey(key);
+    setEditModalVisible(true);
+  };
+
+  const handleEditNickname = () => {
+    showEditModal('名字', profileData.nickname, 'nickname');
+  };
+
+  const handleEditBio = () => {
+    showEditModal('简介', profileData.bio, 'bio');
+  };
+
+  const handleEditGender = () => {
+    Picker.show({
+      columns: [genderColumns],
+      value: [profileData.gender],
+      onConfirm: (val) => {
+        setProfileData({ ...profileData, gender: val[0] as Gender });
+      },
+    });
+  };
+
+  const handleEditBirthday = () => {
+    DatePicker.show({
+      defaultValue: profileData.birthday ? new Date(profileData.birthday) : new Date(),
+      max: new Date(),
+      onConfirm: (val) => {
+        const dateStr = val.toISOString().split('T')[0];
+        setProfileData({ ...profileData, birthday: dateStr });
+      },
+    });
+  };
+
+  const handleEditLocation = () => {
+    showEditModal('所在地', profileData.location, 'location');
+  };
+
+  const handleEditDouyinId = () => {
+    showEditModal('抖音号', profileData.douyinId, 'douyinId');
+  };
+
+  const handleModalConfirm = () => {
+    setProfileData({ ...profileData, [editModalKey]: editModalValue });
+    setEditModalVisible(false);
+  };
+
   const handleSave = async () => {
     try {
       const updatedUser = await authAPI.updateProfile(profileData);
@@ -56,23 +116,31 @@ export const ProfileEdit = () => {
   };
 
   const menuItems = [
-    { label: '名字', value: profileData.nickname, key: 'nickname' },
-    { label: '简介', value: profileData.bio, key: 'bio' },
-    { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender' },
-    { label: '生日', value: profileData.birthday, key: 'birthday' },
-    { label: '所在地', value: profileData.location, key: 'location' },
-    { label: '抖音号', value: profileData.douyinId, key: 'douyinId' },
+    { label: '名字', value: profileData.nickname || '未设置', key: 'nickname', onClick: handleEditNickname },
+    { label: '简介', value: profileData.bio || 'hypocrisy.', key: 'bio', onClick: handleEditBio },
+    { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender', onClick: handleEditGender },
+    { label: '生日', value: profileData.birthday || '2002-03-25', key: 'birthday', onClick: handleEditBirthday },
+    { label: '所在地', value: profileData.location || '未知', key: 'location', onClick: handleEditLocation },
+    { label: '抖音号', value: profileData.douyinId || 'ikaroinory', key: 'douyinId', onClick: handleEditDouyinId },
   ];
 
   return (
     <Layout>
       <Layout.Main>
         <div className="top-bar">
-          <BubbleButton onClick={() => navigate(-1)}><ChevronLeftIcon /></BubbleButton>
+          <BubbleButton onClick={() => navigate(-1)}>
+            <ChevronLeftIcon />
+          </BubbleButton>
+          <button className="save-btn" onClick={handleSave}>保存</button>
         </div>
         
         <div className="cover-section">
-          <div className="cover-image" />
+          <div className="cover-image">
+            <button className="change-cover-btn">
+              <CameraIcon />
+              更换封面
+            </button>
+          </div>
           
           <div className="avatar-container">
             <div className="avatar-wrapper">
@@ -99,7 +167,7 @@ export const ProfileEdit = () => {
           {menuItems.map((item) => (
             <List.Item 
               key={item.key} 
-              onClick={() => Toast.show(`编辑${item.label}`)}
+              onClick={item.onClick}
               label={item.label}
               value={item.value}
               extra={<ChevronRightIcon />}
@@ -119,6 +187,22 @@ export const ProfileEdit = () => {
             extra={<ChevronRightIcon />}
           />
         </List>
+
+        <Modal
+          visible={editModalVisible}
+          title={editModalTitle}
+          content={
+            <Input
+              value={editModalValue}
+              onChange={(val) => setEditModalValue(val)}
+              placeholder={`请输入${editModalTitle}`}
+            />
+          }
+          onConfirm={handleModalConfirm}
+          onCancel={() => setEditModalVisible(false)}
+          confirmText="确定"
+          cancelText="取消"
+        />
       </Layout.Main>
     </Layout>
   );
