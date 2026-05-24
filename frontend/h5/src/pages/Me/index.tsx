@@ -1,14 +1,15 @@
-import { List, Button } from 'antd-mobile';
+import { Button } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { 
   UnorderedListOutline, 
   ShopbagOutline,
   SetOutline,
-  ClockCircleOutline
-} from 'antd-mobile-icons';
+  ClockCircleOutline,
+  ChevronRightIcon
+} from '@/components/ui';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
-import { Avatar } from '@/components/ui';
+import { Avatar, List } from '@/components/ui';
 
 export const Me = () => {
   const navigate = useNavigate();
@@ -99,40 +100,36 @@ export const Me = () => {
         </div>
       </div>
 
-      {/* 菜单列表 */}
+      {/* 菜单列表 - 抖音风格 */}
       <div className="menu-section">
-        <List>
+        <List className="menu-list">
           {menuItems.map((item) => (
             <List.Item
               key={item.path}
-              prefix={item.icon}
-              clickable={!!user}
               onClick={() => user && navigate(item.path)}
+              className="menu-item"
             >
-              {item.title}
+              <div className="menu-item-content">
+                <div className="menu-icon-wrapper">
+                  {item.icon}
+                </div>
+                <span className="menu-title">{item.title}</span>
+                <ChevronRightIcon className="menu-arrow" />
+              </div>
             </List.Item>
           ))}
         </List>
 
         {/* 登录/登出按钮 */}
-        <div style={{ padding: '20px' }}>
+        <div className="action-section">
           {user ? (
-            <Button 
-              block 
-              color="danger" 
-              fill="outline"
-              onClick={handleLogout}
-            >
+            <button className="logout-btn" onClick={handleLogout}>
               退出登录
-            </Button>
+            </button>
           ) : (
-            <Button 
-              block 
-              color="primary" 
-              onClick={handleLogin}
-            >
+            <button className="login-btn" onClick={handleLogin}>
               立即登录
-            </Button>
+            </button>
           )}
         </div>
       </div>
