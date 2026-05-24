@@ -4,6 +4,7 @@ import { Button, Input, NavBar, Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
 import './Login.scss';
+import { Layout } from '@/components/ui';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -48,55 +49,59 @@ export const Login = () => {
   };
 
   return (
-    <div className="login-page page-container">
-      <NavBar onBack={() => navigate(-1)}>登录</NavBar>
-      
-      <div className="login-content">
-        <div className="logo">
-          <div className="logo-icon">🎁</div>
-          <h1>实时竞拍大师</h1>
-          <p>抖音电商直播竞拍系统</p>
-        </div>
+    <Layout>
+      <Layout.Header>
+        <NavBar onBack={() => navigate(-1)}>登录</NavBar>
+      </Layout.Header>
 
-        <div className="form">
-          <div className="form-item">
-            <label>手机号</label>
-            <Input
-              type="tel"
-              placeholder="请输入手机号"
-              value={phone}
-              onChange={setPhone}
-              maxLength={11}
-            />
+      <Layout.Main>
+        <div>
+          <div className="logo">
+            <div className="logo-icon">🎁</div>
+            <h1>实时竞拍大师</h1>
+            <p>抖音电商直播竞拍系统</p>
           </div>
 
-          <div className="form-item">
-            <label>验证码</label>
-            <div className="code-input">
+          <div className="form">
+            <div className="form-item">
+              <label>手机号</label>
               <Input
-                type="number"
-                placeholder="请输入验证码"
-                value={code}
-                onChange={setCode}
-                maxLength={6}
+                type="tel"
+                placeholder="请输入手机号"
+                value={phone}
+                onChange={setPhone}
+                maxLength={11}
               />
-              <Button size="small" disabled>
-                获取验证码
-              </Button>
             </div>
-          </div>
 
-          <Button 
-            block 
-            color="primary" 
-            size="large"
-            loading={loading}
-            onClick={handleLogin}
-          >
-            登录
-          </Button>
+            <div className="form-item">
+              <label>验证码</label>
+              <div className="code-input">
+                <Input
+                  type="number"
+                  placeholder="请输入验证码"
+                  value={code}
+                  onChange={setCode}
+                  maxLength={6}
+                />
+                <Button size="small" disabled>
+                  获取验证码
+                </Button>
+              </div>
+            </div>
+
+            <Button 
+              block 
+              color="primary" 
+              size="large"
+              loading={loading}
+              onClick={handleLogin}
+            >
+              登录
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </Layout.Main>
+    </Layout>
   );
 };
