@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
 import config from '../config';
-import { Gender } from '@live-auction/shared';
+import { Gender } from '../../../shared/src/user';
 
 function generateRandomDouyinId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
