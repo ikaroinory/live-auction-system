@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Toast, Picker, DatePicker, Input, Modal } from 'antd-mobile';
+import { Toast, Picker, DatePicker, Input } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
 import { Gender } from '../../../../../shared/src/user';
-import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton } from '@/components/ui';
+import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton, Dialog } from '@/components/ui';
 import './ProfileEdit.scss';
 
 export const ProfileEdit = () => {
@@ -116,12 +116,12 @@ export const ProfileEdit = () => {
   };
 
   const menuItems = [
-    { label: '名字', value: profileData.nickname, key: 'nickname', onClick: handleEditNickname },
-    { label: '简介', value: profileData.bio, key: 'bio', onClick: handleEditBio },
+    { label: '名字', value: profileData.nickname || '未设置', key: 'nickname', onClick: handleEditNickname },
+    { label: '简介', value: profileData.bio || 'hypocrisy.', key: 'bio', onClick: handleEditBio },
     { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender', onClick: handleEditGender },
-    { label: '生日', value: profileData.birthday, key: 'birthday', onClick: handleEditBirthday },
-    { label: '所在地', value: profileData.location, key: 'location', onClick: handleEditLocation },
-    { label: '抖音号', value: profileData.douyinId, key: 'douyinId', onClick: handleEditDouyinId },
+    { label: '生日', value: profileData.birthday || '2002-03-25', key: 'birthday', onClick: handleEditBirthday },
+    { label: '所在地', value: profileData.location || '未知', key: 'location', onClick: handleEditLocation },
+    { label: '抖音号', value: profileData.douyinId || 'ikaroinory', key: 'douyinId', onClick: handleEditDouyinId },
   ];
 
   return (
@@ -188,7 +188,7 @@ export const ProfileEdit = () => {
           />
         </List>
 
-        <Modal
+        <Dialog
           visible={editModalVisible}
           title={editModalTitle}
           content={
