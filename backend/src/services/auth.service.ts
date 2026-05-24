@@ -14,7 +14,7 @@ function generateRandomDouyinId(): string {
 }
 
 export class AuthService {
-  async register(phone: string, password: string, nickname?: string) {
+  async register(phone: string, password: string, nickname?: string, location?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     let douyinId = generateRandomDouyinId();
@@ -38,7 +38,7 @@ export class AuthService {
         nickname: nickname || phone,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: '中国·广东·深圳'
+        location: location || '中国·广东·深圳'
       }
     });
     
@@ -95,7 +95,7 @@ export class AuthService {
     };
   }
 
-  async loginOrRegisterByPhone(phone: string, code: string) {
+  async loginOrRegisterByPhone(phone: string, code: string, location?: string) {
     const existingUser = await prisma.user.findUnique({
       where: { phone }
     });
@@ -142,7 +142,7 @@ export class AuthService {
         nickname: `用户${phone.slice(-4)}`,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: '中国·广东·深圳'
+        location: location || '中国·广东·深圳'
       }
     });
 

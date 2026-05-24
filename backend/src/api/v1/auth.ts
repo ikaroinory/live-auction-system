@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../../lib/prisma';
 import { AuthService } from '../../services/auth.service';
 import { authMiddleware, AuthRequest } from '../../middleware/auth';
+import { getLocationFromRequest } from '../../utils/ipLocation';
 
 const router = Router();
 const authService = new AuthService();
@@ -48,7 +49,8 @@ router.post('/register', async (req: Request, res: Response, next: Function) => 
       return res.status(400).json({ message: '手机号和密码不能为空' });
     }
     
-    const result = await authService.register(phone, password, nickname);
+    const location = getLocationFromRequest(req);
+    const result = await authService.register(phone, password, nickname, location);
     
     res.status(201).json(result);
   } catch (error) {
@@ -198,7 +200,8 @@ router.post('/sms-login', async (req: Request, res: Response, next: Function) =>
       return res.status(400).json({ message: '验证码错误' });
     }
     
-    const result = await authService.loginOrRegisterByPhone(phone, code);
+    const location = getLocationFromRequest(req);
+    const result = await authService.loginOrRegisterByPhone(phone, code, location);
     
     res.json(result);
   } catch (error) {
