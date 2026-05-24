@@ -41,7 +41,7 @@ export const BottomNav = () => {
     <TabBar
       className="bottom-tab-bar"
       activeKey={location.pathname}
-      onChange={(key) => navigate(key)}
+      onChange={(key) => navigate(key, { replace:true })}
     >
       {tabs.map((tab) => (
         <TabBar.Item

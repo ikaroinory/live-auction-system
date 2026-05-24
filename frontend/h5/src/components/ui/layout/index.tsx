@@ -23,8 +23,6 @@ export function Layout({ children }: LayoutProps) {
 
   let mainContent: ReactNode = null
   let footerContent: ReactNode = null
-  console.log(styles);
-  
 
   Children.forEach(children, (child) => {
     if (isElementOfType(child, Main)) {
