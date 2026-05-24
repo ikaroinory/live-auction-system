@@ -13,6 +13,7 @@ import { AvatarEdit } from './pages/Me/AvatarEdit'
 import { Login } from './pages/Login'
 import { useUserStore } from './store/useUserStore'
 import { useEffect } from 'react'
+import { LiveRoom } from './pages/LiveRoom'
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { fetchUser, isLoading } = useUserStore()
@@ -119,8 +120,8 @@ const router = createBrowserRouter([
       { path: "/bids", element: <MeBids /> },
       { path: "/orders", element: <MeOrders /> },
       { path: "/me", element: <Me /> },
-      { path: "/profile", element: <Navigate to={"/me"} replace /> },
-      { path: "/my", element: <Navigate to={"/me"} replace /> }
+
+      { path: '/live/:id', element: <LiveRoom /> }
     ]
   },
 

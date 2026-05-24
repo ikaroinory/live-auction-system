@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AuctionWithSeller } from '@live-auction/shared';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
+import { FloatTag } from '@/components/ui';
 import './LiveStreamCard.scss';
 
 interface LiveStreamCardProps {
@@ -38,37 +39,34 @@ export const LiveStreamCard = ({
         {/* 底部信息区域 */}
         <div className="video-overlay">
           <div className="auction-info">
-            <div className="auction-header">
-              <h2 className="auction-title">{auction.title}</h2>
-            </div>
+            <FloatTag>点击进入直播间</FloatTag>
 
-            <p className="auction-description">
-              {auction.description || '精品好物，限时竞拍'}
-            </p>
+            <div style={{ width: '100%' }}>
+              <div className="auction-header">
+                <h2 className="auction-title">{auction.title}</h2>
+              </div>
 
-            <div className="auction-details">
-              <div className="detail-item">
-                <span className="detail-label">当前价格</span>
-                <span className="detail-value price">¥{auction.startPrice.toFixed(2)}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">加价</span>
-                <span className="detail-value">¥{auction.minIncrement.toFixed(2)}</span>
-              </div>
-              {auction.maxPrice && (
+              <p className="auction-description">
+                {auction.description || '精品好物，限时竞拍'}
+              </p>
+
+              <div className="auction-details">
                 <div className="detail-item">
-                  <span className="detail-label">封顶</span>
-                  <span className="detail-value">¥{auction.maxPrice.toFixed(2)}</span>
+                  <span className="detail-label">当前价格</span>
+                  <span className="detail-value price">¥{auction.startPrice.toFixed(2)}</span>
                 </div>
-              )}
-            </div>
-
-            {/* 点击进入直播间提示 */}
-            {isActive && (
-              <div className="enter-hint">
-                点击进入直播间
+                <div className="detail-item">
+                  <span className="detail-label">加价</span>
+                  <span className="detail-value">¥{auction.minIncrement.toFixed(2)}</span>
+                </div>
+                {auction.maxPrice && (
+                  <div className="detail-item">
+                    <span className="detail-label">封顶</span>
+                    <span className="detail-value">¥{auction.maxPrice.toFixed(2)}</span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

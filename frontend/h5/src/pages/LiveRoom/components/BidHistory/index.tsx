@@ -1,6 +1,6 @@
-import type { Bid } from '../../../types/auction';
-import { formatPrice, formatDate } from '../../../utils/format';
+import { Bid } from '@live-auction/shared';
 import './BidHistory.scss';
+import { formatDate, formatPrice } from '@/utils/format';
 
 interface BidHistoryProps {
   bids: Bid[];

@@ -1,4 +1,4 @@
-import { formatPrice } from '../../../utils/format';
+import { formatPrice } from '@/utils/format';
 import './CurrentPrice.scss';
 
 interface CurrentPriceProps {
