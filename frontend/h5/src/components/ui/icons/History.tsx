@@ -30,3 +30,4 @@ export const HistoryIcon: React.FC<HistoryIconProps> = ({
   )
 }
 
+export const ClockCircleOutline = HistoryIcon;
