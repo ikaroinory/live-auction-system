@@ -1,10 +1,9 @@
-import { Button } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { 
   UnorderedListOutline, 
   ShopbagOutline,
-  SetOutline,
-  ClockCircleOutline,
+  SettingsIcon,
+  HistoryIcon,
   ChevronRightIcon
 } from '@/components/ui';
 import { useUserStore } from '../../store/useUserStore';
@@ -39,12 +38,12 @@ export const Me = () => {
       path: '/me/orders',
     },
     {
-      icon: <ClockCircleOutline />,
+      icon: <HistoryIcon />,
       title: '浏览历史',
       path: '/me/history',
     },
     {
-      icon: <SetOutline />,
+      icon: <SettingsIcon />,
       title: '设置',
       path: '/me/settings',
     },

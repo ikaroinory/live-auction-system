@@ -6,4 +6,7 @@ export { ChevronUpIcon } from "./ChevronUp"
 export { ChevronDownIcon } from "./ChevronDown"
 export { SettingsIcon } from "./Settings"
 export { HistoryIcon } from "./History"
-
+export { UnorderedListOutline } from "./UnorderedList"
+export { ShopbagOutline } from "./Shopbag"
+export { SetOutline } from "./Settings"
+export { ClockCircleOutline } from "./History"
