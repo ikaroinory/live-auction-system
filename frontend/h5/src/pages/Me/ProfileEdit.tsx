@@ -74,8 +74,17 @@ export const ProfileEdit = () => {
     Picker.show({
       columns: [genderColumns],
       value: [profileData.gender],
-      onConfirm: (val) => {
-        setProfileData({ ...profileData, gender: val[0] as Gender });
+      onConfirm: async (val) => {
+        const newGender = val[0] as Gender;
+        const newData = { ...profileData, gender: newGender };
+        setProfileData(newData);
+        try {
+          const updatedUser = await authAPI.updateProfile(newData);
+          setUser(updatedUser);
+          Toast.show('已保存');
+        } catch (error: any) {
+          Toast.show(error.message || '保存失败');
+        }
       },
     });
   };
@@ -84,9 +93,17 @@ export const ProfileEdit = () => {
     DatePicker.show({
       defaultValue: profileData.birthday ? new Date(profileData.birthday) : new Date(),
       max: new Date(),
-      onConfirm: (val) => {
+      onConfirm: async (val) => {
         const dateStr = val.toISOString().split('T')[0];
-        setProfileData({ ...profileData, birthday: dateStr });
+        const newData = { ...profileData, birthday: dateStr };
+        setProfileData(newData);
+        try {
+          const updatedUser = await authAPI.updateProfile(newData);
+          setUser(updatedUser);
+          Toast.show('已保存');
+        } catch (error: any) {
+          Toast.show(error.message || '保存失败');
+        }
       },
     });
   };
@@ -99,17 +116,14 @@ export const ProfileEdit = () => {
     showEditModal('抖音号', profileData.douyinId, 'douyinId');
   };
 
-  const handleModalConfirm = () => {
-    setProfileData({ ...profileData, [editModalKey]: editModalValue });
+  const handleModalConfirm = async () => {
+    const newData = { ...profileData, [editModalKey]: editModalValue };
+    setProfileData(newData);
     setEditModalVisible(false);
-  };
-
-  const handleSave = async () => {
     try {
-      const updatedUser = await authAPI.updateProfile(profileData);
+      const updatedUser = await authAPI.updateProfile(newData);
       setUser(updatedUser);
-      Toast.show('资料已保存');
-      navigate(-1);
+      Toast.show('已保存');
     } catch (error: any) {
       Toast.show(error.message || '保存失败');
     }
@@ -131,7 +145,6 @@ export const ProfileEdit = () => {
           <BubbleButton onClick={() => navigate(-1)}>
             <ChevronLeftIcon />
           </BubbleButton>
-          <button className="save-btn" onClick={handleSave}>保存</button>
         </div>
         
         <div className="cover-section">
