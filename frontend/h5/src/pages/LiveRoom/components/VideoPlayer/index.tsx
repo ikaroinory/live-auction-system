@@ -110,12 +110,6 @@ export const VideoPlayer = () => {
   return (
     <div className="video-player">
       <canvas ref={canvasRef} className="video-canvas" />
-      {isStreaming && (
-        <div className="stream-indicator">
-          <div className="stream-dot"></div>
-          <span>正在直播</span>
-        </div>
-      )}
     </div>
   );
 };

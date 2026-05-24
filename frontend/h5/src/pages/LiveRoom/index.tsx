@@ -10,6 +10,8 @@ import { Countdown } from '../../components/Countdown';
 import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
+import { BubbleButton } from '../../components/ui';
+import { ChevronLeftIcon, HistoryIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
@@ -122,6 +124,10 @@ export const LiveRoom = () => {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   if (!currentAuction) {
     return (
       <div className="live-room-page">
@@ -143,6 +149,13 @@ export const LiveRoom = () => {
           </div>
         </div>
 
+        {/* 左上角返回按钮 */}
+        <div className="back-button-section">
+          <BubbleButton onClick={handleGoBack}>
+            <ChevronLeftIcon size={24} />
+          </BubbleButton>
+        </div>
+
         {/* 连接状态 */}
         <div className="connection-status">
           <span className={`status-dot ${connectionStatus}`}></span>
@@ -157,13 +170,12 @@ export const LiveRoom = () => {
           <RankingList rankings={rankings} />
         </div>
 
-        {/* 出价历史按钮 */}
-        <button 
-          className="bid-history-toggle"
-          onClick={() => setShowBidHistory(!showBidHistory)}
-        >
-          出价历史
-        </button>
+        {/* 右下角出价历史按钮 */}
+        <div className="bid-history-section">
+          <BubbleButton onClick={() => setShowBidHistory(!showBidHistory)}>
+            <HistoryIcon size={24} />
+          </BubbleButton>
+        </div>
 
         {/* 竞拍信息 */}
         <div className="auction-info-section">

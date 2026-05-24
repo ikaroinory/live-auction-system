@@ -46,6 +46,11 @@ export const LiveStreamCard = ({
                 <h2 className="auction-title">{auction.title}</h2>
               </div>
 
+              <div className="stream-indicator">
+                <div className="stream-dot"></div>
+                <span>正在直播</span>
+              </div>
+
               <p className="auction-description">
                 {auction.description || '精品好物，限时竞拍'}
               </p>
