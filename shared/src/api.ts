@@ -1,5 +1,4 @@
-
-export interface ApiResponse&lt;T = any&gt; {
+export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
 }
@@ -13,7 +12,7 @@ export interface PaginationParams {
   limit?: number;
 }
 
-export interface PaginationResult&lt;T&gt; {
+export interface PaginationResult<T> {
   items: T[];
   total: number;
   page: number;

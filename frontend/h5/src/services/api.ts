@@ -21,23 +21,23 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(
-  (config) =&gt; {
+  (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) =&gt; {
+  (error) => {
     return Promise.reject(error);
   }
 );
 
 apiClient.interceptors.response.use(
-  (response) =&gt; {
+  (response) => {
     return response.data;
   },
-  (error) =&gt; {
+  (error) => {
     const message = error.response?.data?.message || error.message || '请求失败';
     console.error('API Error:', message);
     return Promise.reject(error);
@@ -45,22 +45,22 @@ apiClient.interceptors.response.use(
 );
 
 export const authAPI = {
-  smsLogin: (params: LoginParams): Promise&lt;LoginResult&gt; =&gt; {
+  smsLogin: (params: LoginParams): Promise<LoginResult> => {
     return apiClient.post('/v1/auth/sms-login', params);
   },
-  getCurrentUser: (): Promise&lt;User&gt; =&gt; {
+  getCurrentUser: (): Promise<User> => {
     return apiClient.get('/v1/auth/me');
   },
 };
 
 export const auctionAPI = {
-  getAuctions: (status?: number): Promise&lt;AuctionWithSeller[]&gt; =&gt; {
+  getAuctions: (status?: number): Promise<AuctionWithSeller[]> => {
     return apiClient.get('/v1/auctions', { params: status ? { status } : undefined });
   },
-  getAuctionDetail: (id: string): Promise&lt;AuctionDetail&gt; =&gt; {
+  getAuctionDetail: (id: string): Promise<AuctionDetail> => {
     return apiClient.get(`/v1/auctions/${id}`);
   },
-  createAuction: (params: CreateAuctionParams): Promise&lt;Auction&gt; =&gt; {
+  createAuction: (params: CreateAuctionParams): Promise<Auction> => {
     return apiClient.post('/v1/auctions', params);
   },
 };

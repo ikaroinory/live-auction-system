@@ -1,3 +1,4 @@
+import { UserSlim } from "./user";
 
 export interface Auction {
   id: string;

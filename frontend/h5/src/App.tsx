@@ -14,15 +14,15 @@ import type { AuctionWithSeller } from '@live-auction/shared';
 
 function App() {
   const { fetchUser, isLoading } = useUserStore();
-  const [auctions, setAuctions] = useState&lt;AuctionWithSeller[]&gt;([]);
+  const [auctions, setAuctions] = useState<AuctionWithSeller[]>([]);
   const [auctionsLoading, setAuctionsLoading] = useState(true);
 
-  useEffect(() =&gt; {
+  useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
-  useEffect(() =&gt; {
-    const loadAuctions = async () =&gt; {
+  useEffect(() => {
+    const loadAuctions = async () => {
       try {
         const data = await auctionAPI.getAuctions();
         setAuctions(data);
@@ -37,36 +37,36 @@ function App() {
 
   if (isLoading) {
     return (
-      &lt;div style={{ 
+      <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
         backgroundColor: '#000',
         color: '#fff'
-      }}&gt;
+      }}>
         加载中...
-      &lt;/div&gt;
+      </div>
     );
   }
 
   return (
-    &lt;BrowserRouter&gt;
-      &lt;Routes&gt;
-        &lt;Route path="/" element={&lt;Home auctions={auctions} loading={auctionsLoading} /&gt;} /&gt;
-        &lt;Route path="/auction/:id" element={&lt;AuctionDetail /&gt;} /&gt;
-        &lt;Route path="/live/:id" element={&lt;LiveRoom /&gt;} /&gt;
-        &lt;Route path="/me/bids" element={&lt;MeBids /&gt;} /&gt;
-        &lt;Route path="/me/orders" element={&lt;MeOrders /&gt;} /&gt;
-        &lt;Route path="/me" element={&lt;Me /&gt;} /&gt;
-        &lt;Route path="/profile" element={&lt;Navigate to="/me" replace /&gt;} /&gt;
-        &lt;Route path="/my" element={&lt;Navigate to="/me" replace /&gt;} /&gt;
-        &lt;Route path="/my/bids" element={&lt;Navigate to="/me/bids" replace /&gt;} /&gt;
-        &lt;Route path="/my/orders" element={&lt;Navigate to="/me/orders" replace /&gt;} /&gt;
-        &lt;Route path="/login" element={&lt;Login /&gt;} /&gt;
-        &lt;Route path="*" element={&lt;Navigate to="/" replace /&gt;} /&gt;
-      &lt;/Routes&gt;
-    &lt;/BrowserRouter&gt;
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home auctions={auctions} loading={auctionsLoading} />} />
+        <Route path="/auction/:id" element={<AuctionDetail />} />
+        <Route path="/live/:id" element={<LiveRoom />} />
+        <Route path="/me/bids" element={<MeBids />} />
+        <Route path="/me/orders" element={<MeOrders />} />
+        <Route path="/me" element={<Me />} />
+        <Route path="/profile" element={<Navigate to="/me" replace />} />
+        <Route path="/my" element={<Navigate to="/me" replace />} />
+        <Route path="/my/bids" element={<Navigate to="/me/bids" replace />} />
+        <Route path="/my/orders" element={<Navigate to="/me/orders" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

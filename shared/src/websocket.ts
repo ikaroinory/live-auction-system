@@ -1,4 +1,3 @@
-
 export type WebSocketMessageType = 
   | 'JOIN_ROOM'
   | 'LEAVE_ROOM'
@@ -14,7 +13,7 @@ export type WebSocketMessageType =
   | 'PING'
   | 'PONG';
 
-export interface WebSocketMessage&lt;T = any&gt; {
+export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;
   payload: T;
   timestamp: number;
@@ -40,13 +39,13 @@ export interface PriceUpdatePayload {
 
 export interface RankingUpdatePayload {
   auctionId: string;
-  rankings: Array&lt;{
+  rankings: Array<{
     userId: string;
     username?: string;
     phone?: string;
     price: number;
     rank: number;
-  }&gt;;
+  }>;
 }
 
 export interface CountdownTickPayload {

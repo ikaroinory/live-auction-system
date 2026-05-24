@@ -1,19 +1,19 @@
 
-import { useParams, useNavigate, useEffect, useState } from 'react-router-dom';
+import { useParams, useNavigate, useEffect, useState } from 'react';
 import { NavBar, Button, Card, Empty, Loading } from 'antd-mobile';
 import { auctionAPI } from '../../services/api';
 import type { AuctionDetail as AuctionDetailType } from '@live-auction/shared';
 import './AuctionDetail.scss';
 
-export const AuctionDetail = () =&gt; {
-  const { id } = useParams&lt;{ id: string }&gt;();
+export const AuctionDetail = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [auction, setAuction] = useState&lt;AuctionDetailType | null&gt;(null);
+  const [auction, setAuction] = useState<AuctionDetailType | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() =&gt; {
+  useEffect(() => {
     if (id) {
-      const loadAuction = async () =&gt; {
+      const loadAuction = async () => {
         try {
           const data = await auctionAPI.getAuctionDetail(id);
           setAuction(data);
@@ -29,78 +29,78 @@ export const AuctionDetail = () =&gt; {
 
   if (loading) {
     return (
-      &lt;div className="auction-detail-page page-container"&gt;
-        &lt;NavBar onBack={() =&gt; navigate(-1)}&gt;竞拍详情&lt;/NavBar&gt;
-        &lt;div className="loading-container"&gt;
-          &lt;Loading /&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
+      <div className="auction-detail-page page-container">
+        <NavBar onBack={() => navigate(-1)}>竞拍详情</NavBar>
+        <div className="loading-container">
+          <Loading />
+        </div>
+      </div>
     );
   }
 
   if (!auction) {
     return (
-      &lt;div className="auction-detail-page page-container"&gt;
-        &lt;NavBar onBack={() =&gt; navigate(-1)}&gt;竞拍详情&lt;/NavBar&gt;
-        &lt;div className="loading-container"&gt;
-          &lt;Empty description="竞拍不存在" /&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
+      <div className="auction-detail-page page-container">
+        <NavBar onBack={() => navigate(-1)}>竞拍详情</NavBar>
+        <div className="loading-container">
+          <Empty description="竞拍不存在" />
+        </div>
+      </div>
     );
   }
 
   return (
-    &lt;div className="auction-detail-page page-container"&gt;
-      &lt;NavBar onBack={() =&gt; navigate(-1)}&gt;竞拍详情&lt;/NavBar&gt;
+    <div className="auction-detail-page page-container">
+      <NavBar onBack={() => navigate(-1)}>竞拍详情</NavBar>
       
-      &lt;div className="detail-content"&gt;
-        &lt;Card title="商品信息"&gt;
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;商品名称&lt;/span&gt;
-            &lt;span className="value"&gt;{auction.title}&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;商品描述&lt;/span&gt;
-            &lt;span className="value"&gt;{auction.description}&lt;/span&gt;
-          &lt;/div&gt;
-        &lt;/Card&gt;
+      <div className="detail-content">
+        <Card title="商品信息">
+          <div className="info-item">
+            <span className="label">商品名称</span>
+            <span className="value">{auction.title}</span>
+          </div>
+          <div className="info-item">
+            <span className="label">商品描述</span>
+            <span className="value">{auction.description}</span>
+          </div>
+        </Card>
 
-        &lt;Card title="竞拍规则"&gt;
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;起拍价&lt;/span&gt;
-            &lt;span className="value"&gt;¥{auction.startPrice.toFixed(2)}&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;加价幅度&lt;/span&gt;
-            &lt;span className="value"&gt;¥{auction.minIncrement.toFixed(2)}&lt;/span&gt;
-          &lt;/div&gt;
-          {auction.maxPrice &amp;&amp; (
-            &lt;div className="info-item"&gt;
-              &lt;span className="label"&gt;封顶价&lt;/span&gt;
-              &lt;span className="value"&gt;¥{auction.maxPrice.toFixed(2)}&lt;/span&gt;
-            &lt;/div&gt;
+        <Card title="竞拍规则">
+          <div className="info-item">
+            <span className="label">起拍价</span>
+            <span className="value">¥{auction.startPrice.toFixed(2)}</span>
+          </div>
+          <div className="info-item">
+            <span className="label">加价幅度</span>
+            <span className="value">¥{auction.minIncrement.toFixed(2)}</span>
+          </div>
+          {auction.maxPrice && (
+            <div className="info-item">
+              <span className="label">封顶价</span>
+              <span className="value">¥{auction.maxPrice.toFixed(2)}</span>
+            </div>
           )}
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;竞拍时长&lt;/span&gt;
-            &lt;span className="value"&gt;{auction.durationSeconds}秒&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div className="info-item"&gt;
-            &lt;span className="label"&gt;延时机制&lt;/span&gt;
-            &lt;span className="value"&gt;自动延长{auction.autoExtendSeconds}秒&lt;/span&gt;
-          &lt;/div&gt;
-        &lt;/Card&gt;
+          <div className="info-item">
+            <span className="label">竞拍时长</span>
+            <span className="value">{auction.durationSeconds}秒</span>
+          </div>
+          <div className="info-item">
+            <span className="label">延时机制</span>
+            <span className="value">自动延长{auction.autoExtendSeconds}秒</span>
+          </div>
+        </Card>
 
-        &lt;div className="action-section safe-area-bottom"&gt;
-          &lt;Button 
+        <div className="action-section safe-area-bottom">
+          <Button 
             block 
             color="primary" 
             size="large"
-            onClick={() =&gt; navigate(`/live/${id}`)}
-          &gt;
+            onClick={() => navigate(`/live/${id}`)}
+          >
             进入竞拍
-          &lt;/Button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
