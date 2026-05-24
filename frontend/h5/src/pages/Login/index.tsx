@@ -44,6 +44,7 @@ export const Login = () => {
       
       <div className="login-content">
         <div className="logo">
+          <div className="logo-icon">🎁</div>
           <h1>实时竞拍大师</h1>
           <p>抖音电商直播竞拍系统</p>
         </div>

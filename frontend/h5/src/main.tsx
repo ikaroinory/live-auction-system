@@ -9,6 +9,7 @@ import { Auction } from './types/auction'
 import Me from './pages/Me'
 import { MeOrders } from './pages/Me/MeOrders'
 import { MeBids } from './pages/Me/MeBids'
+import { Login } from './pages/Login'
 
 function MainFramework() {
   return (
@@ -94,7 +95,9 @@ const router = createBrowserRouter([
       { path: "/profile", element: <Navigate to={"/me"} replace /> },
       { path: "/my", element: <Navigate to={"/me"} replace /> }
     ]
-  }
+  },
+
+  { path: "/login", element: <Login /> }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
