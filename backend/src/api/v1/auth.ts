@@ -257,12 +257,25 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, n
     const { nickname, bio, gender, birthday, location, douyinId } = req.body;
 
     const updateData: any = {};
-    if (nickname !== undefined) updateData.nickname = nickname;
-    if (bio !== undefined) updateData.bio = bio;
-    if (gender !== undefined) updateData.gender = gender;
-    if (birthday !== undefined) updateData.birthday = birthday ? new Date(birthday) : null;
-    if (location !== undefined) updateData.location = location;
-    if (douyinId !== undefined) updateData.douyinId = douyinId;
+    
+    if (nickname !== undefined) {
+      updateData.nickname = nickname === '' ? null : nickname;
+    }
+    if (bio !== undefined) {
+      updateData.bio = bio === '' ? null : bio;
+    }
+    if (gender !== undefined) {
+      updateData.gender = gender;
+    }
+    if (birthday !== undefined) {
+      updateData.birthday = birthday ? new Date(birthday) : null;
+    }
+    if (location !== undefined) {
+      updateData.location = location || '未知';
+    }
+    if (douyinId !== undefined) {
+      updateData.douyinId = douyinId;
+    }
 
     const user = await prisma.user.update({
       where: { id: req.user.id },
