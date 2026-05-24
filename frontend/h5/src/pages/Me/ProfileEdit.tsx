@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Toast, DatePicker, Input } from 'antd-mobile';
+import { Toast, Input } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
 import { Gender } from '../../../../../shared/src/user';
@@ -25,7 +25,9 @@ export const ProfileEdit = () => {
   const [editModalValue, setEditModalValue] = useState('');
   const [editModalKey, setEditModalKey] = useState('');
   const [genderModalVisible, setGenderModalVisible] = useState(false);
+  const [birthdayModalVisible, setBirthdayModalVisible] = useState(false);
   const [tempGender, setTempGender] = useState<Gender>(profileData.gender);
+  const [tempBirthday, setTempBirthday] = useState(profileData.birthday || '');
 
   useEffect(() => {
     if (user) {
@@ -38,6 +40,7 @@ export const ProfileEdit = () => {
         douyinId: user.douyinId || '',
       });
       setTempGender(user.gender || Gender.MALE);
+      setTempBirthday(user.birthday || '');
     }
   }, [user]);
 
@@ -96,22 +99,21 @@ export const ProfileEdit = () => {
   };
 
   const handleEditBirthday = () => {
-    DatePicker.show({
-      defaultValue: profileData.birthday ? new Date(profileData.birthday) : new Date(),
-      max: new Date(),
-      onConfirm: async (val) => {
-        const dateStr = val.toISOString().split('T')[0];
-        const newData = { ...profileData, birthday: dateStr };
-        setProfileData(newData);
-        try {
-          const updatedUser = await authAPI.updateProfile(newData);
-          setUser(updatedUser);
-          Toast.show('已保存');
-        } catch (error: any) {
-          Toast.show(error.message || '保存失败');
-        }
-      },
-    });
+    setTempBirthday(profileData.birthday || '');
+    setBirthdayModalVisible(true);
+  };
+
+  const handleBirthdayConfirm = async () => {
+    const newData = { ...profileData, birthday: tempBirthday };
+    setProfileData(newData);
+    setBirthdayModalVisible(false);
+    try {
+      const updatedUser = await authAPI.updateProfile(newData);
+      setUser(updatedUser);
+      Toast.show('已保存');
+    } catch (error: any) {
+      Toast.show(error.message || '保存失败');
+    }
   };
 
   const handleEditLocation = () => {
@@ -241,6 +243,22 @@ export const ProfileEdit = () => {
           }
           onConfirm={handleGenderConfirm}
           onCancel={() => setGenderModalVisible(false)}
+          confirmText="保存"
+          cancelText="取消"
+        />
+
+        <Dialog
+          visible={birthdayModalVisible}
+          title="选择生日"
+          content={
+            <Input
+              value={tempBirthday}
+              onChange={(val) => setTempBirthday(val)}
+              placeholder="请输入生日，格式：YYYY-MM-DD"
+            />
+          }
+          onConfirm={handleBirthdayConfirm}
+          onCancel={() => setBirthdayModalVisible(false)}
           confirmText="保存"
           cancelText="取消"
         />
