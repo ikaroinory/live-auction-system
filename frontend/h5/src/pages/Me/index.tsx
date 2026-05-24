@@ -4,8 +4,7 @@ import {
   UnorderedListOutline, 
   ShopbagOutline,
   SetOutline,
-  ClockCircleOutline,
-  LogoutOutline
+  ClockCircleOutline
 } from 'antd-mobile-icons';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
@@ -110,7 +109,6 @@ export const Me = () => {
               color="danger" 
               fill="outline"
               onClick={handleLogout}
-              icon={<LogoutOutline />}
             >
               退出登录
             </Button>
