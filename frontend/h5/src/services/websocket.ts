@@ -9,7 +9,9 @@ import type {
   RankingUpdatePayload,
   CountdownTickPayload,
   AuctionEndPayload
-} from '../types/websocket';
+} from '@live-auction/shared';
+
+const WS_URL = import.meta.env.VITE_WS_URL || '/ws';
 
 class WebSocketService {
   private socket: Socket | null = null;
@@ -26,7 +28,7 @@ class WebSocketService {
     const store = useAuctionRoomStore.getState();
     store.setConnectionStatus('connecting');
 
-    this.socket = io('/ws', {
+    this.socket = io(WS_URL, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: this.maxReconnectAttempts,
