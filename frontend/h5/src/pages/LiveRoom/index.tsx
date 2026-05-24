@@ -49,9 +49,7 @@ export const LiveRoom = () => {
 
   const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation();
 
-  // 初始化模拟数据
   useEffect(() => {
-    // 模拟加载竞拍信息
     const mockAuction = {
       id: id || '1',
       sellerId: 'seller-1',
@@ -73,7 +71,6 @@ export const LiveRoom = () => {
     };
     setCurrentAuction(mockAuction);
     
-    // 模拟出价历史
     const mockBids = [
       { id: '3', auctionId: id || '1', userId: 'user-3', price: 30, createdAt: new Date(Date.now() - 60000).toISOString() },
       { id: '2', auctionId: id || '1', userId: 'user-2', price: 20, createdAt: new Date(Date.now() - 120000).toISOString() },
@@ -81,10 +78,7 @@ export const LiveRoom = () => {
     ];
     setBidHistory(mockBids);
     
-    // 初始化价格
     updatePrice(30);
-    
-    // 初始化倒计时
     useAuctionRoomStore.setState({ remainingMs: 300000 });
   }, [id, setCurrentAuction, setBidHistory, updatePrice]);
 
@@ -107,7 +101,6 @@ export const LiveRoom = () => {
       playSuccess();
       updatePrice(nextPrice);
       
-      // 添加到出价历史
       const newBid = {
         id: Date.now().toString(),
         auctionId: id || '1',
@@ -141,7 +134,6 @@ export const LiveRoom = () => {
   return (
     <div className="live-room-page">
       <div className="room-content">
-        {/* 视频区域 */}
         <div className="video-section">
           <VideoPlayer />
           <div className="video-overlay-info">
@@ -149,14 +141,12 @@ export const LiveRoom = () => {
           </div>
         </div>
 
-        {/* 左上角返回按钮 */}
         <div className="back-button-section">
           <BubbleButton onClick={handleGoBack}>
             <ChevronLeftIcon size={24} />
           </BubbleButton>
         </div>
 
-        {/* 连接状态 */}
         <div className="connection-status">
           <span className={`status-dot ${connectionStatus}`}></span>
           <span className="status-text">
@@ -165,19 +155,10 @@ export const LiveRoom = () => {
           </span>
         </div>
 
-        {/* 排行榜 */}
         <div className="ranking-section">
           <RankingList rankings={rankings} />
         </div>
 
-        {/* 右下角出价历史按钮 */}
-        <div className="bid-history-section">
-          <BubbleButton onClick={() => setShowBidHistory(!showBidHistory)}>
-            <HistoryIcon size={24} />
-          </BubbleButton>
-        </div>
-
-        {/* 竞拍信息 */}
         <div className="auction-info-section">
           <CurrentPrice price={currentPrice} />
 
@@ -198,7 +179,6 @@ export const LiveRoom = () => {
           )}
         </div>
 
-        {/* 出价按钮 */}
         <div className="bid-section safe-area-bottom">
           <BidButton
             onClick={handleBid}
@@ -208,9 +188,14 @@ export const LiveRoom = () => {
             animationType={animationType}
           />
         </div>
+
+        <div className="bid-history-section">
+          <BubbleButton onClick={() => setShowBidHistory(!showBidHistory)}>
+            <HistoryIcon size={24} />
+          </BubbleButton>
+        </div>
       </div>
 
-      {/* 出价历史弹窗 */}
       {showBidHistory && (
         <div className="bid-history-modal" onClick={() => setShowBidHistory(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
