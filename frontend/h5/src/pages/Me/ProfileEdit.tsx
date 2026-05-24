@@ -56,12 +56,12 @@ export const ProfileEdit = () => {
   };
 
   const menuItems = [
-    { label: '名字', value: profileData.nickname || '未设置', key: 'nickname' },
-    { label: '简介', value: profileData.bio || 'hypocrisy.', key: 'bio' },
+    { label: '名字', value: profileData.nickname, key: 'nickname' },
+    { label: '简介', value: profileData.bio, key: 'bio' },
     { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender' },
-    { label: '生日', value: profileData.birthday || '2002-03-25', key: 'birthday' },
-    { label: '所在地', value: profileData.location || '中国·广东·深圳', key: 'location' },
-    { label: '抖音号', value: profileData.douyinId || 'ikaroinory', key: 'douyinId' },
+    { label: '生日', value: profileData.birthday, key: 'birthday' },
+    { label: '所在地', value: profileData.location, key: 'location' },
+    { label: '抖音号', value: profileData.douyinId, key: 'douyinId' },
   ];
 
   return (
