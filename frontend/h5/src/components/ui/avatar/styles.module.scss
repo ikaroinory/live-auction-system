@@ -1,0 +1,16 @@
+.avatar {
+  width: 72px;
+  height: 72px;
+}
+
+.avatarCircle {
+  @extend .avatar;
+
+  border-radius: 50%;
+}
+
+.avatarSquare {
+  @extend .avatar;
+
+  border-radius: 0;
+}

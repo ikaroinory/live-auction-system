@@ -67,6 +67,7 @@ export const Login = () => {
               <label>手机号</label>
               <Input
                 type="tel"
+                inputMode="tel"
                 placeholder="请输入手机号"
                 value={phone}
                 onChange={setPhone}
@@ -79,6 +80,7 @@ export const Login = () => {
               <div className="code-input">
                 <Input
                   type="number"
+                  inputMode="numeric"
                   placeholder="请输入验证码"
                   value={code}
                   onChange={setCode}

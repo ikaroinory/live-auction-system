@@ -1,4 +1,4 @@
-import { List, Avatar, Button } from 'antd-mobile';
+import { List, Button } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { 
   UnorderedListOutline, 
@@ -8,6 +8,7 @@ import {
 } from 'antd-mobile-icons';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
+import { Avatar } from '@/components/ui';
 
 export const Me = () => {
   const navigate = useNavigate();
@@ -59,10 +60,7 @@ export const Me = () => {
       {/* 用户信息头部 */}
       <div className="user-header">
         <div className="user-info" onClick={handleAvatarClick}>
-          <Avatar 
-            src={avatarUrl} 
-            style={{ '--size': '72px' }}
-          />
+          <Avatar url={ avatarUrl }  defaultUrl='/default-avatar.svg' />
           <div className="user-details">
             <div className="user-name">
               {displayName || '未登录'}

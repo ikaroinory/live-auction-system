@@ -23,15 +23,14 @@ class Footer extends Component<ChildrenProps> {
 
 type LayoutProps = ChildrenProps
 
-
-export function Layout({ children }: LayoutProps) {
+export function Layout(props: LayoutProps) {
   const windowHeight = useWindowHeight()
 
   let headerContent: ReactNode = null
   let mainContent: ReactNode = null
   let footerContent: ReactNode = null
 
-  Children.forEach(children, (child) => {
+  Children.forEach(props.children, (child) => {
     if (isElementOfType(child, Header)) {
       headerContent = child.props.children
     }
