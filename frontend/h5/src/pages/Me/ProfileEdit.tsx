@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, Toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
-import { CameraIcon, ChevronRightIcon, Layout, List } from '@/components/ui';
+import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton } from '@/components/ui';
 import './ProfileEdit.scss';
 
 export const ProfileEdit = () => {
@@ -38,11 +38,14 @@ export const ProfileEdit = () => {
 
   return (
     <Layout>
-      <Layout.Header>
-        <NavBar onBack={() => navigate(-1)} rightContent={<button className="save-btn" onClick={handleSave}>保存</button>} />
-      </Layout.Header>
-      
       <Layout.Main>
+        <div className="top-bar">
+          <BubbleButton onClick={() => navigate(-1)}>
+            <ChevronLeftIcon />
+          </BubbleButton>
+          <button className="save-btn" onClick={handleSave}>保存</button>
+        </div>
+        
         <div className="cover-section">
           <div className="cover-image">
             <button className="change-cover-btn">
