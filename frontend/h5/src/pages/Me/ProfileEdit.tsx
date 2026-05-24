@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toast, Input } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
@@ -10,6 +10,7 @@ import './ProfileEdit.scss';
 export const ProfileEdit = () => {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
     nickname: user?.nickname || '',
@@ -20,6 +21,8 @@ export const ProfileEdit = () => {
     douyinId: user?.douyinId || '',
   });
 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg');
+  const [isUploading, setIsUploading] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editModalTitle, setEditModalTitle] = useState('');
   const [editModalValue, setEditModalValue] = useState('');
@@ -41,6 +44,9 @@ export const ProfileEdit = () => {
       });
       setTempGender(user.gender || Gender.MALE);
       setTempBirthday(user.birthday || '');
+      if (user.avatar) {
+        setPreviewUrl(user.avatar);
+      }
     }
   }, [user]);
 
@@ -137,6 +143,45 @@ export const ProfileEdit = () => {
     }
   };
 
+  const handleUploadAndSave = async (file: File) => {
+    setIsUploading(true);
+
+    const reader = new FileReader();
+
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = () => {
+          reject(new Error('图片读取失败'));
+        };
+        reader.readAsDataURL(file);
+      });
+
+      setPreviewUrl(dataUrl);
+
+      const updatedUser = await authAPI.updateAvatar(dataUrl);
+      setUser(updatedUser);
+      setPreviewUrl(updatedUser.avatar);
+      Toast.show('头像已更新');
+    } catch (error: any) {
+      Toast.show(error.message || '头像上传失败');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    handleUploadAndSave(file);
+  };
+
+  const handleAvatarUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   const menuItems = [
     { label: '名字', value: profileData.nickname, key: 'nickname', onClick: handleEditNickname },
     { label: '简介', value: profileData.bio, key: 'bio', onClick: handleEditBio },
@@ -166,11 +211,11 @@ export const ProfileEdit = () => {
           <div className="avatar-container">
             <div className="avatar-wrapper">
               <img 
-                src={user?.avatar || '/default-avatar.svg'} 
+                src={previewUrl || '/default-avatar.svg'} 
                 alt="头像" 
                 className="avatar-image"
               />
-              <div className="change-avatar-btn">
+              <div className="change-avatar-btn" onClick={handleAvatarUpload}>
                 <CameraIcon />
                 <span>更换头像</span>
               </div>
@@ -262,6 +307,22 @@ export const ProfileEdit = () => {
           confirmText="保存"
           cancelText="取消"
         />
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input"
+          style={{ display: 'none' }}
+        />
+
+        {isUploading && (
+          <div className="upload-overlay">
+            <div className="upload-spinner" />
+            <span>上传中...</span>
+          </div>
+        )}
       </Layout.Main>
     </Layout>
   );
