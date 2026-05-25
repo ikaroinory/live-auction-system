@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
+  Avatar,
   UnorderedListOutline, 
   ShopbagOutline,
   SettingsIcon,
   HistoryIcon,
-  ChevronRightIcon
+  Menu
 } from '@/components/ui';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
-import { Avatar, List } from '@/components/ui';
 
 export const Me = () => {
   const navigate = useNavigate();
@@ -30,21 +30,25 @@ export const Me = () => {
     {
       icon: <UnorderedListOutline />,
       title: '我的出价',
+      name: '我的出价',
       path: '/me/bids',
     },
     {
       icon: <ShopbagOutline />,
       title: '我的订单',
+      name: '我的订单',
       path: '/me/orders',
     },
     {
       icon: <HistoryIcon />,
       title: '浏览历史',
+      name: '浏览历史',
       path: '/me/history',
     },
     {
       icon: <SettingsIcon />,
       title: '设置',
+      name: '设置',
       path: '/me/settings',
     },
   ];
@@ -100,24 +104,8 @@ export const Me = () => {
       </div>
 
       {/* 菜单列表 - 抖音风格 */}
+      <Menu style={{ color:'white' }} items={menuItems} />
       <div className="menu-section">
-        <List className="menu-list">
-          {menuItems.map((item) => (
-            <List.Item
-              key={item.path}
-              onClick={() => user && navigate(item.path)}
-              className="menu-item"
-            >
-              <div className="menu-item-content">
-                <div className="menu-icon-wrapper">
-                  {item.icon}
-                </div>
-                <span className="menu-title">{item.title}</span>
-                <ChevronRightIcon className="menu-arrow" />
-              </div>
-            </List.Item>
-          ))}
-        </List>
 
         {/* 登录/登出按钮 */}
         <div className="action-section">
