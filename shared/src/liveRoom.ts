@@ -10,8 +10,6 @@ export interface LiveRoom {
   status: 0 | 1 | 2; // 0:未开始 1:直播中 2:已结束
   createdAt: string;
   updatedAt: string;
-  startedAt: string | null;
-  endedAt: string | null;
 }
 
 export interface LiveRoomWithStreamer extends LiveRoom {

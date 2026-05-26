@@ -111,8 +111,6 @@ model LiveRoom {
   status      Int       @default(0) // 0:未开始 1:直播中 2:已结束
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  startedAt   DateTime?
-  endedAt     DateTime?
 
   // 关联关系
   streamer  User           @relation("UserToLiveRoom", fields: [streamerId], references: [id])
