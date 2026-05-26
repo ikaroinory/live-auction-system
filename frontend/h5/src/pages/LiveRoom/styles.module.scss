@@ -1,0 +1,49 @@
+.headerBar {
+  position: absolute;
+
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actionBar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.actionButton.like {
+  background: rgba(254, 44, 85, 0.2);
+  color: #fe2c55;
+}
+
+.actionButton.gift {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+}
+
+.actionButton.history {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+}
+
+.actionButton.share {
+  background: rgba(37, 244, 238, 0.2);
+  color: #25f4ee;
+}

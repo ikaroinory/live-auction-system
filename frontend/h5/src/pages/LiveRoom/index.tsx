@@ -11,12 +11,14 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { BubbleButton } from '../../components/ui';
-import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon } from '../../components/ui/icons';
+import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon, ChevronRightIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
 import { formatPrice } from '../../utils/format';
 import './LiveRoom.scss';
+import styles from './styles.module.scss'
+import clsx from 'clsx';
 
 interface ChatMessage {
   id: string;
@@ -161,33 +163,17 @@ export const LiveRoom = () => {
     setChatInput('');
   };
 
-  const handleLike = () => {
+  const showEffects = (type: 'like' | 'gift') => {
     const newAnimation: AnimationItem = {
       id: Date.now().toString(),
-      type: 'like',
-      content: '❤️',
+      type: type,
+      content: type === 'like' ? '❤️' : '🎉',
       left: Math.random() * 60 + 20,
     };
     setAnimations(prev => [...prev, newAnimation]);
     setTimeout(() => {
       setAnimations(prev => prev.filter(a => a.id !== newAnimation.id));
     }, 1000);
-  };
-
-  const handleGift = () => {
-    const gifts = ['🎁', '💎', '🚗', '🏠', '🌟'];
-    const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
-    const newAnimation: AnimationItem = {
-      id: Date.now().toString(),
-      type: 'gift',
-      content: randomGift,
-      left: Math.random() * 60 + 20,
-    };
-    setAnimations(prev => [...prev, newAnimation]);
-    setTimeout(() => {
-      setAnimations(prev => prev.filter(a => a.id !== newAnimation.id));
-    }, 3000);
-    Toast.show('礼物发送成功');
   };
 
   const handleShare = () => {
@@ -246,42 +232,21 @@ export const LiveRoom = () => {
       <div className="room-content">
         <div className="video-section">
           <VideoPlayer />
-          <div className="video-overlay-info">
-            <h1 className="auction-title">{currentAuction.title}</h1>
+        </div>
+
+        <div className={ styles.headerBar }>
+          <div className={ styles.info }>
+            <div className="host-avatar">🎙️</div>
+            <div className="host-info">
+              <div className="host-name">骚男 😎</div>
+              <div className="host-stats">142.9万本场点赞</div>
+            </div>
+            <button className={`follow-button ${isFollowed ? 'followed' : ''}`} onClick={handleFollow}>
+              {isFollowed ? '已关注' : '关注'}
+            </button>
           </div>
-        </div>
 
-        <div className="back-button-section">
-          <BubbleButton onClick={handleGoBack}>
-            <ChevronLeftIcon size={24} />
-          </BubbleButton>
-        </div>
-
-        <div className="connection-status">
-          <span className={`status-dot ${connectionStatus}`}></span>
-          <span className="status-text">
-            {connectionStatus === 'connected' ? '已连接' : 
-             connectionStatus === 'connecting' ? '连接中...' : '未连接'}
-          </span>
-        </div>
-
-        <div className="host-info-section">
-          <div className="host-avatar">🎙️</div>
-          <div className="host-info">
-            <div className="host-name">骚男 😎</div>
-            <div className="host-stats">142.9万本场点赞</div>
-          </div>
-          <button 
-            className={`follow-button ${isFollowed ? 'followed' : ''}`}
-            onClick={handleFollow}
-          >
-            {isFollowed ? '已关注' : '+ 关注'}
-          </button>
-        </div>
-
-        <div className="online-count-section">
-          <span className="online-dot"></span>
-          <span className="online-count">{onlineCount.toLocaleString()} 观看</span>
+          <BubbleButton onClick={handleGoBack}><ChevronRightIcon size={20} /></BubbleButton>
         </div>
 
         <div className="chat-section">
@@ -311,28 +276,8 @@ export const LiveRoom = () => {
           <RankingList rankings={rankings} />
         </div>
 
-        <div className="auction-info-section">
-          <CurrentPrice price={currentPrice} />
-
-          <div className="countdown-section">
-            <span className="label">剩余时间</span>
-            <Countdown 
-              remainingMs={displayMs} 
-              onComplete={() => {
-                Toast.show('竞拍已结束');
-              }}
-            />
-          </div>
-
-          {isLeading && (
-            <div className="leading-indicator">
-              🎉 您当前领先！
-            </div>
-          )}
-        </div>
-
         <div className="bid-section safe-area-bottom">
-          <div className="bottom-bar">
+          <div className={ styles.actionBar }>
             <div className="chat-input-wrapper">
               <input
                 type="text"
@@ -343,29 +288,10 @@ export const LiveRoom = () => {
                 onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
               />
             </div>
-            
-            <div className="action-buttons">
-              <button className="action-btn" onClick={handleLike}>
-                <span className="action-btn-icon like"><LikeIcon size={20} /></span>
-              </button>
-              <button className="action-btn" onClick={handleGift}>
-                <span className="action-btn-icon gift"><GiftIcon size={20} /></span>
-              </button>
-              <button className="action-btn" onClick={() => setShowBidHistory(!showBidHistory)}>
-                <span className="action-btn-icon history"><HistoryIcon size={20} /></span>
-              </button>
-              <BubbleButton className="action-btn-icon share" onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
-            </div>
-          </div>
-          
-          <div style={{ marginTop: '12px' }}>
-            <BidButton
-              onClick={handleBid}
-              nextPrice={currentPrice + currentAuction.minIncrement}
-              disabled={connectionStatus !== 'connected' || remainingMs <= 0}
-              isAnimating={isAnimating}
-              animationType={animationType}
-            />
+            <BubbleButton className={ clsx(styles.actionButton, styles.like) } onClick={ () => showEffects('like') }><LikeIcon size={20} /></BubbleButton>
+            <BubbleButton className={ clsx(styles.actionButton, styles.gift) } onClick={ () => showEffects('gift') }><GiftIcon size={20} /></BubbleButton>
+            <BubbleButton className={ clsx(styles.actionButton, styles.history) } onClick={ () => setShowBidHistory(!showBidHistory) }><HistoryIcon size={20} /></BubbleButton>
+            <BubbleButton className={ clsx(styles.actionButton, styles.share) } onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
           </div>
         </div>
 
@@ -374,7 +300,7 @@ export const LiveRoom = () => {
           {animations.map((anim) => (
             <div
               key={anim.id}
-              className={anim.type === 'like' ? 'like-animation' : 'gift-item'}
+              className={anim.type === 'like' ? 'like-animation' : 'gift-animation'}
               style={{ left: `${anim.left}%`, bottom: '180px' }}
             >
               {anim.content}

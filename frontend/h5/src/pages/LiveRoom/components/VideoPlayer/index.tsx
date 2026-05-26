@@ -92,7 +92,7 @@ export const VideoPlayer = () => {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const texts = ['LIVE', '直播中', '🔥', '🔥🔥', '🔥'];
+      const texts = ['LIVE', '直播中'];
       const text = texts[Math.floor(hue / 72) % texts.length];
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
