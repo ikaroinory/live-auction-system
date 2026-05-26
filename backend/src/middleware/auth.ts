@@ -31,3 +31,27 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     return res.status(401).json({ message: '无效的认证令牌' });
   }
 };
+
+// 可选认证中间件 - 有token就解析，没有也允许访问
+export const optionalAuthMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, config.jwt.secret) as { id: string; phone: string };
+          req.user = decoded;
+        } catch (error) {
+          // token 无效但不阻止访问
+        }
+      }
+    }
+    
+    next();
+  } catch (error) {
+    // 任何错误都不阻止访问
+    next();
+  }
+};

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../../lib/prisma';
-import { authMiddleware, AuthRequest } from '../../middleware/auth';
+import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../../middleware/auth';
 
 const router = Router();
 
@@ -52,7 +52,7 @@ const router = Router();
  *       200:
  *         description: 成功获取直播间列表
  */
-router.get('/', async (req: Request, res: Response, next: Function) => {
+router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     const { status } = req.query;
     const where = status ? { status: parseInt(status as string) } : {};
@@ -75,9 +75,9 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
       orderBy: { createdAt: 'desc' }
     });
     
-    // 如果用户已登录，添加关注状态
-    if ((req as any).user?.id) {
-      const userId = (req as any).user.id;
+    // 添加关注状态
+    if (req.user?.id) {
+      const userId = req.user.id;
       const userFollowedRooms = await prisma.liveRoomFollow.findMany({
         where: { userId },
         select: { liveRoomId: true }
@@ -88,6 +88,12 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
       liveRooms = liveRooms.map(room => ({
         ...room,
         isFollowed: followedIds.has(room.id)
+      }));
+    } else {
+      // 未登录时，设置 isFollowed 为 false
+      liveRooms = liveRooms.map(room => ({
+        ...room,
+        isFollowed: false
       }));
     }
     
@@ -116,7 +122,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
  *       404:
  *         description: 直播间不存在
  */
-router.get('/:id', async (req: Request, res: Response, next: Function) => {
+router.get('/:id', optionalAuthMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     const { id } = req.params;
     
@@ -142,17 +148,16 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
       return res.status(404).json({ message: '直播间不存在' });
     }
     
-    // 如果用户已登录，添加关注状态
-    if ((req as any).user?.id) {
-      const userId = (req as any).user.id;
-      const isFollowed = await prisma.liveRoomFollow.findFirst({
-        where: { userId, liveRoomId: id }
+    // 添加关注状态
+    let isFollowed = false;
+    if (req.user?.id) {
+      const followRecord = await prisma.liveRoomFollow.findFirst({
+        where: { userId: req.user.id, liveRoomId: id }
       });
-      
-      res.json({ ...liveRoom, isFollowed: !!isFollowed });
-    } else {
-      res.json({ ...liveRoom, isFollowed: false });
+      isFollowed = !!followRecord;
     }
+    
+    res.json({ ...liveRoom, isFollowed });
   } catch (error) {
     next(error);
   }
