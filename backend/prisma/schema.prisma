@@ -28,16 +28,19 @@ model User {
   updatedAt DateTime @updatedAt
 
   // 关联关系
-  auctions    Auction[] @relation("sellerAuctions")
-  bids        Bid[]
-  orders      Order[]   @relation("userOrders")
-  soldOrders  Order[]   @relation("sellerOrders")
-  wonAuctions Auction[] @relation("winnerAuctions")
+  auctions      Auction[]        @relation("sellerAuctions")
+  bids          Bid[]
+  orders        Order[]          @relation("userOrders")
+  soldOrders    Order[]          @relation("sellerOrders")
+  wonAuctions   Auction[]        @relation("winnerAuctions")
+  liveRooms     LiveRoom[]       @relation("UserToLiveRoom")
+  followedRooms LiveRoomFollow[] @relation("UserToLiveRoomFollow")
 }
 
 model Auction {
   id                String    @id @default(uuid())
   sellerId          String
+  liveRoomId        String?
   title             String
   description       String?
   images            Json?
@@ -55,13 +58,15 @@ model Auction {
   updatedAt         DateTime  @updatedAt
 
   // 关联关系
-  seller User   @relation("sellerAuctions", fields: [sellerId], references: [id])
-  winner User?  @relation("winnerAuctions", fields: [winnerId], references: [id])
-  bids   Bid[]
-  order  Order?
+  seller   User      @relation("sellerAuctions", fields: [sellerId], references: [id])
+  winner   User?     @relation("winnerAuctions", fields: [winnerId], references: [id])
+  liveRoom LiveRoom? @relation(fields: [liveRoomId], references: [id])
+  bids     Bid[]
+  order    Order?
 
   @@index([status])
   @@index([startTime])
+  @@index([liveRoomId])
 }
 
 model Bid {
@@ -94,4 +99,42 @@ model Order {
   auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
   user    User    @relation("userOrders", fields: [userId], references: [id])
   seller  User    @relation("sellerOrders", fields: [sellerId], references: [id])
+}
+
+model LiveRoom {
+  id          String    @id @default(uuid())
+  roomNumber  Int       @unique @default(autoincrement())
+  streamerId  String
+  title       String
+  description String?   @db.Text
+  coverImage  String?   @db.LongText
+  status      Int       @default(0) // 0:未开始 1:直播中 2:已结束
+  viewerCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  startedAt   DateTime?
+  endedAt     DateTime?
+
+  // 关联关系
+  streamer  User           @relation("UserToLiveRoom", fields: [streamerId], references: [id])
+  followers LiveRoomFollow[] @relation("LiveRoomToLiveRoomFollow")
+  auctions  Auction[]
+
+  @@index([status])
+  @@index([streamerId])
+}
+
+model LiveRoomFollow {
+  id         String   @id @default(uuid())
+  userId     String
+  liveRoomId String
+  createdAt  DateTime @default(now())
+
+  // 关联关系
+  user      User     @relation("UserToLiveRoomFollow", fields: [userId], references: [id], onDelete: Cascade)
+  liveRoom  LiveRoom @relation("LiveRoomToLiveRoomFollow", fields: [liveRoomId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, liveRoomId])
+  @@index([userId])
+  @@index([liveRoomId])
 }
