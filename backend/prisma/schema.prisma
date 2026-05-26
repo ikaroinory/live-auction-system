@@ -109,7 +109,6 @@ model LiveRoom {
   description String?   @db.Text
   coverImage  String?   @db.LongText
   status      Int       @default(0) // 0:未开始 1:直播中 2:已结束
-  viewerCount Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   startedAt   DateTime?

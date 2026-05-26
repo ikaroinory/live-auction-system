@@ -8,7 +8,6 @@ export interface LiveRoom {
   description: string | null;
   coverImage: string | null;
   status: 0 | 1 | 2; // 0:未开始 1:直播中 2:已结束
-  viewerCount: number;
   createdAt: string;
   updatedAt: string;
   startedAt: string | null;
