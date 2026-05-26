@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import type { AuctionWithSeller } from '@live-auction/shared';
+import type { LiveRoomWithStreamer } from '@live-auction/shared';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
 import { FloatTag } from '@/components/ui';
 import './LiveStreamCard.scss';
 
 interface LiveStreamCardProps {
-  auction: AuctionWithSeller;
+  liveRoom: LiveRoomWithStreamer;
   isActive: boolean;
   onEnterLiveRoom: () => void;
 }
 
 export const LiveStreamCard = ({
-  auction,
+  liveRoom,
   isActive,
   onEnterLiveRoom,
 }: LiveStreamCardProps) => {
@@ -43,7 +43,7 @@ export const LiveStreamCard = ({
 
             <div style={{ width: '100%' }}>
               <div className="auction-header">
-                <h2 className="auction-title">{auction.title}</h2>
+                <h2 className="auction-title">{liveRoom.title}</h2>
               </div>
 
               <div className="stream-indicator">
@@ -52,24 +52,22 @@ export const LiveStreamCard = ({
               </div>
 
               <p className="auction-description">
-                {auction.description || '精品好物，限时竞拍'}
+                {liveRoom.description || '精彩直播，不容错过'}
               </p>
 
               <div className="auction-details">
                 <div className="detail-item">
-                  <span className="detail-label">当前价格</span>
-                  <span className="detail-value price">¥{auction.startPrice.toFixed(2)}</span>
+                  <span className="detail-label">主播</span>
+                  <span className="detail-value">{liveRoom.streamer.nickname || liveRoom.streamer.phone}</span>
                 </div>
                 <div className="detail-item">
-                  <span className="detail-label">加价</span>
-                  <span className="detail-value">¥{auction.minIncrement.toFixed(2)}</span>
+                  <span className="detail-label">关注</span>
+                  <span className="detail-value">{liveRoom._count.followers}人</span>
                 </div>
-                {auction.maxPrice && (
-                  <div className="detail-item">
-                    <span className="detail-label">封顶</span>
-                    <span className="detail-value">¥{auction.maxPrice.toFixed(2)}</span>
-                  </div>
-                )}
+                <div className="detail-item">
+                  <span className="detail-label">商品</span>
+                  <span className="detail-value">{liveRoom._count.auctions}件</span>
+                </div>
               </div>
             </div>
           </div>

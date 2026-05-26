@@ -10,30 +10,30 @@ import { ProfileEdit } from './pages/Me/ProfileEdit';
 import Me from './pages/Me';
 import { Login } from './pages/Login';
 import { useUserStore } from './store/useUserStore';
-import { auctionAPI } from './services/api';
-import type { AuctionWithSeller } from '@live-auction/shared';
+import { liveRoomAPI } from './services/api';
+import type { LiveRoomWithStreamer } from '@live-auction/shared';
 
 function App() {
   const { fetchUser, isLoading } = useUserStore();
-  const [auctions, setAuctions] = useState<AuctionWithSeller[]>([]);
-  const [auctionsLoading, setAuctionsLoading] = useState(true);
+  const [liveRooms, setLiveRooms] = useState<LiveRoomWithStreamer[]>([]);
+  const [liveRoomsLoading, setLiveRoomsLoading] = useState(true);
 
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
   useEffect(() => {
-    const loadAuctions = async () => {
+    const loadLiveRooms = async () => {
       try {
-        const data = await auctionAPI.getAuctions();
-        setAuctions(data);
+        const data = await liveRoomAPI.getLiveRooms();
+        setLiveRooms(data);
       } catch (error) {
-        console.error('Failed to load auctions:', error);
+        console.error('Failed to load live rooms:', error);
       } finally {
-        setAuctionsLoading(false);
+        setLiveRoomsLoading(false);
       }
     };
-    loadAuctions();
+    loadLiveRooms();
   }, []);
 
   if (isLoading) {
@@ -54,7 +54,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home auctions={auctions} loading={auctionsLoading} />} />
+        <Route path="/" element={<Home liveRooms={liveRooms} loading={liveRoomsLoading} />} />
         <Route path="/auction/:id" element={<AuctionDetail />} />
         <Route path="/live/:id" element={<LiveRoom />} />
         <Route path="/me/bids" element={<MeBids />} />

@@ -2,22 +2,22 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Empty, Toast } from 'antd-mobile';
 import { LiveStreamCard } from './components/LiveStreamCard';
-import type { AuctionWithSeller } from '@live-auction/shared';
+import type { LiveRoomWithStreamer } from '@live-auction/shared';
 import './Home.scss';
 
 interface HomeProps {
-  auctions?: AuctionWithSeller[];
+  liveRooms?: LiveRoomWithStreamer[];
   loading?: boolean;
 }
 
-export const Home = ({ auctions = [], loading = false }: HomeProps) => {
+export const Home = ({ liveRooms = [], loading = false }: HomeProps) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const activeAuctions = auctions.filter(a => a.status === 1);
+  const activeLiveRooms = liveRooms.filter(room => room.status === 1);
 
   const minSwipeDistance = 50;
 
@@ -38,12 +38,12 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     const isDownSwipe = distance < -minSwipeDistance;
 
     if (isUpSwipe && !isTransitioning) {
-      if (currentIndex >= activeAuctions.length - 1) {
+      if (currentIndex >= activeLiveRooms.length - 1) {
         Toast.show('已经是最后一个直播间了');
         return;
       }
       setCurrentIndex((prev) => {
-        const next = Math.min(prev + 1, activeAuctions.length - 1);
+        const next = Math.min(prev + 1, activeLiveRooms.length - 1);
         return next;
       });
       setIsTransitioning(true);
@@ -60,7 +60,7 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
       });
       setIsTransitioning(true);
     }
-  }, [touchStart, touchEnd, isTransitioning, currentIndex, activeAuctions.length]);
+  }, [touchStart, touchEnd, isTransitioning, currentIndex, activeLiveRooms.length]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -69,11 +69,11 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     }
   }, [isTransitioning]);
 
-  const currentAuction = activeAuctions[currentIndex];
+  const currentLiveRoom = activeLiveRooms[currentIndex];
 
   const handleEnterLiveRoom = () => {
-    if (currentAuction) {
-      navigate(`/live/${currentAuction.id}`);
+    if (currentLiveRoom) {
+      navigate(`/live/${currentLiveRoom.id}`);
     }
   };
 
@@ -87,12 +87,12 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
     );
   }
 
-  if (activeAuctions.length === 0) {
+  if (activeLiveRooms.length === 0) {
     return (
       <div className="home-page">
         <div className="empty-container">
           <Empty 
-            description="暂无直播中的竞拍" 
+            description="暂无直播中的直播间" 
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </div>
@@ -115,10 +115,10 @@ export const Home = ({ auctions = [], loading = false }: HomeProps) => {
               transition: isTransitioning ? 'transform 0.3s ease-out' : 'none'
             }}
           >
-            {activeAuctions.map((auction, index) => (
-              <div key={auction.id} className="live-stream-item">
+            {activeLiveRooms.map((liveRoom, index) => (
+              <div key={liveRoom.id} className="live-stream-item">
                 <LiveStreamCard
-                  auction={auction}
+                  liveRoom={liveRoom}
                   isActive={index === currentIndex}
                   onEnterLiveRoom={handleEnterLiveRoom}
                 />

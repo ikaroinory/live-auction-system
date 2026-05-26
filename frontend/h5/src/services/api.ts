@@ -8,6 +8,12 @@ import type {
   AuctionDetail,
   CreateAuctionParams,
   UpdateProfileParams,
+  LiveRoom,
+  LiveRoomWithStreamer,
+  CreateLiveRoomParams,
+  UpdateLiveRoomParams,
+  FollowLiveRoomParams,
+  LiveRoomFollowWithDetails,
 } from '@live-auction/shared';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -68,6 +74,30 @@ export const auctionAPI = {
   },
   createAuction: (params: CreateAuctionParams): Promise<Auction> => {
     return apiClient.post('/v1/auctions', params);
+  },
+};
+
+export const liveRoomAPI = {
+  getLiveRooms: (status?: number): Promise<LiveRoomWithStreamer[]> => {
+    return apiClient.get('/v1/live-rooms', { params: status ? { status } : undefined });
+  },
+  getLiveRoomDetail: (id: string): Promise<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: any[] }> => {
+    return apiClient.get(`/v1/live-rooms/${id}`);
+  },
+  createLiveRoom: (params: CreateLiveRoomParams): Promise<LiveRoom> => {
+    return apiClient.post('/v1/live-rooms', params);
+  },
+  updateLiveRoom: (id: string, params: UpdateLiveRoomParams): Promise<LiveRoom> => {
+    return apiClient.put(`/v1/live-rooms/${id}`, params);
+  },
+  followLiveRoom: (id: string): Promise<{ message: string; follow: LiveRoomFollowWithDetails }> => {
+    return apiClient.post(`/v1/live-rooms/${id}/follow`);
+  },
+  unfollowLiveRoom: (id: string): Promise<{ message: string }> => {
+    return apiClient.post(`/v1/live-rooms/${id}/unfollow`);
+  },
+  getMyFollowedLiveRooms: (): Promise<LiveRoomFollowWithDetails[]> => {
+    return apiClient.get('/v1/live-rooms/my/followed');
   },
 };
 
