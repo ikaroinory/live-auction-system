@@ -11,7 +11,7 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { BubbleButton } from '../../components/ui';
-import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon, ChevronRightIcon } from '../../components/ui/icons';
+import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon, CloseIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
@@ -246,7 +246,7 @@ export const LiveRoom = () => {
             </button>
           </div>
 
-          <BubbleButton onClick={handleGoBack}><ChevronRightIcon size={20} /></BubbleButton>
+          <BubbleButton onClick={handleGoBack}><CloseIcon size={20} /></BubbleButton>
         </div>
 
         <div className="chat-section">
