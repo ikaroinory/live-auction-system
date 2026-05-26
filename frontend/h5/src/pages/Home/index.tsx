@@ -1,16 +1,28 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Empty, Toast } from 'antd-mobile';
 import { LiveStreamCard } from './components/LiveStreamCard';
 import type { LiveRoomWithStreamer } from '@live-auction/shared';
 import './Home.scss';
+import { liveRoomAPI } from '@/services/api';
 
-interface HomeProps {
-  liveRooms?: LiveRoomWithStreamer[];
-  loading?: boolean;
-}
+export const Home = () => {
+  const [liveRooms, setLiveRooms] = useState<LiveRoomWithStreamer[]>([]);
+  const [liveRoomsLoading, setLiveRoomsLoading] = useState(true);
+  useEffect(() => {
+    const loadLiveRooms = async () => {
+      try {
+        const data = await liveRoomAPI.getLiveRooms();
+        setLiveRooms(data);
+      } catch (error) {
+        console.error('Failed to load live rooms:', error);
+      } finally {
+        setLiveRoomsLoading(false);
+      }
+    };
+    loadLiveRooms();
+  }, []);
 
-export const Home = ({ liveRooms = [], loading = false }: HomeProps) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -77,7 +89,7 @@ export const Home = ({ liveRooms = [], loading = false }: HomeProps) => {
     }
   };
 
-  if (loading) {
+  if (liveRoomsLoading) {
     return (
       <div className="home-page">
         <div className="loading-container">

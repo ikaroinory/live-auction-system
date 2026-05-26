@@ -1,9 +1,7 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './assets/styles/index.scss'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import { Layout, Menu } from './components/ui'
-import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
 import { Auction } from './types/auction'
 import Me from './pages/Me'
@@ -16,6 +14,7 @@ import { useEffect } from 'react'
 import { LiveRoom } from './pages/LiveRoom'
 import ProfileEdit from './pages/Me/ProfileEdit'
 import { MenuItemProps } from './components/ui/menu/menu-item'
+import React from 'react'
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { fetchUser, isLoading } = useUserStore()
@@ -148,10 +147,13 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to={"/home"} replace /> },
 
-      { path: "/home", element: <Home auctions={mockAuctions} /> },
+      { path: "/home", element: <Home /> },
       { path: "/bids", element: <MeBids /> },
       { path: "/orders", element: <MeOrders /> },
       { path: "/me", element: <Me /> },
+
+      { path: "/me/bids", element: <MeBids /> },
+      { path: "/me/orders", element: <MeOrders /> }
     ]
   },
 
