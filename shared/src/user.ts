@@ -21,6 +21,7 @@ export interface UserSlim {
   id: string;
   phone: string;
   nickname?: string;
+  avatar?: string;
 }
 
 export interface LoginParams {
