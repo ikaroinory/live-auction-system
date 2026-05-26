@@ -45,6 +45,9 @@ export const LiveStreamCard = ({
             <div style={{ width: '100%' }}>
               <div style={{ display: 'flex' }}>
                 <div className={ styles.label }>直播中</div>
+                { liveRoom.isFollowed && (
+                  <div className={ styles.followedLabel }>我的关注</div>
+                ) }
               </div>
               <div className="auction-title">@{ liveRoom.streamer.nickname }</div>
               <div className="auction-description">{ liveRoom.description }</div>
