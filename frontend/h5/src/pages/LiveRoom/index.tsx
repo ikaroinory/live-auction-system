@@ -351,6 +351,9 @@ export const LiveRoom = () => {
               <button className="action-btn" onClick={handleGift}>
                 <span className="action-btn-icon gift"><GiftIcon size={20} /></span>
               </button>
+              <button className="action-btn" onClick={() => setShowBidHistory(!showBidHistory)}>
+                <span className="action-btn-icon history"><HistoryIcon size={20} /></span>
+              </button>
               <BubbleButton className="action-btn-icon share" onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
             </div>
           </div>
@@ -366,11 +369,6 @@ export const LiveRoom = () => {
           </div>
         </div>
 
-        <div className="bid-history-section">
-          <BubbleButton onClick={() => setShowBidHistory(!showBidHistory)}>
-            <HistoryIcon size={24} />
-          </BubbleButton>
-        </div>
 
         <div className="gift-animation-container">
           {animations.map((anim) => (

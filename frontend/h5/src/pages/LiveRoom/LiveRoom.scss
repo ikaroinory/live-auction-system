@@ -166,24 +166,6 @@
   z-index: 20;
 }
 
-.bid-history-section {
-  position: absolute;
-  bottom: 120px;
-  right: 16px;
-  z-index: 20;
-  
-  .bubbleButton {
-    background: linear-gradient(135deg, rgba(254, 44, 85, 0.9) 0%, rgba(255, 107, 138, 0.9) 100%);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 16px rgba(254, 44, 85, 0.4);
-    
-    &:hover {
-      background: linear-gradient(135deg, rgba(255, 107, 138, 0.95) 0%, rgba(255, 140, 165, 0.95) 100%);
-      box-shadow: 0 6px 20px rgba(254, 44, 85, 0.5);
-    }
-  }
-}
-
 .chat-section {
   position: absolute;
   left: 16px;
@@ -505,6 +487,11 @@
 .action-btn-icon.gift {
   background: rgba(255, 215, 0, 0.2);
   color: #ffd700;
+}
+
+.action-btn-icon.history {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
 }
 
 .action-btn-icon.share {
