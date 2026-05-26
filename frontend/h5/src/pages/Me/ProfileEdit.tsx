@@ -195,9 +195,7 @@ export const ProfileEdit = () => {
     <Layout>
       <Layout.Main>
         <div className="top-bar">
-          <BubbleButton onClick={() => navigate(-1)}>
-            <ChevronLeftIcon />
-          </BubbleButton>
+          <BubbleButton onClick={() => navigate(-1)}><ChevronLeftIcon /></BubbleButton>
         </div>
         
         <div className="cover-section">

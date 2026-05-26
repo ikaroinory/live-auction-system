@@ -351,11 +351,7 @@ export const LiveRoom = () => {
               <button className="action-btn" onClick={handleGift}>
                 <span className="action-btn-icon gift">🎁</span>
               </button>
-              <button className="action-btn" onClick={handleShare}>
-                <span className="action-btn-icon share">
-                  <ShareIcon size={18} />
-                </span>
-              </button>
+              <BubbleButton className="action-btn-icon share" onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
             </div>
           </div>
           
