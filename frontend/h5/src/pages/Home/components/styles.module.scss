@@ -1,14 +1,67 @@
-.label {
-    padding: 1px 4px;
-    font-size: 12px;
-    background: rgb(240, 86, 114);
-    border-radius: 4px;
+.main {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #000;
+  overflow: hidden;
+  transition: transform 0.2s ease-out;
 }
 
-.followedLabel {
-    padding: 1px 4px;
-    font-size: 12px;
-    background: rgb(85, 148, 247);
-    border-radius: 4px;
-    margin-left: 6px;
+.container {
+  position: absolute;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 16px;
+}
+
+.informationContainer {
+  width: 100%;
+}
+
+.informationContainer .informationContainerItem:not(:first-child) {
+  margin-top: 8px;
+}
+
+.labelContainer {
+  display: flex;
+  gap: 4px;
+}
+
+.label {
+  padding: 1px 4px;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.label.livingLabel {
+  background: rgb(240, 86, 114);
+  color: white;
+}
+
+.label.followedLabel {
+  background: white;
+  color: black;
+}
+
+.liveRoomTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.liveRoomDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
 }
