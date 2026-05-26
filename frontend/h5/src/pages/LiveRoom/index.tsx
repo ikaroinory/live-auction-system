@@ -16,6 +16,8 @@ import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
 import { formatPrice } from '../../utils/format';
+import { liveRoomAPI, auctionAPI } from '../../services/api';
+import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared';
 import './LiveRoom.scss';
 import styles from './styles.module.scss'
 import clsx from 'clsx';
@@ -38,7 +40,8 @@ interface AnimationItem {
 export const LiveRoom = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const auctionId = Number(id);
+  const [liveRoom, setLiveRoom] = useState<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: AuctionWithSeller[] } | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showBidHistory, setShowBidHistory] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
   const [chatInput, setChatInput] = useState('');
@@ -63,7 +66,7 @@ export const LiveRoom = () => {
   } = useAuctionRoomStore();
 
   const { submitBid } = useWebSocket({
-    auctionId,
+    auctionId: currentAuction?.id,
     userId: user?.id,
     autoConnect: true,
   });
@@ -73,36 +76,38 @@ export const LiveRoom = () => {
   const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation();
 
   useEffect(() => {
-    const mockAuction = {
-      id: id || '1',
-      sellerId: 'seller-1',
-      title: '限量版潮玩手办',
-      description: '全新限量版手办，全球仅1000件',
-      images: [],
-      startPrice: 0,
-      minIncrement: 10,
-      maxPrice: null,
-      durationSeconds: 300,
-      autoExtendSeconds: 15,
-      status: 1,
-      startTime: new Date().toISOString(),
-      endTime: new Date(Date.now() + 300000).toISOString(),
-      finalPrice: null,
-      winnerId: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    const loadLiveRoom = async () => {
+      if (!id) return;
+      
+      try {
+        setLoading(true);
+        const data = await liveRoomAPI.getLiveRoomDetail(id);
+        setLiveRoom(data);
+        setIsFollowed(!!data.isFollowed);
+
+        if (data.auctions && data.auctions.length > 0) {
+          const auction = data.auctions[0];
+          setCurrentAuction(auction);
+          
+          const mockBids = [
+            { id: '3', auctionId: auction.id, userId: 'user-3', price: auction.startPrice + auction.minIncrement * 3, createdAt: new Date(Date.now() - 60000).toISOString() },
+            { id: '2', auctionId: auction.id, userId: 'user-2', price: auction.startPrice + auction.minIncrement * 2, createdAt: new Date(Date.now() - 120000).toISOString() },
+            { id: '1', auctionId: auction.id, userId: 'user-1', price: auction.startPrice + auction.minIncrement, createdAt: new Date(Date.now() - 180000).toISOString() },
+          ];
+          setBidHistory(mockBids);
+          
+          updatePrice(auction.startPrice + auction.minIncrement * 3);
+          useAuctionRoomStore.setState({ remainingMs: 300000 });
+        }
+      } catch (error) {
+        console.error('Failed to load live room:', error);
+        Toast.show('加载直播间失败');
+      } finally {
+        setLoading(false);
+      }
     };
-    setCurrentAuction(mockAuction);
     
-    const mockBids = [
-      { id: '3', auctionId: id || '1', userId: 'user-3', price: 30, createdAt: new Date(Date.now() - 60000).toISOString() },
-      { id: '2', auctionId: id || '1', userId: 'user-2', price: 20, createdAt: new Date(Date.now() - 120000).toISOString() },
-      { id: '1', auctionId: id || '1', userId: 'user-1', price: 10, createdAt: new Date(Date.now() - 180000).toISOString() },
-    ];
-    setBidHistory(mockBids);
-    
-    updatePrice(30);
-    useAuctionRoomStore.setState({ remainingMs: 300000 });
+    loadLiveRoom();
   }, [id, setCurrentAuction, setBidHistory, updatePrice]);
 
   const handleBid = () => {
@@ -126,7 +131,7 @@ export const LiveRoom = () => {
       
       const newBid = {
         id: Date.now().toString(),
-        auctionId: id || '1',
+        auctionId: currentAuction.id,
         userId: user.id,
         price: nextPrice,
         createdAt: new Date().toISOString(),
@@ -144,9 +149,27 @@ export const LiveRoom = () => {
     navigate(-1);
   };
 
-  const handleFollow = () => {
-    setIsFollowed(!isFollowed);
-    Toast.show(isFollowed ? '已取消关注' : '关注成功');
+  const handleFollow = async () => {
+    if (!user) {
+      Toast.show('请先登录');
+      navigate('/login');
+      return;
+    }
+    
+    if (!id) return;
+
+    try {
+      if (isFollowed) {
+        await liveRoomAPI.unfollowLiveRoom(id);
+        Toast.show('已取消关注');
+      } else {
+        await liveRoomAPI.followLiveRoom(id);
+        Toast.show('关注成功');
+      }
+      setIsFollowed(!isFollowed);
+    } catch (error) {
+      Toast.show('操作失败，请稍后重试');
+    }
   };
 
   const handleSendChat = () => {
@@ -155,7 +178,7 @@ export const LiveRoom = () => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       userId: user.id,
-      userName: user.name || '我',
+      userName: user.nickname || user.phone || '我',
       content: chatInput,
       type: 'message',
     };
@@ -182,11 +205,11 @@ export const LiveRoom = () => {
 
   useEffect(() => {
     const mockMessages: ChatMessage[] = [
-      { id: '1', userId: '1', userName: '梦尘', content: '5999元苹果17 256G', type: 'message' },
-      { id: '2', userId: '2', userName: '幸福是什么', content: '希望一发入魂，中个手机', type: 'message' },
-      { id: '3', userId: '3', userName: '朱Z', content: '5999元苹果17 256G', type: 'message' },
+      { id: '1', userId: '1', userName: '梦尘', content: '这个直播间好棒', type: 'message' },
+      { id: '2', userId: '2', userName: '幸福是什么', content: '希望能拍到好东西', type: 'message' },
+      { id: '3', userId: '3', userName: '朱Z', content: '主播加油', type: 'message' },
       { id: '4', userId: '4', userName: 'Sum_41', content: '关注了主播', type: 'join' },
-      { id: '5', userId: '5', userName: '菠萝睡不醒', content: '5999元苹果17 256G', type: 'message' },
+      { id: '5', userId: '5', userName: '菠萝睡不醒', content: '666', type: 'message' },
     ];
     setChatMessages(mockMessages);
 
@@ -217,11 +240,21 @@ export const LiveRoom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  if (!currentAuction) {
+  if (loading) {
     return (
       <div className="live-room-page">
         <div className="loading-container">
-          <div className="loading">正在加载竞拍信息...</div>
+          <div className="loading">正在加载直播间...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!liveRoom) {
+    return (
+      <div className="live-room-page">
+        <div className="loading-container">
+          <div className="loading">直播间不存在</div>
         </div>
       </div>
     );
@@ -238,8 +271,8 @@ export const LiveRoom = () => {
           <div className={ styles.info }>
             <div className="host-avatar">🎙️</div>
             <div className="host-info">
-              <div className="host-name">骚男 😎</div>
-              <div className="host-stats">142.9万本场点赞</div>
+              <div className="host-name">{liveRoom.streamer.nickname || liveRoom.streamer.phone}</div>
+              <div className="host-stats">{liveRoom._count.followers} 人关注</div>
             </div>
             <button className={`follow-button ${isFollowed ? 'followed' : ''}`} onClick={handleFollow}>
               {isFollowed ? '已关注' : '关注'}
