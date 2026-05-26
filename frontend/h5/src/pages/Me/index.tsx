@@ -69,7 +69,7 @@ export const Me = () => {
       {/* 用户信息头部 */}
       <div className="user-header">
         <div className="user-info">
-          <Avatar url={ avatarUrl }  defaultUrl='/default-avatar.svg' onClick={ handleAvatarClick }/>
+          <Avatar url={ avatarUrl } defaultUrl='/default-avatar.svg' onClick={ handleAvatarClick }/>
 
           <div className="user-details">
             <div className="user-name">

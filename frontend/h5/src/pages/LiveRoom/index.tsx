@@ -10,7 +10,7 @@ import { Countdown } from '../../components/Countdown';
 import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
-import { BubbleButton } from '../../components/ui';
+import { Avatar, BubbleButton } from '../../components/ui';
 import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon, CloseIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
@@ -269,7 +269,7 @@ export const LiveRoom = () => {
 
         <div className={ styles.headerBar }>
           <div className={ styles.info }>
-            <div className="host-avatar">🎙️</div>
+            <Avatar style={{ width: 48 }} url={ liveRoom.streamer.avatar } defaultUrl='/default-avatar.svg' />
             <div className="host-info">
               <div className="host-name">{liveRoom.streamer.nickname || liveRoom.streamer.phone}</div>
               <div className="host-stats">{liveRoom._count.followers} 人关注</div>
@@ -279,7 +279,7 @@ export const LiveRoom = () => {
             </button>
           </div>
 
-          <BubbleButton onClick={handleGoBack}><CloseIcon size={20} /></BubbleButton>
+          <BubbleButton style={{ width: 40, height: 40 }} onClick={handleGoBack}><CloseIcon size={20} /></BubbleButton>
         </div>
 
         <div className="chat-section">

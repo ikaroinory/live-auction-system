@@ -3,6 +3,7 @@ import type { LiveRoomWithStreamer } from '@live-auction/shared';
 import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
 import { FloatTag } from '@/components/ui';
 import './LiveStreamCard.scss';
+import styles from './styles.module.scss'
 
 interface LiveStreamCardProps {
   liveRoom: LiveRoomWithStreamer;
@@ -42,33 +43,11 @@ export const LiveStreamCard = ({
             <FloatTag>点击进入直播间</FloatTag>
 
             <div style={{ width: '100%' }}>
-              <div className="auction-header">
-                <h2 className="auction-title">{liveRoom.title}</h2>
+              <div style={{ display: 'flex' }}>
+                <div className={ styles.label }>直播中</div>
               </div>
-
-              <div className="stream-indicator">
-                <div className="stream-dot"></div>
-                <span>正在直播</span>
-              </div>
-
-              <p className="auction-description">
-                {liveRoom.description || '精彩直播，不容错过'}
-              </p>
-
-              <div className="auction-details">
-                <div className="detail-item">
-                  <span className="detail-label">主播</span>
-                  <span className="detail-value">{liveRoom.streamer.nickname || liveRoom.streamer.phone}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">关注</span>
-                  <span className="detail-value">{liveRoom._count.followers}人</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">商品</span>
-                  <span className="detail-value">{liveRoom._count.auctions}件</span>
-                </div>
-              </div>
+              <div className="auction-title">@{ liveRoom.streamer.nickname }</div>
+              <div className="auction-description">{ liveRoom.description }</div>
             </div>
           </div>
         </div>
