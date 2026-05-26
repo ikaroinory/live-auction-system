@@ -11,7 +11,7 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { BubbleButton } from '../../components/ui';
-import { ChevronLeftIcon, HistoryIcon } from '../../components/ui/icons';
+import { ChevronLeftIcon, HistoryIcon, ShareIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
@@ -355,7 +355,9 @@ export const LiveRoom = () => {
                 <span className="action-btn-text">礼物</span>
               </button>
               <button className="action-btn" onClick={handleShare}>
-                <span className="action-btn-icon share">🔗</span>
+                <span className="action-btn-icon share">
+                  <ShareIcon size={18} />
+                </span>
                 <span className="action-btn-text">分享</span>
               </button>
             </div>
