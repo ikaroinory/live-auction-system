@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './assets/styles/index.scss'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
-import { Layout } from './components/ui'
+import { Layout, Menu } from './components/ui'
 import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
 import { Auction } from './types/auction'
@@ -15,6 +15,7 @@ import { useUserStore } from './store/useUserStore'
 import { useEffect } from 'react'
 import { LiveRoom } from './pages/LiveRoom'
 import ProfileEdit from './pages/Me/ProfileEdit'
+import { MenuItemProps } from './components/ui/menu/menu-item'
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { fetchUser, isLoading } = useUserStore()
@@ -41,10 +42,40 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 }
 
 function MainFramework() {
+  const style = {
+    fontSize: 16,
+    fontWeight: 600,
+    margin: '12px 0'
+  }
+
+  const menuItem: MenuItemProps[] = [
+    {
+      name: <div style={ style }>首页</div>,
+      navigation: '/home'
+    },
+    {
+      name: <div style={ style }>我的出价</div>,
+      navigation: '/bids'
+    },
+    {
+      name: <div style={ style }>我的订单</div>,
+      navigation: '/orders',
+    },
+    {
+      name: <div style={ style }>我</div>,
+      navigation: '/me'
+    }
+  ]
+
   return (
     <Layout>
-      <Layout.Main><Outlet /></Layout.Main>
-      <Layout.Footer><BottomNav /></Layout.Footer>
+      <Layout.Main>
+        <Outlet />
+      </Layout.Main>
+
+      <Layout.Footer>
+        <Menu items={ menuItem }/>
+      </Layout.Footer>
     </Layout>
   )
 }

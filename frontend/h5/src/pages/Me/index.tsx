@@ -5,10 +5,13 @@ import {
   ShopbagOutline,
   SettingsIcon,
   HistoryIcon,
-  Menu
+  Menu,
+  Display,
+  ChevronRightIcon
 } from '@/components/ui';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
+import { MenuItemProps } from '@/components/ui/menu/menu-item';
 
 export const Me = () => {
   const navigate = useNavigate();
@@ -26,30 +29,26 @@ export const Me = () => {
     }
   };
 
-  const menuItems = [
+  const menuItems: MenuItemProps[] = [
     {
       icon: <UnorderedListOutline />,
-      title: '我的出价',
       name: '我的出价',
-      path: '/me/bids',
+      navigation: '/me/bids'
     },
     {
       icon: <ShopbagOutline />,
-      title: '我的订单',
       name: '我的订单',
-      path: '/me/orders',
+      navigation: '/me/orders',
     },
     {
       icon: <HistoryIcon />,
-      title: '浏览历史',
       name: '浏览历史',
-      path: '/me/history',
+      navigation: '/me/history',
     },
     {
       icon: <SettingsIcon />,
-      title: '设置',
       name: '设置',
-      path: '/me/settings',
+      navigation: '/me/settings',
     },
   ];
 
@@ -66,47 +65,40 @@ export const Me = () => {
   const avatarUrl = user?.avatar || '/default-avatar.svg';
 
   return (
-    <div className="me-page">
+    <div>
       {/* 用户信息头部 */}
       <div className="user-header">
-        <div className="user-info" onClick={handleAvatarClick}>
-          <Avatar url={ avatarUrl }  defaultUrl='/default-avatar.svg' />
+        <div className="user-info">
+          <Avatar url={ avatarUrl }  defaultUrl='/default-avatar.svg' onClick={ handleAvatarClick }/>
+
           <div className="user-details">
-            <div 
-              className="user-name" 
-              onClick={(e) => { e.stopPropagation(); handleNicknameClick(); }}
-            >
-              {displayName || '未登录'}
+            <div className="user-name">
+              <div onClick={ handleNicknameClick }>{ displayName || '未登录' }</div>
             </div>
             {user && (
-              <div className="user-phone">
-                {user.phone}
+              <div className="user-id">
+                抖音号：{user.douyinId}
               </div>
             )}
           </div>
         </div>
         
-        {/* 统计信息 */}
-        <div className="stats-section">
-          <div className="stat-item">
-            <div className="stat-number">{user ? '12' : '-'}</div>
-            <div className="stat-label">出价次数</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">{user ? '3' : '-'}</div>
-            <div className="stat-label">成功竞拍</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">{user ? '8' : '-'}</div>
-            <div className="stat-label">浏览记录</div>
-          </div>
+        <div style={{ marginTop: 32, display:'flex' }}>
+          <Display style={{ flex: 1 }}>
+            <Display.Item name={ '出价次数' } count={ user ? 12 : '-' }/>
+            <Display.Item name={ '成功竞拍' } count={ user ? 3 : '-' }/>
+            <Display.Item name={ '浏览记录' } count={ user ? 8 : '-' }/>
+          </Display>
+
+          <button className="edit-btn" onClick={ handleNicknameClick }>
+            编辑主页
+          </button>
         </div>
       </div>
 
-      {/* 菜单列表 - 抖音风格 */}
-      <Menu style={{ color:'white' }} items={menuItems} />
-      <div className="menu-section">
+      <Menu style={{ color: 'white' }} items={ menuItems } />
 
+      <div className="menu-section">
         {/* 登录/登出按钮 */}
         <div className="action-section">
           {user ? (
