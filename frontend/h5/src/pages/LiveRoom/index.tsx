@@ -11,7 +11,7 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { BubbleButton } from '../../components/ui';
-import { ChevronLeftIcon, HistoryIcon, ShareIcon } from '../../components/ui/icons';
+import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon } from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
@@ -346,10 +346,10 @@ export const LiveRoom = () => {
             
             <div className="action-buttons">
               <button className="action-btn" onClick={handleLike}>
-                <span className="action-btn-icon like">❤️</span>
+                <span className="action-btn-icon like"><LikeIcon size={20} /></span>
               </button>
               <button className="action-btn" onClick={handleGift}>
-                <span className="action-btn-icon gift">🎁</span>
+                <span className="action-btn-icon gift"><GiftIcon size={20} /></span>
               </button>
               <BubbleButton className="action-btn-icon share" onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
             </div>
