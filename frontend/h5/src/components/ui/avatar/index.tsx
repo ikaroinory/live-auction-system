@@ -7,14 +7,13 @@ interface AvatarProps {
   defaultUrl?: string
 }
 
-export const Avatar: BaseComponent<AvatarProps> = ({ url, shape, defaultUrl, ...props}) => {
-  const _shape = shape || 'circle'
-  const _url = url || defaultUrl
+export const Avatar: BaseComponent<'div', AvatarProps> = ({ url, shape = 'circle', defaultUrl, ...props }) => {
+  const imgUrl = url ?? defaultUrl
 
   return (
     <div className={ styles.avatar } { ...props }>
-      { _url !== undefined && _shape === 'circle' && <img className={ styles.avatarCircle } src={ _url } /> }
-      { _url !== undefined && _shape === 'square' && <img className={ styles.avatarSquare } src={ _url } /> }
+      { imgUrl !== undefined && shape === 'circle' && <img className={ styles.avatarCircle } src={ imgUrl } /> }
+      { imgUrl !== undefined && shape === 'square' && <img className={ styles.avatarSquare } src={ imgUrl } /> }
     </div>
   )
 }

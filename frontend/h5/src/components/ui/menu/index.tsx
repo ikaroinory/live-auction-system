@@ -6,7 +6,7 @@ interface MenuProps {
   items?: MenuItemProps[]
 }
 
-export const Menu: BaseComponent<MenuProps> = ({items, ...props}) => {
+export const Menu: BaseComponent<'div', MenuProps> = ({items, ...props}) => {
   return (
     <div className={ styles.menu } {...props}>
       { items?.map(item => <MenuItem { ...item }/>)}

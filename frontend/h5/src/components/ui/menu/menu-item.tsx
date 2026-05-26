@@ -17,7 +17,7 @@ function isNavigationProps(e?: To | NavigationProps): e is NavigationProps {
   return typeof e === 'object' && e !== null && 'to' in e
 }
 
-export const MenuItem: BaseComponent<MenuItemProps> = ({name, icon, navigation, ...props}) => {
+export const MenuItem: BaseComponent<'div', MenuItemProps> = ({name, icon, navigation, ...props}) => {
   const navigate = useNavigate()
   const location = navigation !== undefined ? useLocation() : undefined
 

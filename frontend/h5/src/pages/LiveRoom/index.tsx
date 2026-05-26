@@ -334,7 +334,6 @@ export const LiveRoom = () => {
         <div className="bid-section safe-area-bottom">
           <div className="bottom-bar">
             <div className="chat-input-wrapper">
-              <button className="emoji-button">😊</button>
               <input
                 type="text"
                 className="chat-input"
@@ -348,17 +347,14 @@ export const LiveRoom = () => {
             <div className="action-buttons">
               <button className="action-btn" onClick={handleLike}>
                 <span className="action-btn-icon like">❤️</span>
-                <span className="action-btn-text">点赞</span>
               </button>
               <button className="action-btn" onClick={handleGift}>
                 <span className="action-btn-icon gift">🎁</span>
-                <span className="action-btn-text">礼物</span>
               </button>
               <button className="action-btn" onClick={handleShare}>
                 <span className="action-btn-icon share">
                   <ShareIcon size={18} />
                 </span>
-                <span className="action-btn-text">分享</span>
               </button>
             </div>
           </div>

@@ -10,7 +10,7 @@ interface DisplayMembers {
   Item: typeof DisplayItem
 }
 
-const _Display: BaseComponent<DisplayProps> = ({items, ...props}) => {
+const _Display: BaseComponent<'div', DisplayProps> = ({items, ...props}) => {
   return (
     <div className={ styles.display } {...props}>
       { items?.map(item => <DisplayItem { ...item } />)}
@@ -19,5 +19,5 @@ const _Display: BaseComponent<DisplayProps> = ({items, ...props}) => {
   )
 }
 
-export const Display = _Display as ComponentWithMembers<DisplayProps, DisplayMembers>
+export const Display = _Display as ComponentWithMembers<'div', DisplayProps, DisplayMembers>
 Display.Item = DisplayItem

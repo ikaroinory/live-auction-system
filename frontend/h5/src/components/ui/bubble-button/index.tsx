@@ -1,21 +1,11 @@
-import React from 'react'
 import styles from './styles.module.scss'
+import { BaseComponent } from '../interfaces'
 
-interface BubbleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode
-  className?: string
-}
+interface BubbleButtonProps { }
 
-export const BubbleButton: React.FC<BubbleButtonProps> = ({
-  children,
-  className = '',
-  ...props
-}) => {
+export const BubbleButton: BaseComponent<'button', BubbleButtonProps> = ({ children, ...props }) => {
   return (
-    <button
-      className={`${styles.bubbleButton} ${className}`}
-      {...props}
-    >
+    <button className={ styles.bubbleButton } {...props}>
       {children}
     </button>
   )
