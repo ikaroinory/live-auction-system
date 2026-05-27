@@ -1,13 +1,13 @@
-import { BaseComponent, ComponentWithMembers } from '../interfaces';
-import { DisplayItem, DisplayItemProps } from './display-item';
-import styles from './styles.module.scss';
+import { BaseComponent, ComponentWithMembers } from '../interfaces'
+import { DisplayItem, DisplayItemProps } from './display-item'
+import styles from './styles.module.scss'
 
 interface DisplayProps {
-  items?: DisplayItemProps[];
+  items?: DisplayItemProps[]
 }
 
 interface DisplayMembers {
-  Item: typeof DisplayItem;
+  Item: typeof DisplayItem
 }
 
 const _Display: BaseComponent<'div', DisplayProps> = ({ items, ...props }) => {
@@ -18,8 +18,8 @@ const _Display: BaseComponent<'div', DisplayProps> = ({ items, ...props }) => {
       ))}
       {props.children}
     </div>
-  );
-};
+  )
+}
 
-export const Display = _Display as ComponentWithMembers<'div', DisplayProps, DisplayMembers>;
-Display.Item = DisplayItem;
+export const Display = _Display as ComponentWithMembers<'div', DisplayProps, DisplayMembers>
+Display.Item = DisplayItem

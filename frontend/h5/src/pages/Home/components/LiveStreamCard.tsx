@@ -1,22 +1,21 @@
-import { useState } from 'react';
-import type { LiveRoomWithStreamer } from '@live-auction/shared';
-import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer';
-import { FloatTag } from '@/components/ui';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
+import type { LiveRoomWithStreamer } from '@live-auction/shared'
+import { VideoPlayer } from '../../LiveRoom/components/VideoPlayer'
+import { FloatTag } from '@/components/ui'
+import clsx from 'clsx'
+import styles from './styles.module.scss'
 
 interface LiveStreamCardProps {
-  liveRoom: LiveRoomWithStreamer;
-  isActive: boolean;
-  onEnterLiveRoom: () => void;
+  liveRoom: LiveRoomWithStreamer
+  isActive: boolean
+  onEnterLiveRoom: () => void
 }
 
 export const LiveStreamCard = ({ liveRoom, isActive, onEnterLiveRoom }: LiveStreamCardProps) => {
   const handleClick = () => {
     if (isActive) {
-      onEnterLiveRoom();
+      onEnterLiveRoom()
     }
-  };
+  }
 
   return (
     <div className={styles.main} onClick={handleClick}>
@@ -41,5 +40,5 @@ export const LiveStreamCard = ({ liveRoom, isActive, onEnterLiveRoom }: LiveStre
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

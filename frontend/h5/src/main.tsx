@@ -1,27 +1,27 @@
-import ReactDOM from 'react-dom/client';
-import './assets/styles/index.scss';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-import { Layout, Menu } from './components/ui';
-import { Home } from './pages/Home';
-import { Auction } from './types/auction';
-import Me from './pages/Me';
-import { MeOrders } from './pages/Me/MeOrders';
-import { MeBids } from './pages/Me/MeBids';
-import { AvatarEdit } from './pages/Me/AvatarEdit';
-import { Login } from './pages/Login';
-import { useUserStore } from './store/useUserStore';
-import { useEffect } from 'react';
-import { LiveRoom } from './pages/LiveRoom';
-import ProfileEdit from './pages/Me/ProfileEdit';
-import { MenuItemProps } from './components/ui/menu/menu-item';
-import React from 'react';
+import ReactDOM from 'react-dom/client'
+import './assets/styles/index.scss'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
+import { Layout, Menu } from './components/ui'
+import { Home } from './pages/Home'
+import { Auction } from './types/auction'
+import Me from './pages/Me'
+import { MeOrders } from './pages/Me/MeOrders'
+import { MeBids } from './pages/Me/MeBids'
+import { AvatarEdit } from './pages/Me/AvatarEdit'
+import { Login } from './pages/Login'
+import { useUserStore } from './store/useUserStore'
+import { useEffect } from 'react'
+import { LiveRoom } from './pages/LiveRoom'
+import ProfileEdit from './pages/Me/ProfileEdit'
+import { MenuItemProps } from './components/ui/menu/menu-item'
+import React from 'react'
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
-  const { fetchUser, isLoading } = useUserStore();
+  const { fetchUser, isLoading } = useUserStore()
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    fetchUser()
+  }, [fetchUser])
 
   if (isLoading) {
     return (
@@ -36,10 +36,10 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
       >
         加载中...
       </div>
-    );
+    )
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }
 
 function MainFramework() {
@@ -47,7 +47,7 @@ function MainFramework() {
     fontSize: 16,
     fontWeight: 600,
     margin: '12px 0',
-  };
+  }
 
   const menuItem: MenuItemProps[] = [
     {
@@ -66,7 +66,7 @@ function MainFramework() {
       name: <div style={style}>我</div>,
       navigation: '/me',
     },
-  ];
+  ]
 
   return (
     <Layout>
@@ -78,7 +78,7 @@ function MainFramework() {
         <Menu items={menuItem} />
       </Layout.Footer>
     </Layout>
-  );
+  )
 }
 
 // 模拟竞拍数据
@@ -140,7 +140,7 @@ const mockAuctions: Auction[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
-];
+]
 
 const router = createBrowserRouter([
   {
@@ -165,7 +165,7 @@ const router = createBrowserRouter([
   { path: '/me/profile', element: <ProfileEdit /> },
 
   { path: '/live/:id', element: <LiveRoom /> },
-]);
+])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -173,4 +173,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <RouterProvider router={router} />
     </AppInitializer>
   </React.StrictMode>
-);
+)

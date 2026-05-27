@@ -1,9 +1,9 @@
-import { BaseComponent } from '../interfaces';
-import { MenuItem, MenuItemProps } from './menu-item';
-import styles from './styles.module.scss';
+import { BaseComponent } from '../interfaces'
+import { MenuItem, MenuItemProps } from './menu-item'
+import styles from './styles.module.scss'
 
 interface MenuProps {
-  items?: MenuItemProps[];
+  items?: MenuItemProps[]
 }
 
 export const Menu: BaseComponent<'div', MenuProps> = ({ items, ...props }) => {
@@ -13,5 +13,5 @@ export const Menu: BaseComponent<'div', MenuProps> = ({ items, ...props }) => {
         <MenuItem {...item} />
       ))}
     </div>
-  );
-};
+  )
+}

@@ -1,8 +1,8 @@
-import { formatPrice } from '@/utils/format';
-import './CurrentPrice.scss';
+import { formatPrice } from '@/utils/format'
+import './CurrentPrice.scss'
 
 interface CurrentPriceProps {
-  price: number;
+  price: number
 }
 
 export const CurrentPrice = ({ price }: CurrentPriceProps) => {
@@ -11,5 +11,5 @@ export const CurrentPrice = ({ price }: CurrentPriceProps) => {
       <span className="label">当前价格</span>
       <span className="price">{formatPrice(price)}</span>
     </div>
-  );
-};
+  )
+}

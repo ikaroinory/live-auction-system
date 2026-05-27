@@ -1,52 +1,52 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Input, NavBar, Toast } from 'antd-mobile';
-import { useUserStore } from '../../store/useUserStore';
-import { authAPI } from '../../services/api';
-import './Login.scss';
-import { Layout } from '@/components/ui';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button, Input, NavBar, Toast } from 'antd-mobile'
+import { useUserStore } from '../../store/useUserStore'
+import { authAPI } from '../../services/api'
+import './Login.scss'
+import { Layout } from '@/components/ui'
 
 export const Login = () => {
-  const navigate = useNavigate();
-  const { login, user } = useUserStore();
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const { login, user } = useUserStore()
+  const [phone, setPhone] = useState('')
+  const [code, setCode] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/')
     }
-  }, [user, navigate]);
+  }, [user, navigate])
 
   const handleLogin = async () => {
     if (!phone || !code) {
-      Toast.show('请填写手机号和验证码');
-      return;
+      Toast.show('请填写手机号和验证码')
+      return
     }
 
     if (!/^1[3-9]\d{9}$/.test(phone)) {
-      Toast.show('请输入正确的手机号');
-      return;
+      Toast.show('请输入正确的手机号')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const response = await authAPI.smsLogin({ phone, code });
+      const response = await authAPI.smsLogin({ phone, code })
 
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', response.token)
 
-      login(response.user);
+      login(response.user)
 
-      Toast.show('登录成功');
-      navigate('/');
+      Toast.show('登录成功')
+      navigate('/')
     } catch (error: any) {
-      Toast.show(error.response?.data?.message || '登录失败，请稍后重试');
+      Toast.show(error.response?.data?.message || '登录失败，请稍后重试')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <Layout>
@@ -99,5 +99,5 @@ export const Login = () => {
         </div>
       </Layout.Main>
     </Layout>
-  );
-};
+  )
+}

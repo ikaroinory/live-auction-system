@@ -1,17 +1,17 @@
-import { ReactNode, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import styles from './styles.module.scss';
+import { ReactNode, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import styles from './styles.module.scss'
 
 interface DialogProps {
-  visible: boolean;
-  title?: string;
-  content?: ReactNode;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  showCancelButton?: boolean;
-  showConfirmButton?: boolean;
+  visible: boolean
+  title?: string
+  content?: ReactNode
+  onConfirm?: () => void
+  onCancel?: () => void
+  confirmText?: string
+  cancelText?: string
+  showCancelButton?: boolean
+  showConfirmButton?: boolean
 }
 
 export function Dialog(props: DialogProps) {
@@ -25,20 +25,20 @@ export function Dialog(props: DialogProps) {
     cancelText = '取消',
     showCancelButton = true,
     showConfirmButton = true,
-  } = props;
+  } = props
 
   useEffect(() => {
     if (visible) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [visible]);
+      document.body.style.overflow = ''
+    }
+  }, [visible])
 
-  if (!visible) return null;
+  if (!visible) return null
 
   return createPortal(
     <div className={styles.dialogOverlay} onClick={onCancel}>
@@ -60,5 +60,5 @@ export function Dialog(props: DialogProps) {
       </div>
     </div>,
     document.body
-  );
+  )
 }

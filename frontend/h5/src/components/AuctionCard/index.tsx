@@ -1,42 +1,42 @@
-import { Card } from 'antd-mobile';
-import type { Auction } from '../../types/auction';
-import './AuctionCard.scss';
+import { Card } from 'antd-mobile'
+import type { Auction } from '../../types/auction'
+import './AuctionCard.scss'
 
 interface AuctionCardProps {
-  auction: Auction;
-  onClick?: () => void;
+  auction: Auction
+  onClick?: () => void
 }
 
 export const AuctionCard = ({ auction, onClick }: AuctionCardProps) => {
   const getStatusText = (status: number) => {
     switch (status) {
       case 0:
-        return '未开始';
+        return '未开始'
       case 1:
-        return '进行中';
+        return '进行中'
       case 2:
-        return '已结束';
+        return '已结束'
       case 3:
-        return '已取消';
+        return '已取消'
       default:
-        return '未知';
+        return '未知'
     }
-  };
+  }
 
   const getStatusColor = (status: number) => {
     switch (status) {
       case 0:
-        return '#909399';
+        return '#909399'
       case 1:
-        return '#67C23A';
+        return '#67C23A'
       case 2:
-        return '#E6A23C';
+        return '#E6A23C'
       case 3:
-        return '#F56C6C';
+        return '#F56C6C'
       default:
-        return '#909399';
+        return '#909399'
     }
-  };
+  }
 
   return (
     <div className="auction-card" onClick={onClick}>
@@ -62,5 +62,5 @@ export const AuctionCard = ({ auction, onClick }: AuctionCardProps) => {
         </div>
       </Card>
     </div>
-  );
-};
+  )
+}

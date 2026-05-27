@@ -1,11 +1,11 @@
-import { useNotificationStore } from '../../store/useNotificationStore';
-import './ToastNotification.scss';
+import { useNotificationStore } from '../../store/useNotificationStore'
+import './ToastNotification.scss'
 
 export const ToastNotification = () => {
-  const { notifications, removeNotification } = useNotificationStore();
+  const { notifications, removeNotification } = useNotificationStore()
 
   if (notifications.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -26,5 +26,5 @@ export const ToastNotification = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}

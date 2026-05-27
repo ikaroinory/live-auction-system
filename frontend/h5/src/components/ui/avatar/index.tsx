@@ -1,10 +1,10 @@
-import { BaseComponent } from '../interfaces';
-import styles from './styles.module.scss';
+import { BaseComponent } from '../interfaces'
+import styles from './styles.module.scss'
 
 interface AvatarProps {
-  url?: string;
-  shape?: 'circle' | 'square';
-  defaultUrl?: string;
+  url?: string
+  shape?: 'circle' | 'square'
+  defaultUrl?: string
 }
 
 export const Avatar: BaseComponent<'div', AvatarProps> = ({
@@ -13,7 +13,7 @@ export const Avatar: BaseComponent<'div', AvatarProps> = ({
   defaultUrl,
   ...props
 }) => {
-  const imgUrl = url ?? defaultUrl;
+  const imgUrl = url ?? defaultUrl
 
   return (
     <div className={styles.avatar} {...props}>
@@ -24,5 +24,5 @@ export const Avatar: BaseComponent<'div', AvatarProps> = ({
         <img className={styles.avatarSquare} src={imgUrl} />
       )}
     </div>
-  );
-};
+  )
+}

@@ -1,16 +1,16 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import { Toast } from 'antd-mobile';
-import { useAuctionRoomStore } from '../../store/useAuctionRoomStore';
-import { useUserStore } from '../../store/useUserStore';
-import { useWebSocket } from '../../hooks/useWebSocket';
-import { useCountdown } from '../../hooks/useCountdown';
-import { useBidAnimation } from '../../hooks/useBidAnimation';
-import { Countdown } from '../../components/Countdown';
-import { RankingList } from '../../components/RankingList';
-import { BidButton } from '../../components/BidButton';
-import { ToastNotification } from '../../components/ToastNotification';
-import { Avatar, BubbleButton } from '../../components/ui';
+import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Toast } from 'antd-mobile'
+import { useAuctionRoomStore } from '../../store/useAuctionRoomStore'
+import { useUserStore } from '../../store/useUserStore'
+import { useWebSocket } from '../../hooks/useWebSocket'
+import { useCountdown } from '../../hooks/useCountdown'
+import { useBidAnimation } from '../../hooks/useBidAnimation'
+import { Countdown } from '../../components/Countdown'
+import { RankingList } from '../../components/RankingList'
+import { BidButton } from '../../components/BidButton'
+import { ToastNotification } from '../../components/ToastNotification'
+import { Avatar, BubbleButton } from '../../components/ui'
 import {
   ChevronLeftIcon,
   HistoryIcon,
@@ -18,48 +18,48 @@ import {
   LikeIcon,
   GiftIcon,
   CloseIcon,
-} from '../../components/ui/icons';
-import { VideoPlayer } from './components/VideoPlayer';
-import { CurrentPrice } from './components/CurrentPrice';
-import { BidHistory } from './components/BidHistory';
-import { formatPrice } from '../../utils/format';
-import { liveRoomAPI, auctionAPI } from '../../services/api';
-import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared';
-import './LiveRoom.scss';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
+} from '../../components/ui/icons'
+import { VideoPlayer } from './components/VideoPlayer'
+import { CurrentPrice } from './components/CurrentPrice'
+import { BidHistory } from './components/BidHistory'
+import { formatPrice } from '../../utils/format'
+import { liveRoomAPI, auctionAPI } from '../../services/api'
+import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared'
+import './LiveRoom.scss'
+import styles from './styles.module.scss'
+import clsx from 'clsx'
 
 interface ChatMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  type: 'message' | 'join';
+  id: string
+  userId: string
+  userName: string
+  content: string
+  type: 'message' | 'join'
 }
 
 interface AnimationItem {
-  id: string;
-  type: 'like' | 'gift';
-  content: string;
-  left: number;
+  id: string
+  type: 'like' | 'gift'
+  content: string
+  left: number
 }
 
 export const LiveRoom = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [liveRoom, setLiveRoom] = useState<
     (LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: AuctionWithSeller[] }) | null
-  >(null);
-  const [loading, setLoading] = useState(true);
-  const [showBidHistory, setShowBidHistory] = useState(false);
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [animations, setAnimations] = useState<AnimationItem[]>([]);
-  const [onlineCount] = useState(40000);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  >(null)
+  const [loading, setLoading] = useState(true)
+  const [showBidHistory, setShowBidHistory] = useState(false)
+  const [isFollowed, setIsFollowed] = useState(false)
+  const [chatInput, setChatInput] = useState('')
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [animations, setAnimations] = useState<AnimationItem[]>([])
+  const [onlineCount] = useState(40000)
+  const chatEndRef = useRef<HTMLDivElement>(null)
 
-  const { user } = useUserStore();
+  const { user } = useUserStore()
   const {
     currentAuction,
     currentPrice,
@@ -72,31 +72,31 @@ export const LiveRoom = () => {
     addBidToHistory,
     setCurrentAuction,
     setBidHistory,
-  } = useAuctionRoomStore();
+  } = useAuctionRoomStore()
 
   const { submitBid } = useWebSocket({
     auctionId: currentAuction?.id,
     userId: user?.id,
     autoConnect: true,
-  });
+  })
 
-  const { remainingMs: displayMs } = useCountdown(remainingMs);
+  const { remainingMs: displayMs } = useCountdown(remainingMs)
 
-  const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation();
+  const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation()
 
   useEffect(() => {
     const loadLiveRoom = async () => {
-      if (!id) return;
+      if (!id) return
 
       try {
-        setLoading(true);
-        const data = await liveRoomAPI.getLiveRoomDetail(id);
-        setLiveRoom(data);
-        setIsFollowed(!!data.isFollowed);
+        setLoading(true)
+        const data = await liveRoomAPI.getLiveRoomDetail(id)
+        setLiveRoom(data)
+        setIsFollowed(!!data.isFollowed)
 
         if (data.auctions && data.auctions.length > 0) {
-          const auction = data.auctions[0];
-          setCurrentAuction(auction);
+          const auction = data.auctions[0]
+          setCurrentAuction(auction)
 
           const mockBids = [
             {
@@ -120,41 +120,41 @@ export const LiveRoom = () => {
               price: auction.startPrice + auction.minIncrement,
               createdAt: new Date(Date.now() - 180000).toISOString(),
             },
-          ];
-          setBidHistory(mockBids);
+          ]
+          setBidHistory(mockBids)
 
-          updatePrice(auction.startPrice + auction.minIncrement * 3);
-          useAuctionRoomStore.setState({ remainingMs: 300000 });
+          updatePrice(auction.startPrice + auction.minIncrement * 3)
+          useAuctionRoomStore.setState({ remainingMs: 300000 })
         }
       } catch (error) {
-        console.error('Failed to load live room:', error);
-        Toast.show('加载直播间失败');
+        console.error('Failed to load live room:', error)
+        Toast.show('加载直播间失败')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    loadLiveRoom();
-  }, [id, setCurrentAuction, setBidHistory, updatePrice]);
+    loadLiveRoom()
+  }, [id, setCurrentAuction, setBidHistory, updatePrice])
 
   const handleBid = () => {
     if (!user) {
-      Toast.show('请先登录');
-      navigate('/login');
-      return;
+      Toast.show('请先登录')
+      navigate('/login')
+      return
     }
 
     if (!currentAuction) {
-      Toast.show('竞拍信息加载中');
-      return;
+      Toast.show('竞拍信息加载中')
+      return
     }
 
-    const nextPrice = currentPrice + currentAuction.minIncrement;
-    const success = submitBid(nextPrice);
+    const nextPrice = currentPrice + currentAuction.minIncrement
+    const success = submitBid(nextPrice)
 
     if (success) {
-      playSuccess();
-      updatePrice(nextPrice);
+      playSuccess()
+      updatePrice(nextPrice)
 
       const newBid = {
         id: Date.now().toString(),
@@ -162,45 +162,45 @@ export const LiveRoom = () => {
         userId: user.id,
         price: nextPrice,
         createdAt: new Date().toISOString(),
-      };
-      addBidToHistory(newBid);
+      }
+      addBidToHistory(newBid)
 
-      Toast.show(`出价 ${formatPrice(nextPrice)} 成功！`);
+      Toast.show(`出价 ${formatPrice(nextPrice)} 成功！`)
     } else {
-      playFail();
-      Toast.show('出价失败，请稍后重试');
+      playFail()
+      Toast.show('出价失败，请稍后重试')
     }
-  };
+  }
 
   const handleGoBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   const handleFollow = async () => {
     if (!user) {
-      Toast.show('请先登录');
-      navigate('/login');
-      return;
+      Toast.show('请先登录')
+      navigate('/login')
+      return
     }
 
-    if (!id) return;
+    if (!id) return
 
     try {
       if (isFollowed) {
-        await liveRoomAPI.unfollowLiveRoom(id);
-        Toast.show('已取消关注');
+        await liveRoomAPI.unfollowLiveRoom(id)
+        Toast.show('已取消关注')
       } else {
-        await liveRoomAPI.followLiveRoom(id);
-        Toast.show('关注成功');
+        await liveRoomAPI.followLiveRoom(id)
+        Toast.show('关注成功')
       }
-      setIsFollowed(!isFollowed);
+      setIsFollowed(!isFollowed)
     } catch (error) {
-      Toast.show('操作失败，请稍后重试');
+      Toast.show('操作失败，请稍后重试')
     }
-  };
+  }
 
   const handleSendChat = () => {
-    if (!chatInput.trim() || !user) return;
+    if (!chatInput.trim() || !user) return
 
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -208,10 +208,10 @@ export const LiveRoom = () => {
       userName: user.nickname || user.phone || '我',
       content: chatInput,
       type: 'message',
-    };
-    setChatMessages((prev) => [...prev, newMessage]);
-    setChatInput('');
-  };
+    }
+    setChatMessages((prev) => [...prev, newMessage])
+    setChatInput('')
+  }
 
   const showEffects = (type: 'like' | 'gift') => {
     const newAnimation: AnimationItem = {
@@ -219,16 +219,16 @@ export const LiveRoom = () => {
       type: type,
       content: type === 'like' ? '❤️' : '🎉',
       left: Math.random() * 60 + 20,
-    };
-    setAnimations((prev) => [...prev, newAnimation]);
+    }
+    setAnimations((prev) => [...prev, newAnimation])
     setTimeout(() => {
-      setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id));
-    }, 1000);
-  };
+      setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
+    }, 1000)
+  }
 
   const handleShare = () => {
-    Toast.show('分享链接已复制');
-  };
+    Toast.show('分享链接已复制')
+  }
 
   useEffect(() => {
     const mockMessages: ChatMessage[] = [
@@ -243,28 +243,28 @@ export const LiveRoom = () => {
       { id: '3', userId: '3', userName: '朱Z', content: '主播加油', type: 'message' },
       { id: '4', userId: '4', userName: 'Sum_41', content: '关注了主播', type: 'join' },
       { id: '5', userId: '5', userName: '菠萝睡不醒', content: '666', type: 'message' },
-    ];
-    setChatMessages(mockMessages);
+    ]
+    setChatMessages(mockMessages)
 
     const interval = setInterval(() => {
-      const randomUsers = ['我勒个恋狗啊', '恨', 'Ninety__n', '我。。'];
-      const randomContents = ['这个多少钱', '主播好厉害', '冲冲冲', '666', '太牛了', '想要这个'];
+      const randomUsers = ['我勒个恋狗啊', '恨', 'Ninety__n', '我。。']
+      const randomContents = ['这个多少钱', '主播好厉害', '冲冲冲', '666', '太牛了', '想要这个']
       const newMessage: ChatMessage = {
         id: Date.now().toString(),
         userId: Math.random().toString(),
         userName: randomUsers[Math.floor(Math.random() * randomUsers.length)],
         content: randomContents[Math.floor(Math.random() * randomContents.length)],
         type: Math.random() > 0.9 ? 'join' : 'message',
-      };
-      setChatMessages((prev) => [...prev.slice(-20), newMessage]);
-    }, 3000);
+      }
+      setChatMessages((prev) => [...prev.slice(-20), newMessage])
+    }, 3000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [chatMessages])
 
   if (loading) {
     return (
@@ -273,7 +273,7 @@ export const LiveRoom = () => {
           <div className="loading">正在加载直播间...</div>
         </div>
       </div>
-    );
+    )
   }
 
   if (!liveRoom) {
@@ -283,7 +283,7 @@ export const LiveRoom = () => {
           <div className="loading">直播间不存在</div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -406,5 +406,5 @@ export const LiveRoom = () => {
 
       <ToastNotification />
     </div>
-  );
-};
+  )
+}

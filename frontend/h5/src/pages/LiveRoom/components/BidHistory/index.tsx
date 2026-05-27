@@ -1,9 +1,9 @@
-import { Bid } from '@live-auction/shared';
-import './BidHistory.scss';
-import { formatDate, formatPrice } from '@/utils/format';
+import { Bid } from '@live-auction/shared'
+import './BidHistory.scss'
+import { formatDate, formatPrice } from '@/utils/format'
 
 interface BidHistoryProps {
-  bids: Bid[];
+  bids: Bid[]
 }
 
 export const BidHistory = ({ bids }: BidHistoryProps) => {
@@ -26,5 +26,5 @@ export const BidHistory = ({ bids }: BidHistoryProps) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}

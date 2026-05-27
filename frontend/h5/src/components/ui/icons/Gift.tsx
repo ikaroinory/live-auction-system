@@ -1,10 +1,10 @@
-import React from 'react';
+import React from 'react'
 
 interface GiftIconProps {
-  size?: number;
-  color?: string;
-  className?: string;
-  filled?: boolean;
+  size?: number
+  color?: string
+  className?: string
+  filled?: boolean
 }
 
 export const GiftIcon: React.FC<GiftIconProps> = ({
@@ -31,5 +31,5 @@ export const GiftIcon: React.FC<GiftIconProps> = ({
       <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
       <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
     </svg>
-  );
-};
+  )
+}

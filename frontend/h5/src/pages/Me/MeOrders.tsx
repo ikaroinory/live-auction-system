@@ -1,5 +1,5 @@
-import { List } from 'antd-mobile';
-import './Me.scss';
+import { List } from 'antd-mobile'
+import './Me.scss'
 
 export const MeOrders = () => {
   return (
@@ -21,5 +21,5 @@ export const MeOrders = () => {
         </List.Item>
       </List>
     </div>
-  );
-};
+  )
+}

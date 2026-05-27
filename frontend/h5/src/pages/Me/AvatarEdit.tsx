@@ -1,83 +1,81 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { NavBar, Toast } from 'antd-mobile';
-import { useUserStore } from '../../store/useUserStore';
-import { authAPI } from '../../services/api';
-import { CameraIcon, ChevronRightIcon, DownloadIcon, Layout } from '@/components/ui';
-import './AvatarEdit.scss';
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { NavBar, Toast } from 'antd-mobile'
+import { useUserStore } from '../../store/useUserStore'
+import { authAPI } from '../../services/api'
+import { CameraIcon, ChevronRightIcon, DownloadIcon, Layout } from '@/components/ui'
+import './AvatarEdit.scss'
 
 export const AvatarEdit = () => {
-  const navigate = useNavigate();
-  const { user, setUser } = useUserStore();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user?.avatar || '/default-avatar.svg'
-  );
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSaved, setIsSaved] = useState(true);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate()
+  const { user, setUser } = useUserStore()
+  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg')
+  const [isUploading, setIsUploading] = useState(false)
+  const [isSaved, setIsSaved] = useState(true)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (user?.avatar) {
-      setPreviewUrl(user.avatar);
+      setPreviewUrl(user.avatar)
     }
-  }, [user]);
+  }, [user])
 
   const handleUploadAndSave = async (file: File) => {
-    setIsUploading(true);
-    setIsSaved(false);
+    setIsUploading(true)
+    setIsSaved(false)
 
-    const reader = new FileReader();
+    const reader = new FileReader()
 
     try {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          resolve(reader.result as string);
-        };
+          resolve(reader.result as string)
+        }
         reader.onerror = () => {
-          reject(new Error('图片读取失败'));
-        };
-        reader.readAsDataURL(file);
-      });
+          reject(new Error('图片读取失败'))
+        }
+        reader.readAsDataURL(file)
+      })
 
-      setPreviewUrl(dataUrl);
+      setPreviewUrl(dataUrl)
 
-      const updatedUser = await authAPI.updateAvatar(dataUrl);
-      setUser(updatedUser);
-      setPreviewUrl(updatedUser.avatar);
-      setIsSaved(true);
-      Toast.show('头像已更新');
+      const updatedUser = await authAPI.updateAvatar(dataUrl)
+      setUser(updatedUser)
+      setPreviewUrl(updatedUser.avatar)
+      setIsSaved(true)
+      Toast.show('头像已更新')
     } catch (error: any) {
-      Toast.show(error.message || '头像上传失败');
-      setIsSaved(false);
+      Toast.show(error.message || '头像上传失败')
+      setIsSaved(false)
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    handleUploadAndSave(file);
-  };
+    const file = e.target.files?.[0]
+    if (!file) return
+    handleUploadAndSave(file)
+  }
 
   const handleUpload = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const handleSaveToGallery = () => {
     if (!previewUrl || previewUrl === '/default-avatar.svg') {
-      Toast.show('没有可保存的头像');
-      return;
+      Toast.show('没有可保存的头像')
+      return
     }
 
-    const link = document.createElement('a');
-    link.href = previewUrl;
-    link.download = 'avatar.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    Toast.show('头像已保存');
-  };
+    const link = document.createElement('a')
+    link.href = previewUrl
+    link.download = 'avatar.png'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    Toast.show('头像已保存')
+  }
 
   return (
     <Layout>
@@ -123,7 +121,7 @@ export const AvatarEdit = () => {
         />
       </Layout.Main>
     </Layout>
-  );
-};
+  )
+}
 
-export default AvatarEdit;
+export default AvatarEdit

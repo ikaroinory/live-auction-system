@@ -1,8 +1,8 @@
-import type { RankingItem } from '../../types/auction';
-import './RankingList.scss';
+import type { RankingItem } from '../../types/auction'
+import './RankingList.scss'
 
 interface RankingListProps {
-  rankings: RankingItem[];
+  rankings: RankingItem[]
 }
 
 export const RankingList = ({ rankings }: RankingListProps) => {
@@ -39,5 +39,5 @@ export const RankingList = ({ rankings }: RankingListProps) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}

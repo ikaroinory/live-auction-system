@@ -1,5 +1,5 @@
-import { List } from 'antd-mobile';
-import './Me.scss';
+import { List } from 'antd-mobile'
+import './Me.scss'
 
 export const MeBids = () => {
   return (
@@ -31,5 +31,5 @@ export const MeBids = () => {
         </List.Item>
       </List>
     </div>
-  );
-};
+  )
+}

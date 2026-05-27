@@ -1,2 +1,2 @@
-export { isElementOfType } from './isElementOfType';
-export { useWindowHeight } from './useWindowHeight';
+export { isElementOfType } from './isElementOfType'
+export { useWindowHeight } from './useWindowHeight'

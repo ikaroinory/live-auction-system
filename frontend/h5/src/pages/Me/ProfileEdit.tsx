@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Toast, Input } from 'antd-mobile';
-import { useUserStore } from '../../store/useUserStore';
-import { authAPI } from '../../services/api';
-import { Gender } from '../../../../../shared/src/user';
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Toast, Input } from 'antd-mobile'
+import { useUserStore } from '../../store/useUserStore'
+import { authAPI } from '../../services/api'
+import { Gender } from '../../../../../shared/src/user'
 import {
   CameraIcon,
   ChevronLeftIcon,
@@ -12,13 +12,13 @@ import {
   List,
   BubbleButton,
   Dialog,
-} from '@/components/ui';
-import './ProfileEdit.scss';
+} from '@/components/ui'
+import './ProfileEdit.scss'
 
 export const ProfileEdit = () => {
-  const navigate = useNavigate();
-  const { user, setUser } = useUserStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate()
+  const { user, setUser } = useUserStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [profileData, setProfileData] = useState({
     nickname: user?.nickname || '',
@@ -27,20 +27,18 @@ export const ProfileEdit = () => {
     birthday: user?.birthday || '',
     location: user?.location || '',
     douyinId: user?.douyinId || '',
-  });
+  })
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user?.avatar || '/default-avatar.svg'
-  );
-  const [isUploading, setIsUploading] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editModalTitle, setEditModalTitle] = useState('');
-  const [editModalValue, setEditModalValue] = useState('');
-  const [editModalKey, setEditModalKey] = useState('');
-  const [genderModalVisible, setGenderModalVisible] = useState(false);
-  const [birthdayModalVisible, setBirthdayModalVisible] = useState(false);
-  const [tempGender, setTempGender] = useState<Gender>(profileData.gender);
-  const [tempBirthday, setTempBirthday] = useState(profileData.birthday || '');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg')
+  const [isUploading, setIsUploading] = useState(false)
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [editModalTitle, setEditModalTitle] = useState('')
+  const [editModalValue, setEditModalValue] = useState('')
+  const [editModalKey, setEditModalKey] = useState('')
+  const [genderModalVisible, setGenderModalVisible] = useState(false)
+  const [birthdayModalVisible, setBirthdayModalVisible] = useState(false)
+  const [tempGender, setTempGender] = useState<Gender>(profileData.gender)
+  const [tempBirthday, setTempBirthday] = useState(profileData.birthday || '')
 
   useEffect(() => {
     if (user) {
@@ -51,146 +49,146 @@ export const ProfileEdit = () => {
         birthday: user.birthday || '',
         location: user.location || '',
         douyinId: user.douyinId || '',
-      });
-      setTempGender(user.gender || Gender.MALE);
-      setTempBirthday(user.birthday || '');
+      })
+      setTempGender(user.gender || Gender.MALE)
+      setTempBirthday(user.birthday || '')
       if (user.avatar) {
-        setPreviewUrl(user.avatar);
+        setPreviewUrl(user.avatar)
       }
     }
-  }, [user]);
+  }, [user])
 
   const getGenderDisplay = (g?: Gender) => {
     switch (g) {
       case Gender.MALE:
-        return '男';
+        return '男'
       case Gender.FEMALE:
-        return '女';
+        return '女'
       default:
-        return '未知';
+        return '未知'
     }
-  };
+  }
 
   const genderOptions = [
     { label: '男', value: Gender.MALE },
     { label: '女', value: Gender.FEMALE },
     { label: '未知', value: Gender.UNKNOWN },
-  ];
+  ]
 
   const showEditModal = (title: string, value: string, key: string) => {
-    setEditModalTitle(title);
-    setEditModalValue(value);
-    setEditModalKey(key);
-    setEditModalVisible(true);
-  };
+    setEditModalTitle(title)
+    setEditModalValue(value)
+    setEditModalKey(key)
+    setEditModalVisible(true)
+  }
 
   const handleEditNickname = () => {
-    showEditModal('名字', profileData.nickname, 'nickname');
-  };
+    showEditModal('名字', profileData.nickname, 'nickname')
+  }
 
   const handleEditBio = () => {
-    showEditModal('简介', profileData.bio, 'bio');
-  };
+    showEditModal('简介', profileData.bio, 'bio')
+  }
 
   const handleEditGender = () => {
-    setTempGender(profileData.gender);
-    setGenderModalVisible(true);
-  };
+    setTempGender(profileData.gender)
+    setGenderModalVisible(true)
+  }
 
   const selectGender = (g: Gender) => {
-    setTempGender(g);
-  };
+    setTempGender(g)
+  }
 
   const handleGenderConfirm = async () => {
-    const newData = { ...profileData, gender: tempGender };
-    setProfileData(newData);
-    setGenderModalVisible(false);
+    const newData = { ...profileData, gender: tempGender }
+    setProfileData(newData)
+    setGenderModalVisible(false)
     try {
-      const updatedUser = await authAPI.updateProfile(newData);
-      setUser(updatedUser);
-      Toast.show('已保存');
+      const updatedUser = await authAPI.updateProfile(newData)
+      setUser(updatedUser)
+      Toast.show('已保存')
     } catch (error: any) {
-      Toast.show(error.message || '保存失败');
+      Toast.show(error.message || '保存失败')
     }
-  };
+  }
 
   const handleEditBirthday = () => {
-    setTempBirthday(profileData.birthday || '');
-    setBirthdayModalVisible(true);
-  };
+    setTempBirthday(profileData.birthday || '')
+    setBirthdayModalVisible(true)
+  }
 
   const handleBirthdayConfirm = async () => {
-    const newData = { ...profileData, birthday: tempBirthday };
-    setProfileData(newData);
-    setBirthdayModalVisible(false);
+    const newData = { ...profileData, birthday: tempBirthday }
+    setProfileData(newData)
+    setBirthdayModalVisible(false)
     try {
-      const updatedUser = await authAPI.updateProfile(newData);
-      setUser(updatedUser);
-      Toast.show('已保存');
+      const updatedUser = await authAPI.updateProfile(newData)
+      setUser(updatedUser)
+      Toast.show('已保存')
     } catch (error: any) {
-      Toast.show(error.message || '保存失败');
+      Toast.show(error.message || '保存失败')
     }
-  };
+  }
 
   const handleEditLocation = () => {
-    showEditModal('所在地', profileData.location, 'location');
-  };
+    showEditModal('所在地', profileData.location, 'location')
+  }
 
   const handleEditDouyinId = () => {
-    showEditModal('抖音号', profileData.douyinId, 'douyinId');
-  };
+    showEditModal('抖音号', profileData.douyinId, 'douyinId')
+  }
 
   const handleModalConfirm = async () => {
-    const newData = { ...profileData, [editModalKey]: editModalValue };
-    setProfileData(newData);
-    setEditModalVisible(false);
+    const newData = { ...profileData, [editModalKey]: editModalValue }
+    setProfileData(newData)
+    setEditModalVisible(false)
     try {
-      const updatedUser = await authAPI.updateProfile(newData);
-      setUser(updatedUser);
-      Toast.show('已保存');
+      const updatedUser = await authAPI.updateProfile(newData)
+      setUser(updatedUser)
+      Toast.show('已保存')
     } catch (error: any) {
-      Toast.show(error.message || '保存失败');
+      Toast.show(error.message || '保存失败')
     }
-  };
+  }
 
   const handleUploadAndSave = async (file: File) => {
-    setIsUploading(true);
+    setIsUploading(true)
 
-    const reader = new FileReader();
+    const reader = new FileReader()
 
     try {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          resolve(reader.result as string);
-        };
+          resolve(reader.result as string)
+        }
         reader.onerror = () => {
-          reject(new Error('图片读取失败'));
-        };
-        reader.readAsDataURL(file);
-      });
+          reject(new Error('图片读取失败'))
+        }
+        reader.readAsDataURL(file)
+      })
 
-      setPreviewUrl(dataUrl);
+      setPreviewUrl(dataUrl)
 
-      const updatedUser = await authAPI.updateAvatar(dataUrl);
-      setUser(updatedUser);
-      setPreviewUrl(updatedUser.avatar);
-      Toast.show('头像已更新');
+      const updatedUser = await authAPI.updateAvatar(dataUrl)
+      setUser(updatedUser)
+      setPreviewUrl(updatedUser.avatar)
+      Toast.show('头像已更新')
     } catch (error: any) {
-      Toast.show(error.message || '头像上传失败');
+      Toast.show(error.message || '头像上传失败')
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    handleUploadAndSave(file);
-  };
+    const file = e.target.files?.[0]
+    if (!file) return
+    handleUploadAndSave(file)
+  }
 
   const handleAvatarUpload = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const menuItems = [
     { label: '名字', value: profileData.nickname, key: 'nickname', onClick: handleEditNickname },
@@ -204,7 +202,7 @@ export const ProfileEdit = () => {
     { label: '生日', value: profileData.birthday, key: 'birthday', onClick: handleEditBirthday },
     { label: '所在地', value: profileData.location, key: 'location', onClick: handleEditLocation },
     { label: '抖音号', value: profileData.douyinId, key: 'douyinId', onClick: handleEditDouyinId },
-  ];
+  ]
 
   return (
     <Layout>
@@ -332,7 +330,7 @@ export const ProfileEdit = () => {
         )}
       </Layout.Main>
     </Layout>
-  );
-};
+  )
+}
 
-export default ProfileEdit;
+export default ProfileEdit

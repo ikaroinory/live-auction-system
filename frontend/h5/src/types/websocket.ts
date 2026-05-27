@@ -11,51 +11,51 @@ export type WebSocketMessageType =
   | 'AUCTION_ENDED'
   | 'AUCTION_CANCELLED'
   | 'PING'
-  | 'PONG';
+  | 'PONG'
 
 export interface WebSocketMessage<T = any> {
-  type: WebSocketMessageType;
-  payload: T;
-  timestamp: number;
+  type: WebSocketMessageType
+  payload: T
+  timestamp: number
 }
 
 export interface JoinRoomPayload {
-  auctionId: string;
-  userId: string;
+  auctionId: string
+  userId: string
 }
 
 export interface BidPayload {
-  auctionId: string;
-  userId: string;
-  price: number;
+  auctionId: string
+  userId: string
+  price: number
 }
 
 export interface PriceUpdatePayload {
-  auctionId: string;
-  currentPrice: number;
-  bidderId: string;
-  bidderName: string;
+  auctionId: string
+  currentPrice: number
+  bidderId: string
+  bidderName: string
 }
 
 export interface RankingUpdatePayload {
-  auctionId: string;
+  auctionId: string
   rankings: Array<{
-    userId: string;
-    username?: string;
-    phone?: string;
-    price: number;
-    rank: number;
-  }>;
+    userId: string
+    username?: string
+    phone?: string
+    price: number
+    rank: number
+  }>
 }
 
 export interface CountdownTickPayload {
-  auctionId: string;
-  remainingMs: number;
+  auctionId: string
+  remainingMs: number
 }
 
 export interface AuctionEndPayload {
-  auctionId: string;
-  finalPrice: number;
-  winnerId: string;
-  winnerName: string;
+  auctionId: string
+  finalPrice: number
+  winnerId: string
+  winnerName: string
 }

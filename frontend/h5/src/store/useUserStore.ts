@@ -1,15 +1,15 @@
-import { create } from 'zustand';
-import type { User } from '@live-auction/shared';
-import { authAPI } from '../services/api';
+import { create } from 'zustand'
+import type { User } from '@live-auction/shared'
+import { authAPI } from '../services/api'
 
 interface UserState {
-  user: User | null;
-  isLoggedIn: boolean;
-  isLoading: boolean;
-  setUser: (user: User | null) => void;
-  login: (user: User) => void;
-  logout: () => void;
-  fetchUser: () => Promise<void>;
+  user: User | null
+  isLoggedIn: boolean
+  isLoading: boolean
+  setUser: (user: User | null) => void
+  login: (user: User) => void
+  logout: () => void
+  fetchUser: () => Promise<void>
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -22,25 +22,25 @@ export const useUserStore = create<UserState>((set) => ({
   login: (user) => set({ user, isLoggedIn: true }),
 
   logout: () => {
-    localStorage.removeItem('token');
-    set({ user: null, isLoggedIn: false });
+    localStorage.removeItem('token')
+    set({ user: null, isLoggedIn: false })
   },
 
   fetchUser: async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
     if (!token) {
-      set({ user: null, isLoggedIn: false, isLoading: false });
-      return;
+      set({ user: null, isLoggedIn: false, isLoading: false })
+      return
     }
 
-    set({ isLoading: true });
+    set({ isLoading: true })
 
     try {
-      const userData = await authAPI.getCurrentUser();
-      set({ user: userData, isLoggedIn: true, isLoading: false });
+      const userData = await authAPI.getCurrentUser()
+      set({ user: userData, isLoggedIn: true, isLoading: false })
     } catch (error) {
-      localStorage.removeItem('token');
-      set({ user: null, isLoggedIn: false, isLoading: false });
+      localStorage.removeItem('token')
+      set({ user: null, isLoggedIn: false, isLoading: false })
     }
   },
-}));
+}))

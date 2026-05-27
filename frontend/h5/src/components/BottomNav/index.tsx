@@ -1,11 +1,11 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import { TabBar } from 'antd-mobile';
-import { AppOutline, UnorderedListOutline, ShopbagOutline, UserOutline } from 'antd-mobile-icons';
-import './BottomNav.scss';
+import { useNavigate, useLocation } from 'react-router-dom'
+import { TabBar } from 'antd-mobile'
+import { AppOutline, UnorderedListOutline, ShopbagOutline, UserOutline } from 'antd-mobile-icons'
+import './BottomNav.scss'
 
 export const BottomNav = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const tabs = [
     {
@@ -28,7 +28,7 @@ export const BottomNav = () => {
       title: '我',
       icon: <UserOutline />,
     },
-  ];
+  ]
 
   return (
     <TabBar
@@ -40,5 +40,5 @@ export const BottomNav = () => {
         <TabBar.Item key={tab.key} icon={tab.icon} title={tab.title} />
       ))}
     </TabBar>
-  );
-};
+  )
+}

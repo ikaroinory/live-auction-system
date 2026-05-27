@@ -1,27 +1,27 @@
-import { create } from 'zustand';
-import type { Auction, RankingItem, Bid } from '@live-auction/shared';
+import { create } from 'zustand'
+import type { Auction, RankingItem, Bid } from '@live-auction/shared'
 
 interface AuctionRoomState {
-  currentAuction: Auction | null;
-  currentPrice: number;
-  rankings: RankingItem[];
-  myBids: Bid[];
-  bidHistory: Bid[];
-  remainingMs: number;
-  connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error';
-  isLeading: boolean;
-  lastBidTime: number;
+  currentAuction: Auction | null
+  currentPrice: number
+  rankings: RankingItem[]
+  myBids: Bid[]
+  bidHistory: Bid[]
+  remainingMs: number
+  connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error'
+  isLeading: boolean
+  lastBidTime: number
 
-  setCurrentAuction: (auction: Auction | null) => void;
-  updatePrice: (price: number) => void;
-  updateRankings: (rankings: RankingItem[]) => void;
-  addMyBid: (bid: Bid) => void;
-  addBidToHistory: (bid: Bid) => void;
-  setBidHistory: (bids: Bid[]) => void;
-  setRemainingTime: (ms: number) => void;
-  setConnectionStatus: (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void;
-  setIsLeading: (isLeading: boolean) => void;
-  reset: () => void;
+  setCurrentAuction: (auction: Auction | null) => void
+  updatePrice: (price: number) => void
+  updateRankings: (rankings: RankingItem[]) => void
+  addMyBid: (bid: Bid) => void
+  addBidToHistory: (bid: Bid) => void
+  setBidHistory: (bids: Bid[]) => void
+  setRemainingTime: (ms: number) => void
+  setConnectionStatus: (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void
+  setIsLeading: (isLeading: boolean) => void
+  reset: () => void
 }
 
 export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
@@ -56,4 +56,4 @@ export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
       isLeading: false,
       lastBidTime: 0,
     }),
-}));
+}))

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
 interface ChevronLeftIconProps {
-  size?: number;
-  color?: string;
-  className?: string;
+  size?: number
+  color?: string
+  className?: string
 }
 
 export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({
@@ -25,5 +25,5 @@ export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({
     >
       <polyline points="15 18 9 12 15 6" />
     </svg>
-  );
-};
+  )
+}

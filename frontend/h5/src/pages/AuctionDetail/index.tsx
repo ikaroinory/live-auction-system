@@ -1,30 +1,30 @@
-import { useParams, useNavigate, useEffect, useState } from 'react';
-import { NavBar, Button, Card, Empty, Loading } from 'antd-mobile';
-import { auctionAPI } from '../../services/api';
-import type { AuctionDetail as AuctionDetailType } from '@live-auction/shared';
-import './AuctionDetail.scss';
+import { useParams, useNavigate, useEffect, useState } from 'react'
+import { NavBar, Button, Card, Empty, Loading } from 'antd-mobile'
+import { auctionAPI } from '../../services/api'
+import type { AuctionDetail as AuctionDetailType } from '@live-auction/shared'
+import './AuctionDetail.scss'
 
 export const AuctionDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [auction, setAuction] = useState<AuctionDetailType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const [auction, setAuction] = useState<AuctionDetailType | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (id) {
       const loadAuction = async () => {
         try {
-          const data = await auctionAPI.getAuctionDetail(id);
-          setAuction(data);
+          const data = await auctionAPI.getAuctionDetail(id)
+          setAuction(data)
         } catch (error) {
-          console.error('Failed to load auction detail:', error);
+          console.error('Failed to load auction detail:', error)
         } finally {
-          setLoading(false);
+          setLoading(false)
         }
-      };
-      loadAuction();
+      }
+      loadAuction()
     }
-  }, [id]);
+  }, [id])
 
   if (loading) {
     return (
@@ -34,7 +34,7 @@ export const AuctionDetail = () => {
           <Loading />
         </div>
       </div>
-    );
+    )
   }
 
   if (!auction) {
@@ -45,7 +45,7 @@ export const AuctionDetail = () => {
           <Empty description="竞拍不存在" />
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -96,5 +96,5 @@ export const AuctionDetail = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

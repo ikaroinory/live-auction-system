@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
   UnorderedListOutline,
@@ -7,15 +7,14 @@ import {
   HistoryIcon,
   Menu,
   Display,
-  ChevronRightIcon,
-} from '@/components/ui';
-import { useUserStore } from '../../store/useUserStore';
-import './Me.scss';
-import { MenuItemProps } from '@/components/ui/menu/menu-item';
+} from '@/components/ui'
+import { useUserStore } from '../../store/useUserStore'
+import './Me.scss'
+import { MenuItemProps } from '@/components/ui/menu/menu-item'
 
 export const Me = () => {
-  const navigate = useNavigate();
-  const { user, logout } = useUserStore();
+  const navigate = useNavigate()
+  const { user, logout } = useUserStore()
 
   const menuItems: MenuItemProps[] = [
     {
@@ -38,27 +37,27 @@ export const Me = () => {
       name: '设置',
       navigation: '/me/settings',
     },
-  ];
+  ]
 
   const handleAvatarClick = () => {
     if (user) {
-      navigate('/me/avatar');
+      navigate('/me/avatar')
     }
-  };
+  }
 
   const handleNicknameClick = () => {
     if (user) {
-      navigate('/me/profile');
+      navigate('/me/profile')
     }
-  };
+  }
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+    logout()
+    navigate('/')
+  }
 
-  const displayName = user?.nickname || user?.phone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
-  const avatarUrl = user?.avatar || '/default-avatar.svg';
+  const displayName = user?.nickname || user?.phone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+  const avatarUrl = user?.avatar || '/default-avatar.svg'
 
   return (
     <>
@@ -106,7 +105,7 @@ export const Me = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Me;
+export default Me

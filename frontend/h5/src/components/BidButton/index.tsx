@@ -1,12 +1,12 @@
-import { formatPrice } from '../../utils/format';
-import './BidButton.scss';
+import { formatPrice } from '../../utils/format'
+import './BidButton.scss'
 
 interface BidButtonProps {
-  onClick: () => void;
-  nextPrice: number;
-  disabled?: boolean;
-  isAnimating?: boolean;
-  animationType?: 'success' | 'fail' | null;
+  onClick: () => void
+  nextPrice: number
+  disabled?: boolean
+  isAnimating?: boolean
+  animationType?: 'success' | 'fail' | null
 }
 
 export const BidButton = ({
@@ -37,5 +37,5 @@ export const BidButton = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
