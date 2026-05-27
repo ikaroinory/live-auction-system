@@ -14,8 +14,8 @@ export const RankingList = ({ rankings }: RankingListProps) => {
       ) : (
         <div className="list">
           {rankings.slice(0, 3).map((item, index) => (
-            <div 
-              key={item.userId} 
+            <div
+              key={item.userId}
               className={`ranking-item rank-${index + 1} ${item.isCurrentUser ? 'current-user' : ''}`}
             >
               <div className="rank">
@@ -33,9 +33,7 @@ export const RankingList = ({ rankings }: RankingListProps) => {
                 <div className="username">{item.phone || item.username}</div>
                 <div className="price">¥{item.price.toFixed(2)}</div>
               </div>
-              {item.isCurrentUser && (
-                <div className="current-badge">我</div>
-              )}
+              {item.isCurrentUser && <div className="current-badge">我</div>}
             </div>
           ))}
         </div>

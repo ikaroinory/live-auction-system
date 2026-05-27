@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
-  UnorderedListOutline, 
+  UnorderedListOutline,
   ShopbagOutline,
   SettingsIcon,
   HistoryIcon,
   Menu,
   Display,
-  ChevronRightIcon
+  ChevronRightIcon,
 } from '@/components/ui';
 import { useUserStore } from '../../store/useUserStore';
 import './Me.scss';
@@ -21,7 +21,7 @@ export const Me = () => {
     {
       icon: <UnorderedListOutline />,
       name: '我的出价',
-      navigation: '/me/bids'
+      navigation: '/me/bids',
     },
     {
       icon: <ShopbagOutline />,
@@ -65,45 +65,41 @@ export const Me = () => {
       {/* 用户信息头部 */}
       <div className="user-header">
         <div className="user-info">
-          <Avatar url={ avatarUrl } defaultUrl='/default-avatar.svg' onClick={ handleAvatarClick }/>
+          <Avatar url={avatarUrl} defaultUrl="/default-avatar.svg" onClick={handleAvatarClick} />
 
           <div className="user-details">
             <div className="user-name">
-              <div onClick={ handleNicknameClick }>{ displayName || '未登录' }</div>
+              <div onClick={handleNicknameClick}>{displayName || '未登录'}</div>
             </div>
-            {user && (
-              <div className="user-id">
-                抖音号：{user.douyinId}
-              </div>
-            )}
+            {user && <div className="user-id">抖音号：{user.douyinId}</div>}
           </div>
         </div>
-        
-        <div style={{ marginTop: 32, display:'flex' }}>
+
+        <div style={{ marginTop: 32, display: 'flex' }}>
           <Display style={{ flex: 1 }}>
-            <Display.Item name={ '获赞' } count={ user ? 700 : '-' }/>
-            <Display.Item name={ '互关' } count={ user ? 33 : '-' }/>
-            <Display.Item name={ '关注' } count={ user ? 128 : '-' }/>
-            <Display.Item name={ '粉丝' } count={ user ? 65 : '-' }/>
+            <Display.Item name={'获赞'} count={user ? 700 : '-'} />
+            <Display.Item name={'互关'} count={user ? 33 : '-'} />
+            <Display.Item name={'关注'} count={user ? 128 : '-'} />
+            <Display.Item name={'粉丝'} count={user ? 65 : '-'} />
           </Display>
 
-          <button className="edit-btn" onClick={ handleNicknameClick }>
+          <button className="edit-btn" onClick={handleNicknameClick}>
             编辑主页
           </button>
         </div>
       </div>
 
-      <Menu style={{ color: 'white' }} items={ menuItems } />
+      <Menu style={{ color: 'white' }} items={menuItems} />
 
       <div className="menu-section">
         {/* 登录/登出按钮 */}
         <div className="action-section">
           {user ? (
-            <button className="logout-btn" onClick={ handleLogout }>
+            <button className="logout-btn" onClick={handleLogout}>
               退出登录
             </button>
           ) : (
-            <button className="login-btn" onClick={ () => navigate('/login') }>
+            <button className="login-btn" onClick={() => navigate('/login')}>
               立即登录
             </button>
           )}

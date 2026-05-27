@@ -1,4 +1,4 @@
-import { UserSlim } from "./user";
+import { UserSlim } from './user';
 
 export interface LiveRoom {
   id: string;

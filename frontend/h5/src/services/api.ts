@@ -81,7 +81,9 @@ export const liveRoomAPI = {
   getLiveRooms: (status?: number): Promise<LiveRoomWithStreamer[]> => {
     return apiClient.get('/v1/live-rooms', { params: status ? { status } : undefined });
   },
-  getLiveRoomDetail: (id: string): Promise<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: any[] }> => {
+  getLiveRoomDetail: (
+    id: string
+  ): Promise<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: any[] }> => {
     return apiClient.get(`/v1/live-rooms/${id}`);
   },
   createLiveRoom: (params: CreateLiveRoomParams): Promise<LiveRoom> => {

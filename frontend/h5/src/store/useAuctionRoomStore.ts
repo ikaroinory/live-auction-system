@@ -11,7 +11,7 @@ interface AuctionRoomState {
   connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error';
   isLeading: boolean;
   lastBidTime: number;
-  
+
   setCurrentAuction: (auction: Auction | null) => void;
   updatePrice: (price: number) => void;
   updateRankings: (rankings: RankingItem[]) => void;
@@ -34,7 +34,7 @@ export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
   connectionStatus: 'disconnected',
   isLeading: false,
   lastBidTime: 0,
-  
+
   setCurrentAuction: (auction) => set({ currentAuction: auction }),
   updatePrice: (price) => set({ currentPrice: price, lastBidTime: Date.now() }),
   updateRankings: (rankings) => set({ rankings }),
@@ -44,15 +44,16 @@ export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
   setRemainingTime: (ms) => set({ remainingMs: ms }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),
   setIsLeading: (isLeading) => set({ isLeading }),
-  reset: () => set({
-    currentAuction: null,
-    currentPrice: 0,
-    rankings: [],
-    myBids: [],
-    bidHistory: [],
-    remainingMs: 0,
-    connectionStatus: 'disconnected',
-    isLeading: false,
-    lastBidTime: 0,
-  }),
+  reset: () =>
+    set({
+      currentAuction: null,
+      currentPrice: 0,
+      rankings: [],
+      myBids: [],
+      bidHistory: [],
+      remainingMs: 0,
+      connectionStatus: 'disconnected',
+      isLeading: false,
+      lastBidTime: 0,
+    }),
 }));

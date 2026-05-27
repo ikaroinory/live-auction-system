@@ -56,7 +56,7 @@ router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, 
   try {
     const { status } = req.query;
     const where = status ? { status: parseInt(status as string) } : {};
-    
+
     let liveRooms = await prisma.liveRoom.findMany({
       where,
       include: {
@@ -65,38 +65,38 @@ router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, 
             id: true,
             phone: true,
             nickname: true,
-            avatar: true
-          }
+            avatar: true,
+          },
         },
         _count: {
-          select: { followers: true, auctions: true }
-        }
+          select: { followers: true, auctions: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
-    
+
     // 添加关注状态
     if (req.user?.id) {
       const userId = req.user.id;
       const userFollowedRooms = await prisma.liveRoomFollow.findMany({
         where: { userId },
-        select: { liveRoomId: true }
+        select: { liveRoomId: true },
       });
-      
-      const followedIds = new Set(userFollowedRooms.map(f => f.liveRoomId));
-      
-      liveRooms = liveRooms.map(room => ({
+
+      const followedIds = new Set(userFollowedRooms.map((f) => f.liveRoomId));
+
+      liveRooms = liveRooms.map((room) => ({
         ...room,
-        isFollowed: followedIds.has(room.id)
+        isFollowed: followedIds.has(room.id),
       }));
     } else {
       // 未登录时，设置 isFollowed 为 false
-      liveRooms = liveRooms.map(room => ({
+      liveRooms = liveRooms.map((room) => ({
         ...room,
-        isFollowed: false
+        isFollowed: false,
       }));
     }
-    
+
     res.json(liveRooms);
   } catch (error) {
     next(error);
@@ -122,46 +122,50 @@ router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, 
  *       404:
  *         description: 直播间不存在
  */
-router.get('/:id', optionalAuthMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    const { id } = req.params;
-    
-    const liveRoom = await prisma.liveRoom.findUnique({
-      where: { id },
-      include: {
-        streamer: {
-          select: {
-            id: true,
-            phone: true,
-            nickname: true,
-            avatar: true
-          }
+router.get(
+  '/:id',
+  optionalAuthMiddleware,
+  async (req: AuthRequest, res: Response, next: Function) => {
+    try {
+      const { id } = req.params;
+
+      const liveRoom = await prisma.liveRoom.findUnique({
+        where: { id },
+        include: {
+          streamer: {
+            select: {
+              id: true,
+              phone: true,
+              nickname: true,
+              avatar: true,
+            },
+          },
+          _count: {
+            select: { followers: true, auctions: true },
+          },
+          auctions: true,
         },
-        _count: {
-          select: { followers: true, auctions: true }
-        },
-        auctions: true
-      }
-    });
-    
-    if (!liveRoom) {
-      return res.status(404).json({ message: '直播间不存在' });
-    }
-    
-    // 添加关注状态
-    let isFollowed = false;
-    if (req.user?.id) {
-      const followRecord = await prisma.liveRoomFollow.findFirst({
-        where: { userId: req.user.id, liveRoomId: id }
       });
-      isFollowed = !!followRecord;
+
+      if (!liveRoom) {
+        return res.status(404).json({ message: '直播间不存在' });
+      }
+
+      // 添加关注状态
+      let isFollowed = false;
+      if (req.user?.id) {
+        const followRecord = await prisma.liveRoomFollow.findFirst({
+          where: { userId: req.user.id, liveRoomId: id },
+        });
+        isFollowed = !!followRecord;
+      }
+
+      res.json({ ...liveRoom, isFollowed });
+    } catch (error) {
+      next(error);
     }
-    
-    res.json({ ...liveRoom, isFollowed });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 /**
  * @swagger
@@ -197,19 +201,19 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
     if (!req.user) {
       return res.status(401).json({ message: '未认证' });
     }
-    
+
     const { title, description, coverImage } = req.body;
-    
+
     const liveRoom = await prisma.liveRoom.create({
       data: {
         streamerId: req.user.id,
         title,
         description: description || null,
         coverImage: coverImage || null,
-        status: 0
-      }
+        status: 0,
+      },
     });
-    
+
     res.status(201).json(liveRoom);
   } catch (error) {
     next(error);
@@ -260,23 +264,23 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
     if (!req.user) {
       return res.status(401).json({ message: '未认证' });
     }
-    
+
     const { id } = req.params;
     const { title, description, coverImage, status } = req.body;
-    
+
     // 检查直播间是否存在且当前用户是否是主播
     const existingRoom = await prisma.liveRoom.findUnique({
-      where: { id }
+      where: { id },
     });
-    
+
     if (!existingRoom) {
       return res.status(404).json({ message: '直播间不存在' });
     }
-    
+
     if (existingRoom.streamerId !== req.user.id) {
       return res.status(403).json({ message: '无权限' });
     }
-    
+
     const data: any = {};
     if (title !== undefined) data.title = title;
     if (description !== undefined) data.description = description;
@@ -289,12 +293,12 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
         data.endedAt = new Date();
       }
     }
-    
+
     const liveRoom = await prisma.liveRoom.update({
       where: { id },
-      data
+      data,
     });
-    
+
     res.json(liveRoom);
   } catch (error) {
     next(error);
@@ -324,43 +328,47 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
  *       404:
  *         description: 直播间不存在
  */
-router.post('/:id/follow', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
-    }
-    
-    const { id } = req.params;
-    
-    // 检查直播间是否存在
-    const liveRoom = await prisma.liveRoom.findUnique({
-      where: { id }
-    });
-    
-    if (!liveRoom) {
-      return res.status(404).json({ message: '直播间不存在' });
-    }
-    
-    // 创建关注关系
-    const follow = await prisma.liveRoomFollow.upsert({
-      where: {
-      userId_liveRoomId: {
-        userId: req.user.id,
-        liveRoomId: id
+router.post(
+  '/:id/follow',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: Function) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' });
       }
-    },
-      create: {
-        userId: req.user.id,
-        liveRoomId: id
-      },
-      update: {}
-    });
-    
-    res.json({ message: '关注成功', follow });
-  } catch (error) {
-    next(error);
+
+      const { id } = req.params;
+
+      // 检查直播间是否存在
+      const liveRoom = await prisma.liveRoom.findUnique({
+        where: { id },
+      });
+
+      if (!liveRoom) {
+        return res.status(404).json({ message: '直播间不存在' });
+      }
+
+      // 创建关注关系
+      const follow = await prisma.liveRoomFollow.upsert({
+        where: {
+          userId_liveRoomId: {
+            userId: req.user.id,
+            liveRoomId: id,
+          },
+        },
+        create: {
+          userId: req.user.id,
+          liveRoomId: id,
+        },
+        update: {},
+      });
+
+      res.json({ message: '关注成功', follow });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 /**
  * @swagger
@@ -385,27 +393,31 @@ router.post('/:id/follow', authMiddleware, async (req: AuthRequest, res: Respons
  *       404:
  *         description: 关注关系不存在
  */
-router.post('/:id/unfollow', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
-    }
-    
-    const { id } = req.params;
-    
-    // 删除关注关系
-    await prisma.liveRoomFollow.deleteMany({
-      where: {
-        userId: req.user.id,
-        liveRoomId: id
+router.post(
+  '/:id/unfollow',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: Function) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' });
       }
-    });
-    
-    res.json({ message: '取消关注成功' });
-  } catch (error) {
-    next(error);
+
+      const { id } = req.params;
+
+      // 删除关注关系
+      await prisma.liveRoomFollow.deleteMany({
+        where: {
+          userId: req.user.id,
+          liveRoomId: id,
+        },
+      });
+
+      res.json({ message: '取消关注成功' });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 /**
  * @swagger
@@ -421,38 +433,42 @@ router.post('/:id/unfollow', authMiddleware, async (req: AuthRequest, res: Respo
  *       401:
  *         description: 未认证
  */
-router.get('/my/followed', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
-    }
-    
-    const follows = await prisma.liveRoomFollow.findMany({
-      where: { userId: req.user.id },
-      include: {
-        liveRoom: {
-          include: {
-            streamer: {
-              select: {
-                id: true,
-                phone: true,
-                nickname: true,
-                avatar: true
-              }
+router.get(
+  '/my/followed',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: Function) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' });
+      }
+
+      const follows = await prisma.liveRoomFollow.findMany({
+        where: { userId: req.user.id },
+        include: {
+          liveRoom: {
+            include: {
+              streamer: {
+                select: {
+                  id: true,
+                  phone: true,
+                  nickname: true,
+                  avatar: true,
+                },
+              },
+              _count: {
+                select: { followers: true, auctions: true },
+              },
             },
-            _count: {
-              select: { followers: true, auctions: true }
-            }
-          }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    
-    res.json(follows);
-  } catch (error) {
-    next(error);
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      res.json(follows);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 export default router;

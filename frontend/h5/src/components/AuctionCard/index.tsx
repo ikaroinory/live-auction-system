@@ -10,21 +10,31 @@ interface AuctionCardProps {
 export const AuctionCard = ({ auction, onClick }: AuctionCardProps) => {
   const getStatusText = (status: number) => {
     switch (status) {
-      case 0: return '未开始';
-      case 1: return '进行中';
-      case 2: return '已结束';
-      case 3: return '已取消';
-      default: return '未知';
+      case 0:
+        return '未开始';
+      case 1:
+        return '进行中';
+      case 2:
+        return '已结束';
+      case 3:
+        return '已取消';
+      default:
+        return '未知';
     }
   };
 
   const getStatusColor = (status: number) => {
     switch (status) {
-      case 0: return '#909399';
-      case 1: return '#67C23A';
-      case 2: return '#E6A23C';
-      case 3: return '#F56C6C';
-      default: return '#909399';
+      case 0:
+        return '#909399';
+      case 1:
+        return '#67C23A';
+      case 2:
+        return '#E6A23C';
+      case 3:
+        return '#F56C6C';
+      default:
+        return '#909399';
     }
   };
 
@@ -34,10 +44,7 @@ export const AuctionCard = ({ auction, onClick }: AuctionCardProps) => {
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{auction.title}</span>
-            <span 
-              className="status-tag"
-              style={{ color: getStatusColor(auction.status) }}
-            >
+            <span className="status-tag" style={{ color: getStatusColor(auction.status) }}>
               {getStatusText(auction.status)}
             </span>
           </div>

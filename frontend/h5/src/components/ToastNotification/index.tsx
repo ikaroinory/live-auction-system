@@ -11,7 +11,7 @@ export const ToastNotification = () => {
   return (
     <div className="toast-notification-container">
       {notifications.map((notification) => (
-        <div 
+        <div
           key={notification.id}
           className={`toast-notification ${notification.type}`}
           onClick={() => removeNotification(notification.id)}

@@ -37,12 +37,15 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
     }
   }, [auctionId, userId]);
 
-  const submitBid = useCallback((price: number) => {
-    if (auctionId && userId) {
-      return websocketService.submitBid(auctionId, userId, price);
-    }
-    return false;
-  }, [auctionId, userId]);
+  const submitBid = useCallback(
+    (price: number) => {
+      if (auctionId && userId) {
+        return websocketService.submitBid(auctionId, userId, price);
+      }
+      return false;
+    },
+    [auctionId, userId]
+  );
 
   useEffect(() => {
     if (autoConnect) {

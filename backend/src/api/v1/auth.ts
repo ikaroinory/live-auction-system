@@ -44,14 +44,14 @@ const authService = new AuthService();
 router.post('/register', async (req: Request, res: Response, next: Function) => {
   try {
     const { phone, password, nickname } = req.body;
-    
+
     if (!phone || !password) {
       return res.status(400).json({ message: '手机号和密码不能为空' });
     }
-    
+
     const location = getLocationFromRequest(req);
     const result = await authService.register(phone, password, nickname, location);
-    
+
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -92,13 +92,13 @@ router.post('/register', async (req: Request, res: Response, next: Function) => 
 router.post('/login', async (req: Request, res: Response, next: Function) => {
   try {
     const { phone, password } = req.body;
-    
+
     if (!phone || !password) {
       return res.status(400).json({ message: '手机号和密码不能为空' });
     }
-    
+
     const result = await authService.login(phone, password);
-    
+
     res.json(result);
   } catch (error) {
     next(error);
@@ -124,7 +124,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
     if (!req.user) {
       return res.status(401).json({ message: '未认证' });
     }
-    
+
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
       select: {
@@ -137,18 +137,18 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
-    
+
     if (!user) {
       return res.status(404).json({ message: '用户不存在' });
     }
-    
+
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
+      createdAt: user.createdAt.toISOString(),
     });
   } catch (error) {
     next(error);
@@ -187,7 +187,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
 router.post('/sms-login', async (req: Request, res: Response, next: Function) => {
   try {
     const { phone, code } = req.body;
-    
+
     if (!phone || !code) {
       return res.status(400).json({ message: '手机号和验证码不能为空' });
     }
@@ -199,10 +199,10 @@ router.post('/sms-login', async (req: Request, res: Response, next: Function) =>
     if (code !== '123456' && code !== '666666') {
       return res.status(400).json({ message: '验证码错误' });
     }
-    
+
     const location = getLocationFromRequest(req);
     const result = await authService.loginOrRegisterByPhone(phone, code, location);
-    
+
     res.json(result);
   } catch (error) {
     next(error);
@@ -234,14 +234,14 @@ router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, ne
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
+      createdAt: user.createdAt.toISOString(),
     });
   } catch (error) {
     next(error);
@@ -257,7 +257,7 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, n
     const { nickname, bio, gender, birthday, location, douyinId } = req.body;
 
     const updateData: any = {};
-    
+
     if (nickname !== undefined) {
       updateData.nickname = nickname === '' ? null : nickname;
     }
@@ -290,14 +290,14 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, n
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
+      createdAt: user.createdAt.toISOString(),
     });
   } catch (error) {
     next(error);

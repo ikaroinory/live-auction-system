@@ -6,12 +6,9 @@ interface CountdownOptions {
   autoStart?: boolean;
 }
 
-export const useCountdown = (
-  initialMs: number,
-  options: CountdownOptions = {}
-) => {
+export const useCountdown = (initialMs: number, options: CountdownOptions = {}) => {
   const { onTick, onComplete, autoStart = true } = options;
-  
+
   const [remainingMs, setRemainingMs] = useState(initialMs);
   const [isRunning, setIsRunning] = useState(autoStart);
   const rafIdRef = useRef<number | null>(null);
@@ -25,13 +22,16 @@ export const useCountdown = (
     setIsRunning(false);
   }, []);
 
-  const reset = useCallback((newMs?: number) => {
-    setRemainingMs(newMs ?? initialMs);
-    lastTickRef.current = Date.now();
-    if (rafIdRef.current) {
-      cancelAnimationFrame(rafIdRef.current);
-    }
-  }, [initialMs]);
+  const reset = useCallback(
+    (newMs?: number) => {
+      setRemainingMs(newMs ?? initialMs);
+      lastTickRef.current = Date.now();
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    },
+    [initialMs]
+  );
 
   useEffect(() => {
     if (!isRunning || remainingMs <= 0) {
@@ -48,7 +48,7 @@ export const useCountdown = (
 
       setRemainingMs((prev) => {
         const newRemaining = Math.max(0, prev - delta);
-        
+
         if (onTick) {
           onTick(newRemaining);
         }

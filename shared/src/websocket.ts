@@ -1,4 +1,4 @@
-export type WebSocketMessageType = 
+export type WebSocketMessageType =
   | 'JOIN_ROOM'
   | 'LEAVE_ROOM'
   | 'SUBMIT_BID'

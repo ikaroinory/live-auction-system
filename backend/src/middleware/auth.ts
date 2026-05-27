@@ -12,19 +12,19 @@ export interface AuthRequest extends Request {
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader) {
       return res.status(401).json({ message: '未提供认证令牌' });
     }
-    
+
     const token = authHeader.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({ message: '认证令牌格式错误' });
     }
-    
+
     const decoded = jwt.verify(token, config.jwt.secret) as { id: string; phone: string };
-    
+
     req.user = decoded;
     next();
   } catch (error) {
@@ -36,7 +36,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
 export const optionalAuthMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (authHeader) {
       const token = authHeader.split(' ')[1];
       if (token) {
@@ -48,7 +48,7 @@ export const optionalAuthMiddleware = (req: AuthRequest, res: Response, next: Ne
         }
       }
     }
-    
+
     next();
   } catch (error) {
     // 任何错误都不阻止访问

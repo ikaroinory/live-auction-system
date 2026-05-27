@@ -4,7 +4,15 @@ import { Toast, Input } from 'antd-mobile';
 import { useUserStore } from '../../store/useUserStore';
 import { authAPI } from '../../services/api';
 import { Gender } from '../../../../../shared/src/user';
-import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, Layout, List, BubbleButton, Dialog } from '@/components/ui';
+import {
+  CameraIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Layout,
+  List,
+  BubbleButton,
+  Dialog,
+} from '@/components/ui';
 import './ProfileEdit.scss';
 
 export const ProfileEdit = () => {
@@ -21,7 +29,9 @@ export const ProfileEdit = () => {
     douyinId: user?.douyinId || '',
   });
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    user?.avatar || '/default-avatar.svg'
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editModalTitle, setEditModalTitle] = useState('');
@@ -185,7 +195,12 @@ export const ProfileEdit = () => {
   const menuItems = [
     { label: '名字', value: profileData.nickname, key: 'nickname', onClick: handleEditNickname },
     { label: '简介', value: profileData.bio, key: 'bio', onClick: handleEditBio },
-    { label: '性别', value: getGenderDisplay(profileData.gender), key: 'gender', onClick: handleEditGender },
+    {
+      label: '性别',
+      value: getGenderDisplay(profileData.gender),
+      key: 'gender',
+      onClick: handleEditGender,
+    },
     { label: '生日', value: profileData.birthday, key: 'birthday', onClick: handleEditBirthday },
     { label: '所在地', value: profileData.location, key: 'location', onClick: handleEditLocation },
     { label: '抖音号', value: profileData.douyinId, key: 'douyinId', onClick: handleEditDouyinId },
@@ -195,26 +210,33 @@ export const ProfileEdit = () => {
     <Layout>
       <Layout.Main>
         <div className="top-bar">
-          <BubbleButton onClick={() => navigate(-1)}><ChevronLeftIcon /></BubbleButton>
+          <BubbleButton onClick={() => navigate(-1)}>
+            <ChevronLeftIcon />
+          </BubbleButton>
         </div>
-        
+
         <div className="cover-section">
           <div className="cover-image" />
-          
+
           <div className="avatar-container">
             <div className="avatar-wrapper">
-              <img 
-                src={previewUrl || '/default-avatar.svg'} 
-                alt="头像" 
-                className="avatar-image"
-              />
+              <img src={previewUrl || '/default-avatar.svg'} alt="头像" className="avatar-image" />
               <div className="change-avatar-btn" onClick={handleAvatarUpload}>
                 <CameraIcon />
                 <span>更换头像</span>
               </div>
             </div>
             <div className="completion-status">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
               资料完成度 100%
@@ -224,8 +246,8 @@ export const ProfileEdit = () => {
 
         <List className="profile-form">
           {menuItems.map((item) => (
-            <List.Item 
-              key={item.key} 
+            <List.Item
+              key={item.key}
               onClick={item.onClick}
               label={item.label}
               value={item.value}
@@ -235,16 +257,8 @@ export const ProfileEdit = () => {
         </List>
 
         <List style={{ margin: '0 16px' }}>
-          <List.Item 
-            label="服务挂件"
-            value="直播预告、公开群"
-            extra={<ChevronRightIcon />}
-          />
-          <List.Item 
-            label="挂件中心"
-            value="管理头像挂件"
-            extra={<ChevronRightIcon />}
-          />
+          <List.Item label="服务挂件" value="直播预告、公开群" extra={<ChevronRightIcon />} />
+          <List.Item label="挂件中心" value="管理头像挂件" extra={<ChevronRightIcon />} />
         </List>
 
         <Dialog
@@ -269,8 +283,8 @@ export const ProfileEdit = () => {
           content={
             <div className="gender-options">
               {genderOptions.map((opt) => (
-                <div 
-                  key={opt.value} 
+                <div
+                  key={opt.value}
                   className={`gender-option ${tempGender === opt.value ? 'active' : ''}`}
                   onClick={() => selectGender(opt.value)}
                 >

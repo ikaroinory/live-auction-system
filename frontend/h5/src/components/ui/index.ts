@@ -1,10 +1,10 @@
-export { Avatar } from "./avatar"
-export { BubbleButton } from "./bubble-button"
-export { Dialog } from "./dialog"
-export { Display } from "./display"
-export { FloatTag } from "./float-tag"
-export { Layout } from "./layout"
-export { List } from "./list"
-export { Menu } from "./menu"
+export { Avatar } from './avatar';
+export { BubbleButton } from './bubble-button';
+export { Dialog } from './dialog';
+export { Display } from './display';
+export { FloatTag } from './float-tag';
+export { Layout } from './layout';
+export { List } from './list';
+export { Menu } from './menu';
 
-export * from "./icons"
+export * from './icons';

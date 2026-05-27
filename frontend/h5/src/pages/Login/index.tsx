@@ -31,12 +31,12 @@ export const Login = () => {
     }
 
     setLoading(true);
-    
+
     try {
       const response = await authAPI.smsLogin({ phone, code });
-      
+
       localStorage.setItem('token', response.token);
-      
+
       login(response.user);
 
       Toast.show('登录成功');
@@ -92,13 +92,7 @@ export const Login = () => {
               </div>
             </div>
 
-            <Button 
-              block 
-              color="primary" 
-              size="large"
-              loading={loading}
-              onClick={handleLogin}
-            >
+            <Button block color="primary" size="large" loading={loading} onClick={handleLogin}>
               登录
             </Button>
           </div>

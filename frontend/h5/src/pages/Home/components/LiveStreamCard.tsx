@@ -11,12 +11,7 @@ interface LiveStreamCardProps {
   onEnterLiveRoom: () => void;
 }
 
-export const LiveStreamCard = ({
-  liveRoom,
-  isActive,
-  onEnterLiveRoom,
-}: LiveStreamCardProps) => {
-
+export const LiveStreamCard = ({ liveRoom, isActive, onEnterLiveRoom }: LiveStreamCardProps) => {
   const handleClick = () => {
     if (isActive) {
       onEnterLiveRoom();
@@ -24,21 +19,25 @@ export const LiveStreamCard = ({
   };
 
   return (
-    <div className={ styles.main } onClick={ handleClick }>
+    <div className={styles.main} onClick={handleClick}>
       <VideoPlayer />
 
-      <div className={ styles.container }>
+      <div className={styles.container}>
         <FloatTag>点击进入直播间</FloatTag>
 
-        <div className={ styles.informationContainer }>
-          <div className={ clsx(styles.informationContainerItem, styles.labelContainer) }>
-            <div className={ clsx(styles.label, styles.livingLabel) }>直播中</div>
-            { liveRoom.isFollowed && (
-              <div className={ clsx(styles.label, styles.followedLabel) }>我的关注</div>
-            ) }
+        <div className={styles.informationContainer}>
+          <div className={clsx(styles.informationContainerItem, styles.labelContainer)}>
+            <div className={clsx(styles.label, styles.livingLabel)}>直播中</div>
+            {liveRoom.isFollowed && (
+              <div className={clsx(styles.label, styles.followedLabel)}>我的关注</div>
+            )}
           </div>
-          <div className={ clsx(styles.informationContainerItem, styles.liveRoomTitle)}>@{ liveRoom.streamer.nickname }</div>
-          <div className={ clsx(styles.informationContainerItem, styles.liveRoomDescription)}>{ liveRoom.description }</div>
+          <div className={clsx(styles.informationContainerItem, styles.liveRoomTitle)}>
+            @{liveRoom.streamer.nickname}
+          </div>
+          <div className={clsx(styles.informationContainerItem, styles.liveRoomDescription)}>
+            {liveRoom.description}
+          </div>
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
 import { io, Socket } from 'socket.io-client';
 import { useAuctionRoomStore } from '../store/useAuctionRoomStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import type { 
-  WebSocketMessage, 
-  JoinRoomPayload, 
+import type {
+  WebSocketMessage,
+  JoinRoomPayload,
   BidPayload,
   PriceUpdatePayload,
   RankingUpdatePayload,
   CountdownTickPayload,
-  AuctionEndPayload
+  AuctionEndPayload,
 } from '@live-auction/shared';
 
 const WS_URL = import.meta.env.VITE_WS_URL || '/ws';
@@ -39,7 +39,7 @@ class WebSocketService {
       console.log('WebSocket connected');
       this.reconnectAttempts = 0;
       store.setConnectionStatus('connected');
-      
+
       if (this.currentAuctionId) {
         this.reconnectAttempts;
       }

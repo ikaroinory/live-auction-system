@@ -1,38 +1,35 @@
-import { createContext, ReactNode } from 'react'
-import { isElementOfType } from '../utils'
-import styles from './styles.module.scss'
+import { createContext, ReactNode } from 'react';
+import { isElementOfType } from '../utils';
+import styles from './styles.module.scss';
 
 interface ListProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  label?: ReactNode
-  value?: ReactNode
-  extra?: ReactNode
+  label?: ReactNode;
+  value?: ReactNode;
+  extra?: ReactNode;
 }
 
-const ListContext = createContext({})
+const ListContext = createContext({});
 
 export function List(props: ListProps) {
-  const { children, className = '', style } = props
-  
+  const { children, className = '', style } = props;
+
   return (
     <ListContext.Provider value={{}}>
       <div className={`${styles.list} ${className}`} style={style}>
         {children}
       </div>
     </ListContext.Provider>
-  )
+  );
 }
 
 function Item(props: ListItemProps) {
-  const { children, className = '', onClick, label, value, extra } = props
+  const { children, className = '', onClick, label, value, extra } = props;
 
   return (
-    <div 
-      className={`${styles.listItem} ${className}`}
-      onClick={onClick}
-    >
-      {(label !== undefined || value !== undefined || extra !== undefined) ? (
+    <div className={`${styles.listItem} ${className}`} onClick={onClick}>
+      {label !== undefined || value !== undefined || extra !== undefined ? (
         <>
           {label !== undefined && <div className={styles.listItemLabel}>{label}</div>}
           <div className={styles.listItemContent}>
@@ -44,11 +41,11 @@ function Item(props: ListItemProps) {
         children
       )}
     </div>
-  )
+  );
 }
 
-List.Item = Item
+List.Item = Item;
 
 export function isListItem(element: unknown): element is ReturnType<typeof Item> {
-  return isElementOfType(element, Item)
+  return isElementOfType(element, Item);
 }

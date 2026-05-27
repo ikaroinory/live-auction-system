@@ -1,15 +1,15 @@
-import React from "react"
+import React from 'react';
 
 interface CloseIconProps {
-  size?: number
-  color?: string
-  className?: string
+  size?: number;
+  color?: string;
+  className?: string;
 }
 
 export const CloseIcon: React.FC<CloseIconProps> = ({
   size = 24,
-  color = "currentColor",
-  className = "",
+  color = 'currentColor',
+  className = '',
 }) => {
   return (
     <svg
@@ -26,5 +26,5 @@ export const CloseIcon: React.FC<CloseIconProps> = ({
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
-  )
-}
+  );
+};

@@ -2,7 +2,6 @@ import { List } from 'antd-mobile';
 import './Me.scss';
 
 export const MeBids = () => {
-  
   return (
     <div className="me-bids-page">
       <div className="header">

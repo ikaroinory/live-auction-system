@@ -1,13 +1,17 @@
-import styles from './styles.module.scss'
-import { BaseComponent } from '../interfaces'
-import clsx from 'clsx'
+import styles from './styles.module.scss';
+import { BaseComponent } from '../interfaces';
+import clsx from 'clsx';
 
-interface BubbleButtonProps { }
+interface BubbleButtonProps {}
 
-export const BubbleButton: BaseComponent<'button', BubbleButtonProps> = ({ children, className, ...props }) => {
+export const BubbleButton: BaseComponent<'button', BubbleButtonProps> = ({
+  children,
+  className,
+  ...props
+}) => {
   return (
-    <button className={ clsx(styles.bubbleButton, className) } {...props}>
+    <button className={clsx(styles.bubbleButton, className)} {...props}>
       {children}
     </button>
-  )
-}
+  );
+};

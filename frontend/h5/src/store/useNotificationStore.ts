@@ -18,15 +18,15 @@ interface NotificationState {
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
-  
+
   addNotification: (notification) => {
     const id = `notification-${Date.now()}-${Math.random()}`;
     const newNotification = { ...notification, id };
-    
+
     set((state) => ({
       notifications: [...state.notifications, newNotification],
     }));
-    
+
     const duration = notification.duration ?? 3000;
     if (duration > 0) {
       setTimeout(() => {
@@ -36,11 +36,11 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       }, duration);
     }
   },
-  
+
   removeNotification: (id) =>
     set((state) => ({
       notifications: state.notifications.filter((n) => n.id !== id),
     })),
-  
+
   clearAll: () => set({ notifications: [] }),
 }));

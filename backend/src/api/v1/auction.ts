@@ -74,7 +74,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
     const { status } = req.query;
     const where = status ? { status: parseInt(status as string) } : {};
-    
+
     const auctions = await prisma.auction.findMany({
       where,
       include: {
@@ -82,23 +82,23 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
           select: {
             id: true,
             phone: true,
-            nickname: true
-          }
+            nickname: true,
+          },
         },
         winner: {
           select: {
             id: true,
             phone: true,
-            nickname: true
-          }
+            nickname: true,
+          },
         },
         _count: {
-          select: { bids: true }
-        }
+          select: { bids: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
-    
+
     res.json(auctions);
   } catch (error) {
     next(error);
@@ -127,7 +127,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
 router.get('/:id', async (req: Request, res: Response, next: Function) => {
   try {
     const { id } = req.params;
-    
+
     const auction = await prisma.auction.findUnique({
       where: { id },
       include: {
@@ -135,15 +135,15 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
           select: {
             id: true,
             phone: true,
-            nickname: true
-          }
+            nickname: true,
+          },
         },
         winner: {
           select: {
             id: true,
             phone: true,
-            nickname: true
-          }
+            nickname: true,
+          },
         },
         bids: {
           include: {
@@ -151,20 +151,20 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
               select: {
                 id: true,
                 phone: true,
-                nickname: true
-              }
-            }
+                nickname: true,
+              },
+            },
           },
           orderBy: { createdAt: 'desc' },
-          take: 20
-        }
-      }
+          take: 20,
+        },
+      },
     });
-    
+
     if (!auction) {
       return res.status(404).json({ message: '竞拍不存在' });
     }
-    
+
     res.json(auction);
   } catch (error) {
     next(error);
@@ -220,9 +220,18 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
     if (!req.user) {
       return res.status(401).json({ message: '未认证' });
     }
-    
-    const { title, description, images, startPrice, minIncrement, maxPrice, durationSeconds, autoExtendSeconds } = req.body;
-    
+
+    const {
+      title,
+      description,
+      images,
+      startPrice,
+      minIncrement,
+      maxPrice,
+      durationSeconds,
+      autoExtendSeconds,
+    } = req.body;
+
     const auction = await prisma.auction.create({
       data: {
         sellerId: req.user.id,
@@ -234,10 +243,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         maxPrice: maxPrice || null,
         durationSeconds,
         autoExtendSeconds: autoExtendSeconds || 15,
-        status: 0
-      }
+        status: 0,
+      },
     });
-    
+
     res.status(201).json(auction);
   } catch (error) {
     next(error);

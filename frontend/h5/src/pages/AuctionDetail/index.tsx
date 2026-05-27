@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate, useEffect, useState } from 'react';
 import { NavBar, Button, Card, Empty, Loading } from 'antd-mobile';
 import { auctionAPI } from '../../services/api';
@@ -52,7 +51,7 @@ export const AuctionDetail = () => {
   return (
     <div className="auction-detail-page page-container">
       <NavBar onBack={() => navigate(-1)}>竞拍详情</NavBar>
-      
+
       <div className="detail-content">
         <Card title="商品信息">
           <div className="info-item">
@@ -91,12 +90,7 @@ export const AuctionDetail = () => {
         </Card>
 
         <div className="action-section safe-area-bottom">
-          <Button 
-            block 
-            color="primary" 
-            size="large"
-            onClick={() => navigate(`/live/${id}`)}
-          >
+          <Button block color="primary" size="large" onClick={() => navigate(`/live/${id}`)}>
             进入竞拍
           </Button>
         </div>

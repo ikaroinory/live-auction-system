@@ -1,15 +1,15 @@
-import React from "react"
+import React from 'react';
 
 interface HistoryIconProps {
-  size?: number
-  color?: string
-  className?: string
+  size?: number;
+  color?: string;
+  className?: string;
 }
 
 export const HistoryIcon: React.FC<HistoryIconProps> = ({
   size = 24,
-  color = "currentColor",
-  className = "",
+  color = 'currentColor',
+  className = '',
 }) => {
   return (
     <svg
@@ -27,7 +27,7 @@ export const HistoryIcon: React.FC<HistoryIconProps> = ({
       <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
       <path d="M12 7v5l4 2" />
     </svg>
-  )
-}
+  );
+};
 
 export const ClockCircleOutline = HistoryIcon;

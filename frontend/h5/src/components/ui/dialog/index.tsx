@@ -15,16 +15,16 @@ interface DialogProps {
 }
 
 export function Dialog(props: DialogProps) {
-  const { 
-    visible, 
-    title, 
-    content, 
-    onConfirm, 
-    onCancel, 
-    confirmText = '确定', 
+  const {
+    visible,
+    title,
+    content,
+    onConfirm,
+    onCancel,
+    confirmText = '确定',
     cancelText = '取消',
     showCancelButton = true,
-    showConfirmButton = true
+    showConfirmButton = true,
   } = props;
 
   useEffect(() => {

@@ -16,16 +16,16 @@ export const useUserStore = create<UserState>((set) => ({
   user: null,
   isLoggedIn: false,
   isLoading: false,
-  
+
   setUser: (user) => set({ user, isLoggedIn: !!user }),
-  
+
   login: (user) => set({ user, isLoggedIn: true }),
-  
+
   logout: () => {
     localStorage.removeItem('token');
     set({ user: null, isLoggedIn: false });
   },
-  
+
   fetchUser: async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -34,7 +34,7 @@ export const useUserStore = create<UserState>((set) => ({
     }
 
     set({ isLoading: true });
-    
+
     try {
       const userData = await authAPI.getCurrentUser();
       set({ user: userData, isLoggedIn: true, isLoading: false });

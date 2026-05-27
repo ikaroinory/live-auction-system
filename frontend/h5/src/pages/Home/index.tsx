@@ -29,7 +29,7 @@ export const Home = () => {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const activeLiveRooms = liveRooms.filter(room => room.status === 1);
+  const activeLiveRooms = liveRooms.filter((room) => room.status === 1);
 
   const minSwipeDistance = 50;
 
@@ -44,7 +44,7 @@ export const Home = () => {
 
   const onTouchEnd = useCallback(() => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isUpSwipe = distance > minSwipeDistance;
     const isDownSwipe = distance < -minSwipeDistance;
@@ -60,7 +60,7 @@ export const Home = () => {
       });
       setIsTransitioning(true);
     }
-    
+
     if (isDownSwipe && !isTransitioning) {
       if (currentIndex <= 0) {
         Toast.show('已经是第一个直播间了');
@@ -103,44 +103,40 @@ export const Home = () => {
     return (
       <div className="home-page">
         <div className="empty-container">
-          <Empty 
-            description="暂无直播中的直播间" 
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+          <Empty description="暂无直播中的直播间" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         </div>
       </div>
     );
   }
 
   console.log(activeLiveRooms);
-  
 
   return (
-      <div className="home-page">
-        <div 
-          className="live-streams-container"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
+    <div className="home-page">
+      <div
+        className="live-streams-container"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          className="live-streams-wrapper"
+          style={{
+            transform: `translateY(${-currentIndex * 100}%)`,
+            transition: isTransitioning ? 'transform 0.3s ease-out' : 'none',
+          }}
         >
-          <div 
-            className="live-streams-wrapper"
-            style={{
-              transform: `translateY(${-currentIndex * 100}%)`,
-              transition: isTransitioning ? 'transform 0.3s ease-out' : 'none'
-            }}
-          >
-            {activeLiveRooms.map((liveRoom, index) => (
-              <div key={liveRoom.id} className="live-stream-item">
-                <LiveStreamCard
-                  liveRoom={liveRoom}
-                  isActive={index === currentIndex}
-                  onEnterLiveRoom={handleEnterLiveRoom}
-                />
-              </div>
-            ))}
-          </div>
+          {activeLiveRooms.map((liveRoom, index) => (
+            <div key={liveRoom.id} className="live-stream-item">
+              <LiveStreamCard
+                liveRoom={liveRoom}
+                isActive={index === currentIndex}
+                onEnterLiveRoom={handleEnterLiveRoom}
+              />
+            </div>
+          ))}
         </div>
       </div>
+    </div>
   );
 };

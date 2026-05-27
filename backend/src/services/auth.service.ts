@@ -16,13 +16,13 @@ function generateRandomDouyinId(): string {
 export class AuthService {
   async register(phone: string, password: string, nickname?: string, location?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     let douyinId = generateRandomDouyinId();
     let isUnique = false;
-    
+
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
-        where: { douyinId }
+        where: { douyinId },
       });
       if (!existing) {
         isUnique = true;
@@ -30,7 +30,7 @@ export class AuthService {
         douyinId = generateRandomDouyinId();
       }
     }
-    
+
     const user = await prisma.user.create({
       data: {
         phone,
@@ -38,12 +38,12 @@ export class AuthService {
         nickname: nickname || phone,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '未知'
-      }
+        location: location || '未知',
+      },
     });
-    
+
     const token = this.generateToken(user.id, user.phone);
-    
+
     return {
       user: {
         id: user.id,
@@ -55,29 +55,29 @@ export class AuthService {
         birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
         location: user.location,
         douyinId: user.douyinId,
-        createdAt: user.createdAt.toISOString()
+        createdAt: user.createdAt.toISOString(),
       },
-      token
+      token,
     };
   }
-  
+
   async login(phone: string, password: string) {
     const user = await prisma.user.findUnique({
-      where: { phone }
+      where: { phone },
     });
-    
+
     if (!user) {
       throw new Error('用户不存在');
     }
-    
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
     if (!isPasswordValid) {
       throw new Error('密码错误');
     }
-    
+
     const token = this.generateToken(user.id, user.phone);
-    
+
     return {
       user: {
         id: user.id,
@@ -89,15 +89,15 @@ export class AuthService {
         birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
         location: user.location,
         douyinId: user.douyinId,
-        createdAt: user.createdAt.toISOString()
+        createdAt: user.createdAt.toISOString(),
       },
-      token
+      token,
     };
   }
 
   async loginOrRegisterByPhone(phone: string, code: string, location?: string) {
     const existingUser = await prisma.user.findUnique({
-      where: { phone }
+      where: { phone },
     });
 
     if (existingUser) {
@@ -110,22 +110,24 @@ export class AuthService {
           avatar: existingUser.avatar,
           bio: existingUser.bio,
           gender: existingUser.gender,
-          birthday: existingUser.birthday ? existingUser.birthday.toISOString().split('T')[0] : undefined,
+          birthday: existingUser.birthday
+            ? existingUser.birthday.toISOString().split('T')[0]
+            : undefined,
           location: existingUser.location,
           douyinId: existingUser.douyinId,
-          createdAt: existingUser.createdAt.toISOString()
+          createdAt: existingUser.createdAt.toISOString(),
         },
         token,
-        isNewUser: false
+        isNewUser: false,
       };
     }
 
     let douyinId = generateRandomDouyinId();
     let isUnique = false;
-    
+
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
-        where: { douyinId }
+        where: { douyinId },
       });
       if (!existing) {
         isUnique = true;
@@ -142,12 +144,12 @@ export class AuthService {
         nickname: `用户${phone.slice(-4)}`,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '未知'
-      }
+        location: location || '未知',
+      },
     });
 
     const token = this.generateToken(newUser.id, newUser.phone);
-    
+
     return {
       user: {
         id: newUser.id,
@@ -159,18 +161,14 @@ export class AuthService {
         birthday: newUser.birthday ? newUser.birthday.toISOString().split('T')[0] : undefined,
         location: newUser.location,
         douyinId: newUser.douyinId,
-        createdAt: newUser.createdAt.toISOString()
+        createdAt: newUser.createdAt.toISOString(),
       },
       token,
-      isNewUser: true
+      isNewUser: true,
     };
   }
-  
+
   private generateToken(userId: string, phone: string) {
-    return jwt.sign(
-      { id: userId, phone },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
+    return jwt.sign({ id: userId, phone }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
   }
 }

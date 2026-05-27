@@ -1,15 +1,15 @@
-import React from "react"
+import React from 'react';
 
 interface ChevronUpIconProps {
-  size?: number
-  color?: string
-  className?: string
+  size?: number;
+  color?: string;
+  className?: string;
 }
 
 export const ChevronUpIcon: React.FC<ChevronUpIconProps> = ({
   size = 24,
-  color = "currentColor",
-  className = "",
+  color = 'currentColor',
+  className = '',
 }) => {
   return (
     <svg
@@ -25,6 +25,5 @@ export const ChevronUpIcon: React.FC<ChevronUpIconProps> = ({
     >
       <polyline points="18 15 12 9 6 15" />
     </svg>
-  )
-}
-
+  );
+};

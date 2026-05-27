@@ -11,7 +11,14 @@ import { RankingList } from '../../components/RankingList';
 import { BidButton } from '../../components/BidButton';
 import { ToastNotification } from '../../components/ToastNotification';
 import { Avatar, BubbleButton } from '../../components/ui';
-import { ChevronLeftIcon, HistoryIcon, ShareIcon, LikeIcon, GiftIcon, CloseIcon } from '../../components/ui/icons';
+import {
+  ChevronLeftIcon,
+  HistoryIcon,
+  ShareIcon,
+  LikeIcon,
+  GiftIcon,
+  CloseIcon,
+} from '../../components/ui/icons';
 import { VideoPlayer } from './components/VideoPlayer';
 import { CurrentPrice } from './components/CurrentPrice';
 import { BidHistory } from './components/BidHistory';
@@ -19,7 +26,7 @@ import { formatPrice } from '../../utils/format';
 import { liveRoomAPI, auctionAPI } from '../../services/api';
 import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared';
 import './LiveRoom.scss';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 import clsx from 'clsx';
 
 interface ChatMessage {
@@ -40,7 +47,9 @@ interface AnimationItem {
 export const LiveRoom = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [liveRoom, setLiveRoom] = useState<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: AuctionWithSeller[] } | null>(null);
+  const [liveRoom, setLiveRoom] = useState<
+    (LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: AuctionWithSeller[] }) | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [showBidHistory, setShowBidHistory] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
@@ -51,10 +60,10 @@ export const LiveRoom = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const { user } = useUserStore();
-  const { 
-    currentAuction, 
-    currentPrice, 
-    rankings, 
+  const {
+    currentAuction,
+    currentPrice,
+    rankings,
     remainingMs,
     connectionStatus,
     isLeading,
@@ -78,7 +87,7 @@ export const LiveRoom = () => {
   useEffect(() => {
     const loadLiveRoom = async () => {
       if (!id) return;
-      
+
       try {
         setLoading(true);
         const data = await liveRoomAPI.getLiveRoomDetail(id);
@@ -88,14 +97,32 @@ export const LiveRoom = () => {
         if (data.auctions && data.auctions.length > 0) {
           const auction = data.auctions[0];
           setCurrentAuction(auction);
-          
+
           const mockBids = [
-            { id: '3', auctionId: auction.id, userId: 'user-3', price: auction.startPrice + auction.minIncrement * 3, createdAt: new Date(Date.now() - 60000).toISOString() },
-            { id: '2', auctionId: auction.id, userId: 'user-2', price: auction.startPrice + auction.minIncrement * 2, createdAt: new Date(Date.now() - 120000).toISOString() },
-            { id: '1', auctionId: auction.id, userId: 'user-1', price: auction.startPrice + auction.minIncrement, createdAt: new Date(Date.now() - 180000).toISOString() },
+            {
+              id: '3',
+              auctionId: auction.id,
+              userId: 'user-3',
+              price: auction.startPrice + auction.minIncrement * 3,
+              createdAt: new Date(Date.now() - 60000).toISOString(),
+            },
+            {
+              id: '2',
+              auctionId: auction.id,
+              userId: 'user-2',
+              price: auction.startPrice + auction.minIncrement * 2,
+              createdAt: new Date(Date.now() - 120000).toISOString(),
+            },
+            {
+              id: '1',
+              auctionId: auction.id,
+              userId: 'user-1',
+              price: auction.startPrice + auction.minIncrement,
+              createdAt: new Date(Date.now() - 180000).toISOString(),
+            },
           ];
           setBidHistory(mockBids);
-          
+
           updatePrice(auction.startPrice + auction.minIncrement * 3);
           useAuctionRoomStore.setState({ remainingMs: 300000 });
         }
@@ -106,7 +133,7 @@ export const LiveRoom = () => {
         setLoading(false);
       }
     };
-    
+
     loadLiveRoom();
   }, [id, setCurrentAuction, setBidHistory, updatePrice]);
 
@@ -128,7 +155,7 @@ export const LiveRoom = () => {
     if (success) {
       playSuccess();
       updatePrice(nextPrice);
-      
+
       const newBid = {
         id: Date.now().toString(),
         auctionId: currentAuction.id,
@@ -137,7 +164,7 @@ export const LiveRoom = () => {
         createdAt: new Date().toISOString(),
       };
       addBidToHistory(newBid);
-      
+
       Toast.show(`出价 ${formatPrice(nextPrice)} 成功！`);
     } else {
       playFail();
@@ -155,7 +182,7 @@ export const LiveRoom = () => {
       navigate('/login');
       return;
     }
-    
+
     if (!id) return;
 
     try {
@@ -174,7 +201,7 @@ export const LiveRoom = () => {
 
   const handleSendChat = () => {
     if (!chatInput.trim() || !user) return;
-    
+
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       userId: user.id,
@@ -182,7 +209,7 @@ export const LiveRoom = () => {
       content: chatInput,
       type: 'message',
     };
-    setChatMessages(prev => [...prev, newMessage]);
+    setChatMessages((prev) => [...prev, newMessage]);
     setChatInput('');
   };
 
@@ -193,9 +220,9 @@ export const LiveRoom = () => {
       content: type === 'like' ? '❤️' : '🎉',
       left: Math.random() * 60 + 20,
     };
-    setAnimations(prev => [...prev, newAnimation]);
+    setAnimations((prev) => [...prev, newAnimation]);
     setTimeout(() => {
-      setAnimations(prev => prev.filter(a => a.id !== newAnimation.id));
+      setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id));
     }, 1000);
   };
 
@@ -206,7 +233,13 @@ export const LiveRoom = () => {
   useEffect(() => {
     const mockMessages: ChatMessage[] = [
       { id: '1', userId: '1', userName: '梦尘', content: '这个直播间好棒', type: 'message' },
-      { id: '2', userId: '2', userName: '幸福是什么', content: '希望能拍到好东西', type: 'message' },
+      {
+        id: '2',
+        userId: '2',
+        userName: '幸福是什么',
+        content: '希望能拍到好东西',
+        type: 'message',
+      },
       { id: '3', userId: '3', userName: '朱Z', content: '主播加油', type: 'message' },
       { id: '4', userId: '4', userName: 'Sum_41', content: '关注了主播', type: 'join' },
       { id: '5', userId: '5', userName: '菠萝睡不醒', content: '666', type: 'message' },
@@ -215,14 +248,7 @@ export const LiveRoom = () => {
 
     const interval = setInterval(() => {
       const randomUsers = ['我勒个恋狗啊', '恨', 'Ninety__n', '我。。'];
-      const randomContents = [
-        '这个多少钱',
-        '主播好厉害',
-        '冲冲冲',
-        '666',
-        '太牛了',
-        '想要这个',
-      ];
+      const randomContents = ['这个多少钱', '主播好厉害', '冲冲冲', '666', '太牛了', '想要这个'];
       const newMessage: ChatMessage = {
         id: Date.now().toString(),
         userId: Math.random().toString(),
@@ -230,7 +256,7 @@ export const LiveRoom = () => {
         content: randomContents[Math.floor(Math.random() * randomContents.length)],
         type: Math.random() > 0.9 ? 'join' : 'message',
       };
-      setChatMessages(prev => [...prev.slice(-20), newMessage]);
+      setChatMessages((prev) => [...prev.slice(-20), newMessage]);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -267,19 +293,30 @@ export const LiveRoom = () => {
           <VideoPlayer />
         </div>
 
-        <div className={ styles.headerBar }>
-          <div className={ styles.info }>
-            <Avatar style={{ width: 48 }} url={ liveRoom.streamer.avatar } defaultUrl='/default-avatar.svg' />
+        <div className={styles.headerBar}>
+          <div className={styles.info}>
+            <Avatar
+              style={{ width: 48 }}
+              url={liveRoom.streamer.avatar}
+              defaultUrl="/default-avatar.svg"
+            />
             <div className="host-info">
-              <div className="host-name">{liveRoom.streamer.nickname || liveRoom.streamer.phone}</div>
+              <div className="host-name">
+                {liveRoom.streamer.nickname || liveRoom.streamer.phone}
+              </div>
               <div className="host-stats">{liveRoom._count.followers} 人关注</div>
             </div>
-            <button className={`follow-button ${isFollowed ? 'followed' : ''}`} onClick={handleFollow}>
+            <button
+              className={`follow-button ${isFollowed ? 'followed' : ''}`}
+              onClick={handleFollow}
+            >
               {isFollowed ? '已关注' : '关注'}
             </button>
           </div>
 
-          <BubbleButton style={{ width: 40, height: 40 }} onClick={handleGoBack}><CloseIcon size={20} /></BubbleButton>
+          <BubbleButton style={{ width: 40, height: 40 }} onClick={handleGoBack}>
+            <CloseIcon size={20} />
+          </BubbleButton>
         </div>
 
         <div className="chat-section">
@@ -291,9 +328,7 @@ export const LiveRoom = () => {
                 </span>
               ) : (
                 <>
-                  <div className="chat-avatar">
-                    {msg.userName.charAt(0)}
-                  </div>
+                  <div className="chat-avatar">{msg.userName.charAt(0)}</div>
                   <div className="chat-content">
                     <span className="chat-name">{msg.userName}</span>
                     <span className="chat-text">{msg.content}</span>
@@ -310,7 +345,7 @@ export const LiveRoom = () => {
         </div>
 
         <div className="bid-section safe-area-bottom">
-          <div className={ styles.actionBar }>
+          <div className={styles.actionBar}>
             <div className="chat-input-wrapper">
               <input
                 type="text"
@@ -321,13 +356,29 @@ export const LiveRoom = () => {
                 onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
               />
             </div>
-            <BubbleButton className={ clsx(styles.actionButton, styles.like) } onClick={ () => showEffects('like') }><LikeIcon size={20} /></BubbleButton>
-            <BubbleButton className={ clsx(styles.actionButton, styles.gift) } onClick={ () => showEffects('gift') }><GiftIcon size={20} /></BubbleButton>
-            <BubbleButton className={ clsx(styles.actionButton, styles.history) } onClick={ () => setShowBidHistory(!showBidHistory) }><HistoryIcon size={20} /></BubbleButton>
-            <BubbleButton className={ clsx(styles.actionButton, styles.share) } onClick={handleShare}><ShareIcon size={18} /></BubbleButton>
+            <BubbleButton
+              className={clsx(styles.actionButton, styles.like)}
+              onClick={() => showEffects('like')}
+            >
+              <LikeIcon size={20} />
+            </BubbleButton>
+            <BubbleButton
+              className={clsx(styles.actionButton, styles.gift)}
+              onClick={() => showEffects('gift')}
+            >
+              <GiftIcon size={20} />
+            </BubbleButton>
+            <BubbleButton
+              className={clsx(styles.actionButton, styles.history)}
+              onClick={() => setShowBidHistory(!showBidHistory)}
+            >
+              <HistoryIcon size={20} />
+            </BubbleButton>
+            <BubbleButton className={clsx(styles.actionButton, styles.share)} onClick={handleShare}>
+              <ShareIcon size={18} />
+            </BubbleButton>
           </div>
         </div>
-
 
         <div className="gift-animation-container">
           {animations.map((anim) => (
@@ -346,10 +397,7 @@ export const LiveRoom = () => {
         <div className="bid-history-modal" onClick={() => setShowBidHistory(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <BidHistory bids={bidHistory} />
-            <button 
-              className="close-modal"
-              onClick={() => setShowBidHistory(false)}
-            >
+            <button className="close-modal" onClick={() => setShowBidHistory(false)}>
               关闭
             </button>
           </div>

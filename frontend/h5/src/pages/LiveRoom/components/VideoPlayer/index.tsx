@@ -48,12 +48,12 @@ export const VideoPlayer = () => {
 
     const animate = () => {
       hue = (hue + 1) % 360;
-      
+
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, `hsl(${hue}, 70%, 15%)`);
       gradient.addColorStop(0.5, `hsl(${(hue + 60) % 360}, 70%, 20%)`);
       gradient.addColorStop(1, `hsl(${(hue + 120) % 360}, 70%, 15%)`);
-      
+
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 

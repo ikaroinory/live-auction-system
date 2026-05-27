@@ -19,10 +19,10 @@ function getLocationByIp(ip: string): string {
   if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
     return '未知';
   }
-  
+
   const ipSegments = ip.split('.');
   const lastSegment = parseInt(ipSegments[ipSegments.length - 1] || '0', 10);
-  
+
   const locations = [
     '中国·北京·北京',
     '中国·上海·上海',
@@ -35,7 +35,7 @@ function getLocationByIp(ip: string): string {
     '中国·陕西·西安',
     '中国·山东·青岛',
   ];
-  
+
   const index = lastSegment % locations.length;
   return locations[index];
 }

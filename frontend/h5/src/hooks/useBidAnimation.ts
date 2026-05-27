@@ -6,7 +6,7 @@ interface AnimationOptions {
 
 export const useBidAnimation = (options: AnimationOptions = {}) => {
   const { duration = 300 } = options;
-  
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationType, setAnimationType] = useState<'success' | 'fail' | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

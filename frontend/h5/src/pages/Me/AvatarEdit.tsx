@@ -9,7 +9,9 @@ import './AvatarEdit.scss';
 export const AvatarEdit = () => {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    user?.avatar || '/default-avatar.svg'
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,7 +84,7 @@ export const AvatarEdit = () => {
       <Layout.Header>
         <NavBar onBack={() => navigate(-1)} />
       </Layout.Header>
-      
+
       <Layout.Main>
         <div className="avatar-preview-container">
           {isUploading && (
