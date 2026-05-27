@@ -16,7 +16,6 @@ export const LiveStreamCard = ({
   isActive,
   onEnterLiveRoom,
 }: LiveStreamCardProps) => {
-  const [isPressed, setIsPressed] = useState(false);
 
   const handleClick = () => {
     if (isActive) {
@@ -25,15 +24,7 @@ export const LiveStreamCard = ({
   };
 
   return (
-    <div 
-      className={ styles.main }
-      onClick={ handleClick }
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      onTouchStart={() => setIsPressed(true)}
-      onTouchEnd={() => setIsPressed(false)}
-    >
+    <div className={ styles.main } onClick={ handleClick }>
       <VideoPlayer />
 
       <div className={ styles.container }>

@@ -17,18 +17,6 @@ export const Me = () => {
   const navigate = useNavigate();
   const { user, logout } = useUserStore();
 
-  const handleAvatarClick = () => {
-    if (user) {
-      navigate('/me/avatar');
-    }
-  };
-
-  const handleNicknameClick = () => {
-    if (user) {
-      navigate('/me/profile');
-    }
-  };
-
   const menuItems: MenuItemProps[] = [
     {
       icon: <UnorderedListOutline />,
@@ -52,20 +40,28 @@ export const Me = () => {
     },
   ];
 
+  const handleAvatarClick = () => {
+    if (user) {
+      navigate('/me/avatar');
+    }
+  };
+
+  const handleNicknameClick = () => {
+    if (user) {
+      navigate('/me/profile');
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
-
-  const handleLogin = () => {
-    navigate('/login');
   };
 
   const displayName = user?.nickname || user?.phone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
   const avatarUrl = user?.avatar || '/default-avatar.svg';
 
   return (
-    <div>
+    <>
       {/* 用户信息头部 */}
       <div className="user-header">
         <div className="user-info">
@@ -85,9 +81,10 @@ export const Me = () => {
         
         <div style={{ marginTop: 32, display:'flex' }}>
           <Display style={{ flex: 1 }}>
-            <Display.Item name={ '出价次数' } count={ user ? 12 : '-' }/>
-            <Display.Item name={ '成功竞拍' } count={ user ? 3 : '-' }/>
-            <Display.Item name={ '浏览记录' } count={ user ? 8 : '-' }/>
+            <Display.Item name={ '获赞' } count={ user ? 700 : '-' }/>
+            <Display.Item name={ '互关' } count={ user ? 33 : '-' }/>
+            <Display.Item name={ '关注' } count={ user ? 128 : '-' }/>
+            <Display.Item name={ '粉丝' } count={ user ? 65 : '-' }/>
           </Display>
 
           <button className="edit-btn" onClick={ handleNicknameClick }>
@@ -102,17 +99,17 @@ export const Me = () => {
         {/* 登录/登出按钮 */}
         <div className="action-section">
           {user ? (
-            <button className="logout-btn" onClick={handleLogout}>
+            <button className="logout-btn" onClick={ handleLogout }>
               退出登录
             </button>
           ) : (
-            <button className="login-btn" onClick={handleLogin}>
+            <button className="login-btn" onClick={ () => navigate('/login') }>
               立即登录
             </button>
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
