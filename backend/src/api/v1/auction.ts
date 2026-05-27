@@ -1,8 +1,8 @@
-import { Router, Request, Response } from 'express';
-import { prisma } from '../../lib/prisma';
-import { authMiddleware, AuthRequest } from '../../middleware/auth';
+import { Router, Request, Response } from 'express'
+import { prisma } from '../../lib/prisma'
+import { authMiddleware, AuthRequest } from '../../middleware/auth'
 
-const router = Router();
+const router = Router()
 
 /**
  * @swagger
@@ -72,8 +72,8 @@ const router = Router();
  */
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
-    const { status } = req.query;
-    const where = status ? { status: parseInt(status as string) } : {};
+    const { status } = req.query
+    const where = status ? { status: parseInt(status as string) } : {}
 
     const auctions = await prisma.auction.findMany({
       where,
@@ -97,13 +97,13 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
         },
       },
       orderBy: { createdAt: 'desc' },
-    });
+    })
 
-    res.json(auctions);
+    res.json(auctions)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -126,7 +126,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
  */
 router.get('/:id', async (req: Request, res: Response, next: Function) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params
 
     const auction = await prisma.auction.findUnique({
       where: { id },
@@ -159,17 +159,17 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
           take: 20,
         },
       },
-    });
+    })
 
     if (!auction) {
-      return res.status(404).json({ message: '竞拍不存在' });
+      return res.status(404).json({ message: '竞拍不存在' })
     }
 
-    res.json(auction);
+    res.json(auction)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -218,7 +218,7 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
+      return res.status(401).json({ message: '未认证' })
     }
 
     const {
@@ -230,7 +230,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       maxPrice,
       durationSeconds,
       autoExtendSeconds,
-    } = req.body;
+    } = req.body
 
     const auction = await prisma.auction.create({
       data: {
@@ -245,12 +245,12 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         autoExtendSeconds: autoExtendSeconds || 15,
         status: 0,
       },
-    });
+    })
 
-    res.status(201).json(auction);
+    res.status(201).json(auction)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
-export default router;
+export default router

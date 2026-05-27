@@ -1,27 +1,27 @@
-import { Request } from 'express';
+import { Request } from 'express'
 
 function getClientIp(req: Request): string {
-  const forwardedFor = req.headers['x-forwarded-for'];
+  const forwardedFor = req.headers['x-forwarded-for']
   if (typeof forwardedFor === 'string') {
-    return forwardedFor.split(',')[0].trim();
+    return forwardedFor.split(',')[0].trim()
   }
   if (Array.isArray(forwardedFor)) {
-    return forwardedFor[0];
+    return forwardedFor[0]
   }
-  const realIp = req.headers['x-real-ip'];
+  const realIp = req.headers['x-real-ip']
   if (typeof realIp === 'string') {
-    return realIp;
+    return realIp
   }
-  return req.ip || '127.0.0.1';
+  return req.ip || '127.0.0.1'
 }
 
 function getLocationByIp(ip: string): string {
   if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
-    return '未知';
+    return '未知'
   }
 
-  const ipSegments = ip.split('.');
-  const lastSegment = parseInt(ipSegments[ipSegments.length - 1] || '0', 10);
+  const ipSegments = ip.split('.')
+  const lastSegment = parseInt(ipSegments[ipSegments.length - 1] || '0', 10)
 
   const locations = [
     '中国·北京·北京',
@@ -34,13 +34,13 @@ function getLocationByIp(ip: string): string {
     '中国·湖北·武汉',
     '中国·陕西·西安',
     '中国·山东·青岛',
-  ];
+  ]
 
-  const index = lastSegment % locations.length;
-  return locations[index];
+  const index = lastSegment % locations.length
+  return locations[index]
 }
 
 export function getLocationFromRequest(req: Request): string {
-  const ip = getClientIp(req);
-  return getLocationByIp(ip);
+  const ip = getClientIp(req)
+  return getLocationByIp(ip)
 }

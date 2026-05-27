@@ -1,11 +1,11 @@
-import { Router, Request, Response } from 'express';
-import { prisma } from '../../lib/prisma';
-import { AuthService } from '../../services/auth.service';
-import { authMiddleware, AuthRequest } from '../../middleware/auth';
-import { getLocationFromRequest } from '../../utils/ipLocation';
+import { Router, Request, Response } from 'express'
+import { prisma } from '../../lib/prisma'
+import { AuthService } from '../../services/auth.service'
+import { authMiddleware, AuthRequest } from '../../middleware/auth'
+import { getLocationFromRequest } from '../../utils/ipLocation'
 
-const router = Router();
-const authService = new AuthService();
+const router = Router()
+const authService = new AuthService()
 
 /**
  * @swagger
@@ -43,20 +43,20 @@ const authService = new AuthService();
  */
 router.post('/register', async (req: Request, res: Response, next: Function) => {
   try {
-    const { phone, password, nickname } = req.body;
+    const { phone, password, nickname } = req.body
 
     if (!phone || !password) {
-      return res.status(400).json({ message: '手机号和密码不能为空' });
+      return res.status(400).json({ message: '手机号和密码不能为空' })
     }
 
-    const location = getLocationFromRequest(req);
-    const result = await authService.register(phone, password, nickname, location);
+    const location = getLocationFromRequest(req)
+    const result = await authService.register(phone, password, nickname, location)
 
-    res.status(201).json(result);
+    res.status(201).json(result)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -91,19 +91,19 @@ router.post('/register', async (req: Request, res: Response, next: Function) => 
  */
 router.post('/login', async (req: Request, res: Response, next: Function) => {
   try {
-    const { phone, password } = req.body;
+    const { phone, password } = req.body
 
     if (!phone || !password) {
-      return res.status(400).json({ message: '手机号和密码不能为空' });
+      return res.status(400).json({ message: '手机号和密码不能为空' })
     }
 
-    const result = await authService.login(phone, password);
+    const result = await authService.login(phone, password)
 
-    res.json(result);
+    res.json(result)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -122,7 +122,7 @@ router.post('/login', async (req: Request, res: Response, next: Function) => {
 router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
+      return res.status(401).json({ message: '未认证' })
     }
 
     const user = await prisma.user.findUnique({
@@ -139,21 +139,21 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
         douyinId: true,
         createdAt: true,
       },
-    });
+    })
 
     if (!user) {
-      return res.status(404).json({ message: '用户不存在' });
+      return res.status(404).json({ message: '用户不存在' })
     }
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
       createdAt: user.createdAt.toISOString(),
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -186,39 +186,39 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
  */
 router.post('/sms-login', async (req: Request, res: Response, next: Function) => {
   try {
-    const { phone, code } = req.body;
+    const { phone, code } = req.body
 
     if (!phone || !code) {
-      return res.status(400).json({ message: '手机号和验证码不能为空' });
+      return res.status(400).json({ message: '手机号和验证码不能为空' })
     }
 
     if (!/^1[3-9]\d{9}$/.test(phone)) {
-      return res.status(400).json({ message: '手机号格式不正确' });
+      return res.status(400).json({ message: '手机号格式不正确' })
     }
 
     if (code !== '123456' && code !== '666666') {
-      return res.status(400).json({ message: '验证码错误' });
+      return res.status(400).json({ message: '验证码错误' })
     }
 
-    const location = getLocationFromRequest(req);
-    const result = await authService.loginOrRegisterByPhone(phone, code, location);
+    const location = getLocationFromRequest(req)
+    const result = await authService.loginOrRegisterByPhone(phone, code, location)
 
-    res.json(result);
+    res.json(result)
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
+      return res.status(401).json({ message: '未认证' })
     }
 
-    const { avatar } = req.body;
+    const { avatar } = req.body
 
     if (!avatar) {
-      return res.status(400).json({ message: '头像 URL 不能为空' });
+      return res.status(400).json({ message: '头像 URL 不能为空' })
     }
 
     const user = await prisma.user.update({
@@ -236,45 +236,45 @@ router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, ne
         douyinId: true,
         createdAt: true,
       },
-    });
+    })
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
       createdAt: user.createdAt.toISOString(),
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: '未认证' });
+      return res.status(401).json({ message: '未认证' })
     }
 
-    const { nickname, bio, gender, birthday, location, douyinId } = req.body;
+    const { nickname, bio, gender, birthday, location, douyinId } = req.body
 
-    const updateData: any = {};
+    const updateData: any = {}
 
     if (nickname !== undefined) {
-      updateData.nickname = nickname === '' ? null : nickname;
+      updateData.nickname = nickname === '' ? null : nickname
     }
     if (bio !== undefined) {
-      updateData.bio = bio === '' ? null : bio;
+      updateData.bio = bio === '' ? null : bio
     }
     if (gender !== undefined) {
-      updateData.gender = gender;
+      updateData.gender = gender
     }
     if (birthday !== undefined) {
-      updateData.birthday = birthday ? new Date(birthday) : null;
+      updateData.birthday = birthday ? new Date(birthday) : null
     }
     if (location !== undefined) {
-      updateData.location = location || '未知';
+      updateData.location = location || '未知'
     }
     if (douyinId !== undefined) {
-      updateData.douyinId = douyinId;
+      updateData.douyinId = douyinId
     }
 
     const user = await prisma.user.update({
@@ -292,16 +292,16 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, n
         douyinId: true,
         createdAt: true,
       },
-    });
+    })
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
       createdAt: user.createdAt.toISOString(),
-    });
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
-export default router;
+export default router

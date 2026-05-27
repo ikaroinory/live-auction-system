@@ -1,33 +1,33 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { prisma } from '../lib/prisma';
-import config from '../config';
-import { Gender } from '../../../shared/src/user';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { prisma } from '../lib/prisma'
+import config from '../config'
+import { Gender } from '../../../shared/src/user'
 
 function generateRandomDouyinId(): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
   for (let i = 0; i < 10; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  return result;
+  return result
 }
 
 export class AuthService {
   async register(phone: string, password: string, nickname?: string, location?: string) {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-    let douyinId = generateRandomDouyinId();
-    let isUnique = false;
+    let douyinId = generateRandomDouyinId()
+    let isUnique = false
 
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
         where: { douyinId },
-      });
+      })
       if (!existing) {
-        isUnique = true;
+        isUnique = true
       } else {
-        douyinId = generateRandomDouyinId();
+        douyinId = generateRandomDouyinId()
       }
     }
 
@@ -40,9 +40,9 @@ export class AuthService {
         gender: Gender.UNKNOWN,
         location: location || '未知',
       },
-    });
+    })
 
-    const token = this.generateToken(user.id, user.phone);
+    const token = this.generateToken(user.id, user.phone)
 
     return {
       user: {
@@ -58,25 +58,25 @@ export class AuthService {
         createdAt: user.createdAt.toISOString(),
       },
       token,
-    };
+    }
   }
 
   async login(phone: string, password: string) {
     const user = await prisma.user.findUnique({
       where: { phone },
-    });
+    })
 
     if (!user) {
-      throw new Error('用户不存在');
+      throw new Error('用户不存在')
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-      throw new Error('密码错误');
+      throw new Error('密码错误')
     }
 
-    const token = this.generateToken(user.id, user.phone);
+    const token = this.generateToken(user.id, user.phone)
 
     return {
       user: {
@@ -92,16 +92,16 @@ export class AuthService {
         createdAt: user.createdAt.toISOString(),
       },
       token,
-    };
+    }
   }
 
   async loginOrRegisterByPhone(phone: string, code: string, location?: string) {
     const existingUser = await prisma.user.findUnique({
       where: { phone },
-    });
+    })
 
     if (existingUser) {
-      const token = this.generateToken(existingUser.id, existingUser.phone);
+      const token = this.generateToken(existingUser.id, existingUser.phone)
       return {
         user: {
           id: existingUser.id,
@@ -119,24 +119,24 @@ export class AuthService {
         },
         token,
         isNewUser: false,
-      };
+      }
     }
 
-    let douyinId = generateRandomDouyinId();
-    let isUnique = false;
+    let douyinId = generateRandomDouyinId()
+    let isUnique = false
 
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
         where: { douyinId },
-      });
+      })
       if (!existing) {
-        isUnique = true;
+        isUnique = true
       } else {
-        douyinId = generateRandomDouyinId();
+        douyinId = generateRandomDouyinId()
       }
     }
 
-    const defaultPassword = await bcrypt.hash('sms_login_' + phone, 10);
+    const defaultPassword = await bcrypt.hash('sms_login_' + phone, 10)
     const newUser = await prisma.user.create({
       data: {
         phone,
@@ -146,9 +146,9 @@ export class AuthService {
         gender: Gender.UNKNOWN,
         location: location || '未知',
       },
-    });
+    })
 
-    const token = this.generateToken(newUser.id, newUser.phone);
+    const token = this.generateToken(newUser.id, newUser.phone)
 
     return {
       user: {
@@ -165,10 +165,10 @@ export class AuthService {
       },
       token,
       isNewUser: true,
-    };
+    }
   }
 
   private generateToken(userId: string, phone: string) {
-    return jwt.sign({ id: userId, phone }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+    return jwt.sign({ id: userId, phone }, config.jwt.secret, { expiresIn: config.jwt.expiresIn })
   }
 }
