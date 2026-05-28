@@ -1,8 +1,9 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { Layout, Avatar, Dropdown, Nav, Button } from '@douyinfe/semi-ui';
-import { IconHome, IconLive, IconTickCircle, IconGift, IconExit } from '@douyinfe/semi-icons';
+import { IconHome, IconLive, IconTickCircle, IconGift, IconExit, IconMoon, IconSun } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import './Layout.scss';
 
 const { Sider, Header, Content } = Layout;
@@ -18,6 +19,7 @@ const LayoutComponent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useUserStore();
+  const { mode, toggleMode } = useThemeMode();
 
   const handleSelect = (data: { itemKey: string | number }) => {
     const item = navItems.find((i) => i.itemKey === String(data.itemKey));
@@ -62,11 +64,18 @@ const LayoutComponent: React.FC = () => {
           <div style={{ fontSize: '16px', fontWeight: 500 }}>
             {navItems.find((item) => location.pathname.startsWith(item.path))?.text || '后台管理'}
           </div>
-          <Dropdown render={userMenu} position="bottomRight">
-            <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
-              {user?.username?.charAt(0).toUpperCase()}
-            </Avatar>
-          </Dropdown>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <Button
+              theme="borderless"
+              icon={mode === 'dark' ? <IconSun /> : <IconMoon />}
+              onClick={toggleMode}
+            />
+            <Dropdown render={userMenu} position="bottomRight">
+              <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
+                {user?.username?.charAt(0).toUpperCase()}
+              </Avatar>
+            </Dropdown>
+          </div>
         </Header>
         <Content className="admin-content">
           <Outlet />
