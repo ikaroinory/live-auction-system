@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Table, Button, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
@@ -7,13 +7,18 @@ import type { Auction } from '@/types';
 
 const { Title } = Typography;
 
+interface AuctionRow {
+  id: number;
+  title: string;
+  startPrice: number;
+  finalPrice?: number;
+  status: number;
+  createdAt: string;
+}
+
 const AuctionList: React.FC = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState<Auction[]>([]);
-
-  useEffect(() => {
-    setData([]);
-  }, []);
+  const [data] = useState<Auction[]>([]);
 
   const columns = [
     {
@@ -38,13 +43,13 @@ const AuctionList: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       render: (status: number) => {
-        const statusMap = {
+        const statusMap: Record<number, { text: string; color: string }> = {
           0: { text: '未开始', color: 'default' },
           1: { text: '进行中', color: 'success' },
           2: { text: '已结束', color: 'warning' },
           3: { text: '已取消', color: 'danger' }
         };
-        const { text, color } = statusMap[status as keyof typeof statusMap] || { text: '未知', color: 'default' };
+        const { text, color } = statusMap[status] || { text: '未知', color: 'default' };
         return <Tag color={color}>{text}</Tag>;
       }
     },
@@ -55,7 +60,7 @@ const AuctionList: React.FC = () => {
     },
     {
       title: '操作',
-      render: (_: any, record: Auction) => (
+      render: (_: unknown, record: AuctionRow) => (
         <Space>
           <Button size="small" onClick={() => navigate(`/auction/${record.id}`)}>
             详情
