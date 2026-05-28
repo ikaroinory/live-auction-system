@@ -4,7 +4,7 @@ import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from
 import { IconPlus, IconMinus, IconUpload } from '@douyinfe/semi-icons';
 import { auctionService } from '@/services';
 import type { AuctionFormData } from '@/types';
-import './Create.scss';
+import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
 
@@ -52,14 +52,14 @@ const AuctionCreate: React.FC = () => {
   };
 
   return (
-    <div className="auction-form-container">
+    <div className={styles.auctionFormContainer}>
       <Title heading={4} style={{ marginBottom: 24 }}>
         发布新竞拍
       </Title>
 
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">商品信息</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>商品信息</div>
 
           <Form.TextArea
             field="title"
@@ -78,9 +78,9 @@ const AuctionCreate: React.FC = () => {
           />
 
           <Form.Label>商品图片（最多4张）</Form.Label>
-          <div className="image-upload-grid">
+          <div className={styles.imageUploadGrid}>
             {images.map((url, index) => (
-              <div key={index} className="image-upload-item">
+              <div key={index} className={styles.imageUploadItem}>
                 <img src={url} alt={`商品图片 ${index + 1}`} />
                 <Button
                   size="small"
@@ -94,8 +94,8 @@ const AuctionCreate: React.FC = () => {
               </div>
             ))}
             {images.length < 4 && (
-              <div className="image-upload-item" onClick={handleImageUpload}>
-                <div className="image-upload-placeholder">
+              <div className={styles.imageUploadItem} onClick={handleImageUpload}>
+                <div className={styles.imageUploadPlaceholder}>
                   <IconUpload size={24} />
                   <Text type="tertiary" size="small">
                     上传图片
@@ -106,10 +106,10 @@ const AuctionCreate: React.FC = () => {
           </div>
         </div>
 
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">竞拍规则配置</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>竞拍规则配置</div>
 
-          <div className="auction-form-grid">
+          <div className={styles.auctionFormGrid}>
             <Form.InputNumber
               field="startPrice"
               label="起拍价"
@@ -175,29 +175,29 @@ const AuctionCreate: React.FC = () => {
                 { type: 'number', min: 60, message: '竞拍时长至少60秒' }
               ]}
             />
-            <div className="duration-presets">
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(60)}>
+            <div className={styles.durationPresets}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(60)}>
                 1分钟
               </button>
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(300)}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(300)}>
                 5分钟
               </button>
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(900)}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(900)}>
                 15分钟
               </button>
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(1800)}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(1800)}>
                 30分钟
               </button>
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(3600)}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(3600)}>
                 1小时
               </button>
-              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(7200)}>
+              <button type="button" className={styles.durationPresetBtn} onClick={() => setDurationPreset(7200)}>
                 2小时
               </button>
             </div>
           </div>
 
-          <Card style={{ marginTop: 24, background: '#f8f9fa' }}>
+          <Card style={{ marginTop: 24, background: 'var(--semi-color-bg-2)' }}>
             <Title heading={6}>规则说明</Title>
             <ul style={{ marginTop: 12, paddingLeft: 20, lineHeight: 1.8 }}>
               <li>起拍价：用户出价的起始价格</li>
@@ -209,7 +209,7 @@ const AuctionCreate: React.FC = () => {
           </Card>
         </div>
 
-        <div className="auction-form-actions">
+        <div className={styles.auctionFormActions}>
           <Button onClick={() => navigate('/auction/list')}>取消</Button>
           <Button type="primary" htmlType="submit" loading={loading}>
             发布竞拍

@@ -4,7 +4,7 @@ import { Layout, Avatar, Dropdown, Nav, Button } from '@douyinfe/semi-ui';
 import { IconHome, IconLive, IconTickCircle, IconGift, IconExit, IconMoon, IconSun } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import { useThemeMode } from '@/hooks/useThemeMode';
-import './Layout.scss';
+import styles from './Layout.module.scss';
 
 const { Sider, Header, Content } = Layout;
 
@@ -47,8 +47,8 @@ const LayoutComponent: React.FC = () => {
   );
 
   return (
-    <div className="admin-layout">
-      <Sider className="admin-sider">
+    <div className={styles.adminLayout}>
+      <Sider className={styles.adminSider}>
         <Nav
           selectedKeys={[getCurrentKey()]}
           items={navItems}
@@ -60,7 +60,7 @@ const LayoutComponent: React.FC = () => {
         />
       </Sider>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Header className="admin-header">
+        <Header className={styles.adminHeader}>
           <div style={{ fontSize: '16px', fontWeight: 500 }}>
             {navItems.find((item) => location.pathname.startsWith(item.path))?.text || '后台管理'}
           </div>
@@ -77,7 +77,7 @@ const LayoutComponent: React.FC = () => {
             </Dropdown>
           </div>
         </Header>
-        <Content className="admin-content">
+        <Content className={styles.adminContent}>
           <Outlet />
         </Content>
       </div>

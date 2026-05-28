@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from '@douyinfe/semi-ui';
-import './Create.scss';
+import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
 
@@ -34,14 +34,14 @@ const ProductCreate: React.FC = () => {
   };
 
   return (
-    <div className="auction-form-container">
+    <div className={styles.auctionFormContainer}>
       <Title heading={4} style={{ marginBottom: 24 }}>
         添加商品
       </Title>
 
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">商品信息</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>商品信息</div>
 
           <Form.Input
             field="name"
@@ -75,9 +75,9 @@ const ProductCreate: React.FC = () => {
           />
 
           <Form.Label>商品图片（最多4张）</Form.Label>
-          <div className="image-upload-grid">
+          <div className={styles.imageUploadGrid}>
             {images.map((url, index) => (
-              <div key={index} className="image-upload-item">
+              <div key={index} className={styles.imageUploadItem}>
                 <img src={url} alt={`商品图片 ${index + 1}`} />
                 <Button
                   size="small"
@@ -91,8 +91,8 @@ const ProductCreate: React.FC = () => {
               </div>
             ))}
             {images.length < 4 && (
-              <div className="image-upload-item" onClick={handleImageUpload}>
-                <div className="image-upload-placeholder">
+              <div className={styles.imageUploadItem} onClick={handleImageUpload}>
+                <div className={styles.imageUploadPlaceholder}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17,8 12,3 7,8" />
@@ -107,7 +107,7 @@ const ProductCreate: React.FC = () => {
           </div>
         </div>
 
-        <div className="auction-form-actions">
+        <div className={styles.auctionFormActions}>
           <Button onClick={() => navigate('/product/list')}>取消</Button>
           <Button type="primary" htmlType="submit" loading={loading}>
             添加商品

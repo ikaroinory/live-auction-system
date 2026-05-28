@@ -4,7 +4,7 @@ import { Form, Input, Button, Toast } from '@douyinfe/semi-ui';
 import { IconPhone, IconKey } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import { authService } from '@/services';
-import './Login.scss';
+import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -54,11 +54,11 @@ const Login: React.FC = () => {
   }, [countdown]);
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1 className="login-title">直播竞拍管理系统</h1>
-        <p className="login-subtitle">商家/主播端管理后台</p>
-        <Form onSubmit={handleSubmit} className="login-form">
+    <div className={styles.loginContainer}>
+      <div className={styles.loginCard}>
+        <h1 className={styles.loginTitle}>直播竞拍管理系统</h1>
+        <p className={styles.loginSubtitle}>商家/主播端管理后台</p>
+        <Form onSubmit={handleSubmit} className={styles.loginForm}>
           <Form.Input
             field="phone"
             label="手机号"
@@ -91,7 +91,7 @@ const Login: React.FC = () => {
               </Button>
             }
           />
-          <Button htmlType="submit" className="login-button" loading={loading}>
+          <Button htmlType="submit" className={styles.loginButton} loading={loading}>
             登录
           </Button>
         </Form>

@@ -1,0 +1,29 @@
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.adminSider {
+  width: 240px;
+  background: var(--semi-color-bg-1);
+  border-right: 1px solid var(--semi-color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.adminHeader {
+  height: 64px;
+  background: var(--semi-color-bg-1);
+  border-bottom: 1px solid var(--semi-color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.adminContent {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--semi-color-bg-0);
+}
