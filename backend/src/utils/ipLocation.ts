@@ -33,7 +33,7 @@ function getLocationByIp(ip: string): string {
     '中国·四川·成都',
     '中国·湖北·武汉',
     '中国·陕西·西安',
-    '中国·山东·青岛',
+    '中国·山东·青岛'
   ]
 
   const index = lastSegment % locations.length

@@ -137,8 +137,8 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true,
-      },
+        createdAt: true
+      }
     })
 
     if (!user) {
@@ -148,7 +148,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: user.createdAt.toISOString()
     })
   } catch (error) {
     next(error)
@@ -234,14 +234,14 @@ router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, ne
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true,
-      },
+        createdAt: true
+      }
     })
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: user.createdAt.toISOString()
     })
   } catch (error) {
     next(error)
@@ -290,14 +290,14 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, n
         birthday: true,
         location: true,
         douyinId: true,
-        createdAt: true,
-      },
+        createdAt: true
+      }
     })
 
     res.json({
       ...user,
       birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: user.createdAt.toISOString()
     })
   } catch (error) {
     next(error)

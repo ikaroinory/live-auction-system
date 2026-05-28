@@ -22,7 +22,7 @@ export class AuthService {
 
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
-        where: { douyinId },
+        where: { douyinId }
       })
       if (!existing) {
         isUnique = true
@@ -38,8 +38,8 @@ export class AuthService {
         nickname: nickname || phone,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '未知',
-      },
+        location: location || '未知'
+      }
     })
 
     const token = this.generateToken(user.id, user.phone)
@@ -55,15 +55,15 @@ export class AuthService {
         birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
         location: user.location,
         douyinId: user.douyinId,
-        createdAt: user.createdAt.toISOString(),
+        createdAt: user.createdAt.toISOString()
       },
-      token,
+      token
     }
   }
 
   async login(phone: string, password: string) {
     const user = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone }
     })
 
     if (!user) {
@@ -89,15 +89,15 @@ export class AuthService {
         birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
         location: user.location,
         douyinId: user.douyinId,
-        createdAt: user.createdAt.toISOString(),
+        createdAt: user.createdAt.toISOString()
       },
-      token,
+      token
     }
   }
 
   async loginOrRegisterByPhone(phone: string, code: string, location?: string) {
     const existingUser = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone }
     })
 
     if (existingUser) {
@@ -115,10 +115,10 @@ export class AuthService {
             : undefined,
           location: existingUser.location,
           douyinId: existingUser.douyinId,
-          createdAt: existingUser.createdAt.toISOString(),
+          createdAt: existingUser.createdAt.toISOString()
         },
         token,
-        isNewUser: false,
+        isNewUser: false
       }
     }
 
@@ -127,7 +127,7 @@ export class AuthService {
 
     while (!isUnique) {
       const existing = await prisma.user.findUnique({
-        where: { douyinId },
+        where: { douyinId }
       })
       if (!existing) {
         isUnique = true
@@ -144,8 +144,8 @@ export class AuthService {
         nickname: `用户${phone.slice(-4)}`,
         douyinId,
         gender: Gender.UNKNOWN,
-        location: location || '未知',
-      },
+        location: location || '未知'
+      }
     })
 
     const token = this.generateToken(newUser.id, newUser.phone)
@@ -161,10 +161,10 @@ export class AuthService {
         birthday: newUser.birthday ? newUser.birthday.toISOString().split('T')[0] : undefined,
         location: newUser.location,
         douyinId: newUser.douyinId,
-        createdAt: newUser.createdAt.toISOString(),
+        createdAt: newUser.createdAt.toISOString()
       },
       token,
-      isNewUser: true,
+      isNewUser: true
     }
   }
 

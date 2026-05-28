@@ -82,21 +82,21 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
           select: {
             id: true,
             phone: true,
-            nickname: true,
-          },
+            nickname: true
+          }
         },
         winner: {
           select: {
             id: true,
             phone: true,
-            nickname: true,
-          },
+            nickname: true
+          }
         },
         _count: {
-          select: { bids: true },
-        },
+          select: { bids: true }
+        }
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     })
 
     res.json(auctions)
@@ -135,15 +135,15 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
           select: {
             id: true,
             phone: true,
-            nickname: true,
-          },
+            nickname: true
+          }
         },
         winner: {
           select: {
             id: true,
             phone: true,
-            nickname: true,
-          },
+            nickname: true
+          }
         },
         bids: {
           include: {
@@ -151,14 +151,14 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
               select: {
                 id: true,
                 phone: true,
-                nickname: true,
-              },
-            },
+                nickname: true
+              }
+            }
           },
           orderBy: { createdAt: 'desc' },
-          take: 20,
-        },
-      },
+          take: 20
+        }
+      }
     })
 
     if (!auction) {
@@ -229,7 +229,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       minIncrement,
       maxPrice,
       durationSeconds,
-      autoExtendSeconds,
+      autoExtendSeconds
     } = req.body
 
     const auction = await prisma.auction.create({
@@ -243,8 +243,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         maxPrice: maxPrice || null,
         durationSeconds,
         autoExtendSeconds: autoExtendSeconds || 15,
-        status: 0,
-      },
+        status: 0
+      }
     })
 
     res.status(201).json(auction)

@@ -65,14 +65,14 @@ router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, 
             id: true,
             phone: true,
             nickname: true,
-            avatar: true,
-          },
+            avatar: true
+          }
         },
         _count: {
-          select: { followers: true, auctions: true },
-        },
+          select: { followers: true, auctions: true }
+        }
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     })
 
     // 添加关注状态
@@ -80,20 +80,20 @@ router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, 
       const userId = req.user.id
       const userFollowedRooms = await prisma.liveRoomFollow.findMany({
         where: { userId },
-        select: { liveRoomId: true },
+        select: { liveRoomId: true }
       })
 
       const followedIds = new Set(userFollowedRooms.map((f) => f.liveRoomId))
 
       liveRooms = liveRooms.map((room) => ({
         ...room,
-        isFollowed: followedIds.has(room.id),
+        isFollowed: followedIds.has(room.id)
       }))
     } else {
       // 未登录时，设置 isFollowed 为 false
       liveRooms = liveRooms.map((room) => ({
         ...room,
-        isFollowed: false,
+        isFollowed: false
       }))
     }
 
@@ -137,14 +137,14 @@ router.get(
               id: true,
               phone: true,
               nickname: true,
-              avatar: true,
-            },
+              avatar: true
+            }
           },
           _count: {
-            select: { followers: true, auctions: true },
+            select: { followers: true, auctions: true }
           },
-          auctions: true,
-        },
+          auctions: true
+        }
       })
 
       if (!liveRoom) {
@@ -155,7 +155,7 @@ router.get(
       let isFollowed = false
       if (req.user?.id) {
         const followRecord = await prisma.liveRoomFollow.findFirst({
-          where: { userId: req.user.id, liveRoomId: id },
+          where: { userId: req.user.id, liveRoomId: id }
         })
         isFollowed = !!followRecord
       }
@@ -210,8 +210,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         title,
         description: description || null,
         coverImage: coverImage || null,
-        status: 0,
-      },
+        status: 0
+      }
     })
 
     res.status(201).json(liveRoom)
@@ -270,7 +270,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
 
     // 检查直播间是否存在且当前用户是否是主播
     const existingRoom = await prisma.liveRoom.findUnique({
-      where: { id },
+      where: { id }
     })
 
     if (!existingRoom) {
@@ -296,7 +296,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
 
     const liveRoom = await prisma.liveRoom.update({
       where: { id },
-      data,
+      data
     })
 
     res.json(liveRoom)
@@ -341,7 +341,7 @@ router.post(
 
       // 检查直播间是否存在
       const liveRoom = await prisma.liveRoom.findUnique({
-        where: { id },
+        where: { id }
       })
 
       if (!liveRoom) {
@@ -353,14 +353,14 @@ router.post(
         where: {
           userId_liveRoomId: {
             userId: req.user.id,
-            liveRoomId: id,
-          },
+            liveRoomId: id
+          }
         },
         create: {
           userId: req.user.id,
-          liveRoomId: id,
+          liveRoomId: id
         },
-        update: {},
+        update: {}
       })
 
       res.json({ message: '关注成功', follow })
@@ -408,8 +408,8 @@ router.post(
       await prisma.liveRoomFollow.deleteMany({
         where: {
           userId: req.user.id,
-          liveRoomId: id,
-        },
+          liveRoomId: id
+        }
       })
 
       res.json({ message: '取消关注成功' })
@@ -452,16 +452,16 @@ router.get(
                   id: true,
                   phone: true,
                   nickname: true,
-                  avatar: true,
-                },
+                  avatar: true
+                }
               },
               _count: {
-                select: { followers: true, auctions: true },
-              },
-            },
-          },
+                select: { followers: true, auctions: true }
+              }
+            }
+          }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' }
       })
 
       res.json(follows)
