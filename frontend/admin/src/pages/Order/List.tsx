@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tag, Space } from '@douyinfe/semi-ui';
+import { Table, Tag } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 
 const { Title } = Typography;
@@ -27,12 +27,12 @@ const OrderList: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       render: (status: number) => {
-        const statusMap = {
+        const statusMap: Record<number, { text: string; color: string }> = {
           0: { text: '待支付', color: 'warning' },
           1: { text: '已支付', color: 'success' },
           2: { text: '已取消', color: 'default' }
         };
-        const { text, color } = statusMap[status as keyof typeof statusMap] || { text: '未知', color: 'default' };
+        const { text, color } = statusMap[status] || { text: '未知', color: 'default' };
         return <Tag color={color}>{text}</Tag>;
       }
     },
