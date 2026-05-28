@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from '@douyinfe/semi-ui';
-import { IconPlus, IconMinus, IconUpload } from '@douyinfe/semi-icons';
+import { Card, Form, Button, Typography, Toast } from '@douyinfe/semi-ui';
+import { IconUpload } from '@douyinfe/semi-icons';
 import { auctionService } from '@/services';
 import type { AuctionFormData } from '@/types';
 import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
+
+interface FormValues {
+  title?: string;
+  description?: string;
+  startPrice?: number;
+  minIncrement?: number;
+  maxPrice?: number;
+  autoExtendSeconds?: number;
+  durationSeconds?: number;
+}
 
 const AuctionCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -24,21 +34,26 @@ const AuctionCreate: React.FC = () => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     setLoading(true);
     try {
       const formData: AuctionFormData = {
-        ...values,
-        images,
+        title: values.title || '',
+        description: values.description || '',
+        startPrice: values.startPrice || 0,
+        minIncrement: values.minIncrement || 1,
+        maxPrice: values.maxPrice,
+        autoExtendSeconds: values.autoExtendSeconds || 15,
         durationSeconds: values.durationSeconds || 3600,
-        autoExtendSeconds: values.autoExtendSeconds || 15
+        images,
       };
 
       await auctionService.create(formData);
       Toast.success('竞拍发布成功');
       navigate('/auction/list');
-    } catch (error: any) {
-      Toast.error(error.response?.data?.message || '发布失败');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Toast.error(err.response?.data?.message || '发布失败');
     } finally {
       setLoading(false);
     }
