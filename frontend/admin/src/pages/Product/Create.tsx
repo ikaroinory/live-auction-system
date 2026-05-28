@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from '@douyinfe/semi-ui';
+import { Form, Button, Typography, Toast } from '@douyinfe/semi-ui';
 import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
+
+interface FormValues {
+  name?: string;
+  description?: string;
+  price?: number;
+}
 
 const ProductCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -21,13 +27,14 @@ const ProductCreate: React.FC = () => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (_values: FormValues) => {
     setLoading(true);
     try {
       Toast.success('商品添加成功');
       navigate('/product/list');
-    } catch (error: any) {
-      Toast.error(error.response?.data?.message || '添加失败');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Toast.error(err.response?.data?.message || '添加失败');
     } finally {
       setLoading(false);
     }
