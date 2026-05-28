@@ -19,8 +19,8 @@ const LayoutComponent: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useUserStore();
 
-  const handleSelect = (data: { itemKey: string }) => {
-    const item = navItems.find((i) => i.itemKey === data.itemKey);
+  const handleSelect = (data: { itemKey: string | number }) => {
+    const item = navItems.find((i) => i.itemKey === String(data.itemKey));
     if (item) {
       navigate(item.path);
     }
