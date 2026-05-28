@@ -8,8 +8,8 @@ export interface User {
 }
 
 export interface LoginRequest {
-  username: string;
-  password: string;
+  phone: string;
+  code: string;
 }
 
 export interface LoginResponse {
