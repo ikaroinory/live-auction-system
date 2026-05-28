@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space, Divider } from '@douyinfe/semi-ui';
+import { Card, Form, Button, Typography, Toast, Divider } from '@douyinfe/semi-ui';
 import { auctionService } from '@/services';
 import RuleForm from '@/components/Form/RuleForm';
 import type { AuctionFormData, RuleConfig } from '@/types';
-import './Create.scss';
+import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
+
+interface FormValues {
+  title?: string;
+  description?: string;
+  startPrice?: number;
+  minIncrement?: number;
+  maxPrice?: number;
+  durationSeconds?: number;
+}
 
 const AuctionCreateAdvanced: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +41,7 @@ const AuctionCreateAdvanced: React.FC = () => {
     setBasicRule({ ...basicRule, ...values });
   };
 
-  const validateForm = (values: any): string | null => {
+  const validateForm = (values: FormValues): string | null => {
     if (!values.title || values.title.trim() === '') {
       return '请输入商品标题';
     }
@@ -45,16 +54,16 @@ const AuctionCreateAdvanced: React.FC = () => {
     if (images.length === 0) {
       return '请至少上传一张商品图片';
     }
-    if (values.startPrice < 0) {
+    if (values.startPrice !== undefined && values.startPrice < 0) {
       return '起拍价不能为负数';
     }
     if (!values.minIncrement || values.minIncrement <= 0) {
       return '最小加价幅度必须大于0';
     }
-    if (values.maxPrice && values.maxPrice <= values.startPrice) {
+    if (values.maxPrice && values.startPrice && values.maxPrice <= values.startPrice) {
       return '封顶价必须大于起拍价';
     }
-    if (values.maxPrice && basicRule.minIncrement && values.maxPrice < values.startPrice + basicRule.minIncrement) {
+    if (values.maxPrice && basicRule.minIncrement && values.startPrice && values.maxPrice < values.startPrice + basicRule.minIncrement) {
       return '封顶价必须大于起拍价加最小加价幅度';
     }
     if (!values.durationSeconds || values.durationSeconds < 60) {
@@ -63,7 +72,7 @@ const AuctionCreateAdvanced: React.FC = () => {
     return null;
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     const error = validateForm(values);
     if (error) {
       Toast.error(error);
@@ -73,35 +82,36 @@ const AuctionCreateAdvanced: React.FC = () => {
     setLoading(true);
     try {
       const formData: AuctionFormData = {
-        title: values.title,
-        description: values.description,
+        title: values.title || '',
+        description: values.description || '',
         images,
-        startPrice: values.startPrice,
-        minIncrement: basicRule.minIncrement || values.minIncrement,
+        startPrice: values.startPrice || 0,
+        minIncrement: basicRule.minIncrement || values.minIncrement || 1,
         maxPrice: basicRule.maxPrice || values.maxPrice,
-        durationSeconds: values.durationSeconds,
+        durationSeconds: values.durationSeconds || 60,
         autoExtendSeconds: basicRule.enableAutoExtend ? basicRule.autoExtendSeconds || 15 : 0
       };
 
       await auctionService.create(formData);
       Toast.success('竞拍发布成功');
       navigate('/auction/list');
-    } catch (error: any) {
-      Toast.error(error.response?.data?.message || '发布失败');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Toast.error(err.response?.data?.message || '发布失败');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auction-form-container">
+    <div className={styles.auctionFormContainer}>
       <Title heading={4} style={{ marginBottom: 24 }}>
         发布新竞拍
       </Title>
 
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">基本信息</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>基本信息</div>
 
           <Form.TextArea
             field="title"
@@ -134,9 +144,9 @@ const AuctionCreateAdvanced: React.FC = () => {
               （最多4张，第一张为主图）
             </Text>
           </Form.Label>
-          <div className="image-upload-grid">
+          <div className={styles.imageUploadGrid}>
             {images.map((url, index) => (
-              <div key={index} className="image-upload-item">
+              <div key={index} className={styles.imageUploadItem}>
                 <img src={url} alt={`商品图片 ${index + 1}`} />
                 {index === 0 && (
                   <div
@@ -144,7 +154,7 @@ const AuctionCreateAdvanced: React.FC = () => {
                       position: 'absolute',
                       top: 4,
                       left: 4,
-                      background: 'var(--color-primary)',
+                      background: 'var(--semi-color-primary)',
                       color: 'white',
                       padding: '2px 8px',
                       borderRadius: 4,
@@ -166,8 +176,8 @@ const AuctionCreateAdvanced: React.FC = () => {
               </div>
             ))}
             {images.length < 4 && (
-              <div className="image-upload-item" onClick={handleImageUpload}>
-                <div className="image-upload-placeholder">
+              <div className={styles.imageUploadItem} onClick={handleImageUpload}>
+                <div className={styles.imageUploadPlaceholder}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17,8 12,3 7,8" />
@@ -182,10 +192,10 @@ const AuctionCreateAdvanced: React.FC = () => {
           </div>
         </div>
 
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">价格规则</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>价格规则</div>
 
-          <div className="auction-form-grid">
+          <div className={styles.auctionFormGrid}>
             <Form.InputNumber
               field="startPrice"
               label="起拍价"
@@ -231,8 +241,8 @@ const AuctionCreateAdvanced: React.FC = () => {
           </div>
         </div>
 
-        <div className="auction-form-section">
-          <div className="auction-form-section-title">时间规则</div>
+        <div className={styles.auctionFormSection}>
+          <div className={styles.auctionFormSectionTitle}>时间规则</div>
 
           <Form.InputNumber
             field="durationSeconds"
@@ -246,23 +256,23 @@ const AuctionCreateAdvanced: React.FC = () => {
               { type: 'number', min: 60, message: '竞拍时长至少60秒' }
             ]}
           />
-          <div className="duration-presets">
-            <button type="button" className="duration-preset-btn">
+          <div className={styles.durationPresets}>
+            <button type="button" className={styles.durationPresetBtn}>
               1分钟
             </button>
-            <button type="button" className="duration-preset-btn">
+            <button type="button" className={styles.durationPresetBtn}>
               5分钟
             </button>
-            <button type="button" className="duration-preset-btn">
+            <button type="button" className={styles.durationPresetBtn}>
               15分钟
             </button>
-            <button type="button" className="duration-preset-btn">
+            <button type="button" className={styles.durationPresetBtn}>
               30分钟
             </button>
-            <button type="button" className="duration-preset-btn">
+            <button type="button" className={styles.durationPresetBtn}>
               1小时
             </button>
-            <button type="button" className="duration-preset-btn">
+            <button type="button" className={styles.durationPresetBtn}>
               2小时
             </button>
           </div>
@@ -272,12 +282,12 @@ const AuctionCreateAdvanced: React.FC = () => {
           <RuleForm initialValues={basicRule} onValuesChange={handleRuleChange} />
         </div>
 
-        <div className="auction-form-section">
-          <Card style={{ background: '#fff3e0', border: '1px solid #ffcc80' }}>
-            <Title heading={6} style={{ color: '#e65100', marginBottom: 12 }}>
+        <div className={styles.auctionFormSection}>
+          <Card style={{ background: 'var(--semi-color-warning-light)', border: '1px solid var(--semi-color-warning)' }}>
+            <Title heading={6} style={{ color: 'var(--semi-color-warning)', marginBottom: 12 }}>
               发布前检查
             </Title>
-            <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 2, color: '#bf360c' }}>
+            <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 2, color: 'var(--semi-color-warning)' }}>
               <li>确认商品信息填写完整准确</li>
               <li>确认至少上传一张商品图片</li>
               <li>确认竞拍规则设置合理</li>
@@ -286,7 +296,7 @@ const AuctionCreateAdvanced: React.FC = () => {
           </Card>
         </div>
 
-        <div className="auction-form-actions">
+        <div className={styles.auctionFormActions}>
           <Button onClick={() => navigate('/auction/list')}>取消</Button>
           <Button type="primary" htmlType="submit" loading={loading}>
             发布竞拍
