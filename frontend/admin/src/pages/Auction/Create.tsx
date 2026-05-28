@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Typography,
-  Toast,
-  Space,
-} from '@douyinfe/semi-ui';
+import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from '@douyinfe/semi-ui';
 import { IconPlus, IconMinus, IconUpload } from '@douyinfe/semi-icons';
 import { auctionService } from '@/services';
 import type { AuctionFormData } from '@/types';
@@ -40,7 +31,7 @@ const AuctionCreate: React.FC = () => {
         ...values,
         images,
         durationSeconds: values.durationSeconds || 3600,
-        autoExtendSeconds: values.autoExtendSeconds || 15,
+        autoExtendSeconds: values.autoExtendSeconds || 15
       };
 
       await auctionService.create(formData);
@@ -55,7 +46,7 @@ const AuctionCreate: React.FC = () => {
 
   const setDurationPreset = (seconds: number) => {
     const event = new CustomEvent('setFieldValue', {
-      detail: { durationSeconds: seconds },
+      detail: { durationSeconds: seconds }
     });
     window.dispatchEvent(event);
   };
@@ -69,7 +60,7 @@ const AuctionCreate: React.FC = () => {
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <div className="auction-form-section">
           <div className="auction-form-section-title">商品信息</div>
-          
+
           <Form.TextArea
             field="title"
             label="商品标题"
@@ -106,7 +97,9 @@ const AuctionCreate: React.FC = () => {
               <div className="image-upload-item" onClick={handleImageUpload}>
                 <div className="image-upload-placeholder">
                   <IconUpload size={24} />
-                  <Text type="tertiary" size="small">上传图片</Text>
+                  <Text type="tertiary" size="small">
+                    上传图片
+                  </Text>
                 </div>
               </div>
             )}
@@ -115,7 +108,7 @@ const AuctionCreate: React.FC = () => {
 
         <div className="auction-form-section">
           <div className="auction-form-section-title">竞拍规则配置</div>
-          
+
           <div className="auction-form-grid">
             <Form.InputNumber
               field="startPrice"
@@ -127,7 +120,7 @@ const AuctionCreate: React.FC = () => {
               precision={2}
               rules={[
                 { required: true, message: '请输入起拍价' },
-                { type: 'number', min: 0, message: '起拍价不能为负数' },
+                { type: 'number', min: 0, message: '起拍价不能为负数' }
               ]}
             />
 
@@ -141,7 +134,7 @@ const AuctionCreate: React.FC = () => {
               precision={2}
               rules={[
                 { required: true, message: '请输入最小加价幅度' },
-                { type: 'number', min: 0.01, message: '加价幅度必须大于0' },
+                { type: 'number', min: 0.01, message: '加价幅度必须大于0' }
               ]}
             />
 
@@ -164,7 +157,7 @@ const AuctionCreate: React.FC = () => {
               max={60}
               rules={[
                 { type: 'number', min: 0, message: '延时时间不能为负数' },
-                { type: 'number', max: 60, message: '延时时间不能超过60秒' },
+                { type: 'number', max: 60, message: '延时时间不能超过60秒' }
               ]}
             />
           </div>
@@ -179,50 +172,26 @@ const AuctionCreate: React.FC = () => {
               style={{ width: '100%' }}
               rules={[
                 { required: true, message: '请输入竞拍时长' },
-                { type: 'number', min: 60, message: '竞拍时长至少60秒' },
+                { type: 'number', min: 60, message: '竞拍时长至少60秒' }
               ]}
             />
             <div className="duration-presets">
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(60)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(60)}>
                 1分钟
               </button>
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(300)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(300)}>
                 5分钟
               </button>
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(900)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(900)}>
                 15分钟
               </button>
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(1800)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(1800)}>
                 30分钟
               </button>
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(3600)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(3600)}>
                 1小时
               </button>
-              <button
-                type="button"
-                className="duration-preset-btn"
-                onClick={() => setDurationPreset(7200)}
-              >
+              <button type="button" className="duration-preset-btn" onClick={() => setDurationPreset(7200)}>
                 2小时
               </button>
             </div>
@@ -241,14 +210,8 @@ const AuctionCreate: React.FC = () => {
         </div>
 
         <div className="auction-form-actions">
-          <Button onClick={() => navigate('/auction/list')}>
-            取消
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-          >
+          <Button onClick={() => navigate('/auction/list')}>取消</Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
             发布竞拍
           </Button>
         </div>

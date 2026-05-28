@@ -66,7 +66,7 @@ const Login: React.FC = () => {
             prefix={<IconPhone />}
             rules={[
               { required: true, message: '请输入手机号' },
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式' },
+              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式' }
             ]}
           />
           <Form.Input
@@ -76,7 +76,7 @@ const Login: React.FC = () => {
             prefix={<IconKey />}
             rules={[
               { required: true, message: '请输入验证码' },
-              { pattern: /^\d{6}$/, message: '请输入6位验证码' },
+              { pattern: /^\d{6}$/, message: '请输入6位验证码' }
             ]}
             extra={
               <Button
@@ -91,11 +91,7 @@ const Login: React.FC = () => {
               </Button>
             }
           />
-          <Button
-            htmlType="submit"
-            className="login-button"
-            loading={loading}
-          >
+          <Button htmlType="submit" className="login-button" loading={loading}>
             登录
           </Button>
         </Form>

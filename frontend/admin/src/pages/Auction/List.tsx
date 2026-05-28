@@ -18,21 +18,21 @@ const AuctionList: React.FC = () => {
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'id',
+      dataIndex: 'id'
     },
     {
       title: '标题',
-      dataIndex: 'title',
+      dataIndex: 'title'
     },
     {
       title: '起拍价',
       dataIndex: 'startPrice',
-      render: (price: number) => `¥${price.toFixed(2)}`,
+      render: (price: number) => `¥${price.toFixed(2)}`
     },
     {
       title: '当前价',
       dataIndex: 'finalPrice',
-      render: (price?: number) => price ? `¥${price.toFixed(2)}` : '-',
+      render: (price?: number) => (price ? `¥${price.toFixed(2)}` : '-')
     },
     {
       title: '状态',
@@ -42,40 +42,34 @@ const AuctionList: React.FC = () => {
           0: { text: '未开始', color: 'default' },
           1: { text: '进行中', color: 'success' },
           2: { text: '已结束', color: 'warning' },
-          3: { text: '已取消', color: 'danger' },
+          3: { text: '已取消', color: 'danger' }
         };
         const { text, color } = statusMap[status as keyof typeof statusMap] || { text: '未知', color: 'default' };
         return <Tag color={color}>{text}</Tag>;
-      },
+      }
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleString('zh-CN'),
+      render: (date: string) => new Date(date).toLocaleString('zh-CN')
     },
     {
       title: '操作',
       render: (_: any, record: Auction) => (
         <Space>
-          <Button
-            size="small"
-            onClick={() => navigate(`/auction/${record.id}`)}
-          >
+          <Button size="small" onClick={() => navigate(`/auction/${record.id}`)}>
             详情
           </Button>
         </Space>
-      ),
-    },
+      )
+    }
   ];
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Title heading={4}>竞拍列表</Title>
-        <Button
-          icon={<IconPlus />}
-          onClick={() => navigate('/auction/create')}
-        >
+        <Button icon={<IconPlus />} onClick={() => navigate('/auction/create')}>
           发布竞拍
         </Button>
       </div>

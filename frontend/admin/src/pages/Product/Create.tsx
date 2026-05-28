@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Typography,
-  Toast,
-  Space,
-} from '@douyinfe/semi-ui';
+import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space } from '@douyinfe/semi-ui';
 import './Create.scss';
 
 const { Title, Text } = Typography;
@@ -51,7 +42,7 @@ const ProductCreate: React.FC = () => {
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <div className="auction-form-section">
           <div className="auction-form-section-title">商品信息</div>
-          
+
           <Form.Input
             field="name"
             label="商品名称"
@@ -78,7 +69,7 @@ const ProductCreate: React.FC = () => {
             precision={2}
             rules={[
               { required: true, message: '请输入商品价格' },
-              { type: 'number', min: 0, message: '价格不能为负数' },
+              { type: 'number', min: 0, message: '价格不能为负数' }
             ]}
             style={{ marginBottom: 20, width: '50%' }}
           />
@@ -107,7 +98,9 @@ const ProductCreate: React.FC = () => {
                     <polyline points="17,8 12,3 7,8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <Text type="tertiary" size="small">上传图片</Text>
+                  <Text type="tertiary" size="small">
+                    上传图片
+                  </Text>
                 </div>
               </div>
             )}
@@ -115,14 +108,8 @@ const ProductCreate: React.FC = () => {
         </div>
 
         <div className="auction-form-actions">
-          <Button onClick={() => navigate('/product/list')}>
-            取消
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-          >
+          <Button onClick={() => navigate('/product/list')}>取消</Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
             添加商品
           </Button>
         </div>

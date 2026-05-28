@@ -8,20 +8,20 @@ const OrderList: React.FC = () => {
   const columns = [
     {
       title: '订单号',
-      dataIndex: 'id',
+      dataIndex: 'id'
     },
     {
       title: '竞拍标题',
-      dataIndex: 'auctionTitle',
+      dataIndex: 'auctionTitle'
     },
     {
       title: '买家',
-      dataIndex: 'buyer',
+      dataIndex: 'buyer'
     },
     {
       title: '成交价',
       dataIndex: 'finalPrice',
-      render: (price: number) => `¥${price.toFixed(2)}`,
+      render: (price: number) => `¥${price.toFixed(2)}`
     },
     {
       title: '状态',
@@ -30,16 +30,16 @@ const OrderList: React.FC = () => {
         const statusMap = {
           0: { text: '待支付', color: 'warning' },
           1: { text: '已支付', color: 'success' },
-          2: { text: '已取消', color: 'default' },
+          2: { text: '已取消', color: 'default' }
         };
         const { text, color } = statusMap[status as keyof typeof statusMap] || { text: '未知', color: 'default' };
         return <Tag color={color}>{text}</Tag>;
-      },
+      }
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
-    },
+      dataIndex: 'createdAt'
+    }
   ];
 
   return (

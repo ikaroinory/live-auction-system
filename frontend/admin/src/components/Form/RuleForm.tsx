@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Form,
-  Typography,
-  Space,
-  Card,
-} from '@douyinfe/semi-ui';
+import { Form, Typography, Space, Card } from '@douyinfe/semi-ui';
 import type { RuleConfig } from '@/types';
 
 const { Title, Text } = Typography;
@@ -14,10 +9,7 @@ interface RuleFormProps {
   onValuesChange?: (values: Partial<RuleConfig>) => void;
 }
 
-const RuleForm: React.FC<RuleFormProps> = ({
-  initialValues,
-  onValuesChange,
-}) => {
+const RuleForm: React.FC<RuleFormProps> = ({ initialValues, onValuesChange }) => {
   return (
     <Card style={{ background: '#f8f9fa' }}>
       <Title heading={6} style={{ marginBottom: 16 }}>
@@ -38,7 +30,7 @@ const RuleForm: React.FC<RuleFormProps> = ({
             style={{ width: '100%' }}
             rules={[
               { required: true, message: '请输入最小加价幅度' },
-              { type: 'number', min: 0.01, message: '加价幅度必须大于0' },
+              { type: 'number', min: 0.01, message: '加价幅度必须大于0' }
             ]}
           />
           <Text type="tertiary" size="small">
@@ -61,8 +53,8 @@ const RuleForm: React.FC<RuleFormProps> = ({
               {
                 type: 'number',
                 min: 0,
-                message: '封顶价不能为负数',
-              },
+                message: '封顶价不能为负数'
+              }
             ]}
           />
           <Text type="tertiary" size="small">
@@ -83,13 +75,13 @@ const RuleForm: React.FC<RuleFormProps> = ({
               {
                 type: 'number',
                 min: 1,
-                message: '出价次数至少为1',
+                message: '出价次数至少为1'
               },
               {
                 type: 'number',
                 max: 100,
-                message: '出价次数不能超过100',
-              },
+                message: '出价次数不能超过100'
+              }
             ]}
           />
           <Text type="tertiary" size="small">
@@ -125,7 +117,7 @@ const RuleForm: React.FC<RuleFormProps> = ({
               rules={[
                 { required: true, message: '请输入延时时间' },
                 { type: 'number', min: 5, message: '延时时间至少5秒' },
-                { type: 'number', max: 60, message: '延时时间不能超过60秒' },
+                { type: 'number', max: 60, message: '延时时间不能超过60秒' }
               ]}
             />
             <Text type="tertiary" size="small">

@@ -1,11 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Typography } from '@douyinfe/semi-ui';
-import {
-  IconLive,
-  IconTickCircle,
-  IconGift,
-  IconArrowUp,
-} from '@douyinfe/semi-icons';
+import { IconLive, IconTickCircle, IconGift, IconArrowUp } from '@douyinfe/semi-icons';
 
 const { Title, Text } = Typography;
 
@@ -15,26 +10,26 @@ const Dashboard: React.FC = () => {
       title: '进行中竞拍',
       value: '12',
       icon: <IconLive size={32} />,
-      color: '#ff2d55',
+      color: '#ff2d55'
     },
     {
       title: '今日订单',
       value: '156',
       icon: <IconTickCircle size={32} />,
-      color: '#5856d6',
+      color: '#5856d6'
     },
     {
       title: '商品总数',
       value: '320',
       icon: <IconGift size={32} />,
-      color: '#34c759',
+      color: '#34c759'
     },
     {
       title: 'GMV',
       value: '¥28,560',
       icon: <IconArrowUp size={32} />,
-      color: '#ff9500',
-    },
+      color: '#ff9500'
+    }
   ];
 
   return (
@@ -47,7 +42,7 @@ const Dashboard: React.FC = () => {
           <Col span={6} key={index}>
             <Card
               style={{
-                borderLeft: `4px solid ${stat.color}`,
+                borderLeft: `4px solid ${stat.color}`
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

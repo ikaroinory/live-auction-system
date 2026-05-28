@@ -1,13 +1,7 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { Layout, Avatar, Dropdown, Button } from '@douyinfe/semi-ui';
-import {
-  IconHome,
-  IconLive,
-  IconTickCircle,
-  IconGift,
-  IconExit,
-} from '@douyinfe/semi-icons';
+import { IconHome, IconLive, IconTickCircle, IconGift, IconExit } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import './Layout.scss';
 
@@ -17,23 +11,23 @@ const menuItems = [
   {
     text: '数据概览',
     icon: <IconHome size="large" />,
-    path: '/dashboard',
+    path: '/dashboard'
   },
   {
     text: '竞拍管理',
     icon: <IconLive size="large" />,
-    path: '/auction/list',
+    path: '/auction/list'
   },
   {
     text: '订单管理',
     icon: <IconTickCircle size="large" />,
-    path: '/order/list',
+    path: '/order/list'
   },
   {
     text: '商品管理',
     icon: <IconGift size="large" />,
-    path: '/product/list',
-  },
+    path: '/product/list'
+  }
 ];
 
 const LayoutComponent: React.FC = () => {
@@ -56,13 +50,7 @@ const LayoutComponent: React.FC = () => {
 
   const userMenu = (
     <div style={{ padding: 8 }}>
-      <Button
-        block
-        type="tertiary"
-        icon={<IconExit />}
-        onClick={handleLogout}
-        theme="borderless"
-      >
+      <Button block type="tertiary" icon={<IconExit />} onClick={handleLogout} theme="borderless">
         退出登录
       </Button>
     </div>
@@ -84,7 +72,7 @@ const LayoutComponent: React.FC = () => {
               style={{
                 justifyContent: 'flex-start',
                 marginBottom: 8,
-                padding: '12px 16px',
+                padding: '12px 16px'
               }}
             >
               {item.text}
@@ -98,11 +86,7 @@ const LayoutComponent: React.FC = () => {
             {menuItems.find((item) => location.pathname.startsWith(item.path))?.text || '后台管理'}
           </div>
           <Dropdown render={userMenu} position="bottomRight">
-            <Avatar
-              size="small"
-              src={user?.avatar}
-              style={{ cursor: 'pointer' }}
-            >
+            <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
               {user?.username?.charAt(0).toUpperCase()}
             </Avatar>
           </Dropdown>

@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Typography,
-  Toast,
-  Space,
-  Divider,
-} from '@douyinfe/semi-ui';
+import { Card, Form, Input, InputNumber, Button, Typography, Toast, Space, Divider } from '@douyinfe/semi-ui';
 import { auctionService } from '@/services';
 import RuleForm from '@/components/Form/RuleForm';
 import type { AuctionFormData, RuleConfig } from '@/types';
@@ -24,7 +14,7 @@ const AuctionCreateAdvanced: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
   const [basicRule, setBasicRule] = useState<Partial<RuleConfig>>({
     enableAutoExtend: true,
-    autoExtendSeconds: 15,
+    autoExtendSeconds: 15
   });
 
   const handleImageUpload = () => {
@@ -90,7 +80,7 @@ const AuctionCreateAdvanced: React.FC = () => {
         minIncrement: basicRule.minIncrement || values.minIncrement,
         maxPrice: basicRule.maxPrice || values.maxPrice,
         durationSeconds: values.durationSeconds,
-        autoExtendSeconds: basicRule.enableAutoExtend ? (basicRule.autoExtendSeconds || 15) : 0,
+        autoExtendSeconds: basicRule.enableAutoExtend ? basicRule.autoExtendSeconds || 15 : 0
       };
 
       await auctionService.create(formData);
@@ -112,14 +102,14 @@ const AuctionCreateAdvanced: React.FC = () => {
       <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <div className="auction-form-section">
           <div className="auction-form-section-title">基本信息</div>
-          
+
           <Form.TextArea
             field="title"
             label="商品标题"
             placeholder="请输入商品标题，简洁明了，突出商品特点"
             rules={[
               { required: true, message: '请输入商品标题' },
-              { maxLength: 100, message: '标题不能超过100个字符' },
+              { maxLength: 100, message: '标题不能超过100个字符' }
             ]}
             style={{ marginBottom: 20 }}
             showCharCount
@@ -132,14 +122,17 @@ const AuctionCreateAdvanced: React.FC = () => {
             placeholder="请详细描述商品的品牌、规格、材质等信息"
             rules={[
               { required: true, message: '请输入商品描述' },
-              { minLength: 10, message: '描述至少需要10个字符' },
+              { minLength: 10, message: '描述至少需要10个字符' }
             ]}
             style={{ marginBottom: 20 }}
             rows={4}
           />
 
           <Form.Label>
-            商品图片 <Text type="tertiary" size="small">（最多4张，第一张为主图）</Text>
+            商品图片{' '}
+            <Text type="tertiary" size="small">
+              （最多4张，第一张为主图）
+            </Text>
           </Form.Label>
           <div className="image-upload-grid">
             {images.map((url, index) => (
@@ -155,7 +148,7 @@ const AuctionCreateAdvanced: React.FC = () => {
                       color: 'white',
                       padding: '2px 8px',
                       borderRadius: 4,
-                      fontSize: 12,
+                      fontSize: 12
                     }}
                   >
                     主图
@@ -180,7 +173,9 @@ const AuctionCreateAdvanced: React.FC = () => {
                     <polyline points="17,8 12,3 7,8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <Text type="tertiary" size="small">上传图片</Text>
+                  <Text type="tertiary" size="small">
+                    上传图片
+                  </Text>
                 </div>
               </div>
             )}
@@ -189,7 +184,7 @@ const AuctionCreateAdvanced: React.FC = () => {
 
         <div className="auction-form-section">
           <div className="auction-form-section-title">价格规则</div>
-          
+
           <div className="auction-form-grid">
             <Form.InputNumber
               field="startPrice"
@@ -201,7 +196,7 @@ const AuctionCreateAdvanced: React.FC = () => {
               precision={2}
               rules={[
                 { required: true, message: '请输入起拍价' },
-                { type: 'number', min: 0, message: '起拍价不能为负数' },
+                { type: 'number', min: 0, message: '起拍价不能为负数' }
               ]}
             />
 
@@ -217,7 +212,7 @@ const AuctionCreateAdvanced: React.FC = () => {
               onChange={(value) => handleRuleChange({ minIncrement: value })}
               rules={[
                 { required: true, message: '请输入最小加价幅度' },
-                { type: 'number', min: 0.01, message: '加价幅度必须大于0' },
+                { type: 'number', min: 0.01, message: '加价幅度必须大于0' }
               ]}
             />
 
@@ -238,7 +233,7 @@ const AuctionCreateAdvanced: React.FC = () => {
 
         <div className="auction-form-section">
           <div className="auction-form-section-title">时间规则</div>
-          
+
           <Form.InputNumber
             field="durationSeconds"
             label="竞拍时长"
@@ -248,24 +243,33 @@ const AuctionCreateAdvanced: React.FC = () => {
             style={{ width: '100%', marginBottom: 12 }}
             rules={[
               { required: true, message: '请输入竞拍时长' },
-              { type: 'number', min: 60, message: '竞拍时长至少60秒' },
+              { type: 'number', min: 60, message: '竞拍时长至少60秒' }
             ]}
           />
           <div className="duration-presets">
-            <button type="button" className="duration-preset-btn">1分钟</button>
-            <button type="button" className="duration-preset-btn">5分钟</button>
-            <button type="button" className="duration-preset-btn">15分钟</button>
-            <button type="button" className="duration-preset-btn">30分钟</button>
-            <button type="button" className="duration-preset-btn">1小时</button>
-            <button type="button" className="duration-preset-btn">2小时</button>
+            <button type="button" className="duration-preset-btn">
+              1分钟
+            </button>
+            <button type="button" className="duration-preset-btn">
+              5分钟
+            </button>
+            <button type="button" className="duration-preset-btn">
+              15分钟
+            </button>
+            <button type="button" className="duration-preset-btn">
+              30分钟
+            </button>
+            <button type="button" className="duration-preset-btn">
+              1小时
+            </button>
+            <button type="button" className="duration-preset-btn">
+              2小时
+            </button>
           </div>
 
           <Divider style={{ margin: '24px 0' }} />
 
-          <RuleForm
-            initialValues={basicRule}
-            onValuesChange={handleRuleChange}
-          />
+          <RuleForm initialValues={basicRule} onValuesChange={handleRuleChange} />
         </div>
 
         <div className="auction-form-section">
@@ -283,14 +287,8 @@ const AuctionCreateAdvanced: React.FC = () => {
         </div>
 
         <div className="auction-form-actions">
-          <Button onClick={() => navigate('/auction/list')}>
-            取消
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-          >
+          <Button onClick={() => navigate('/auction/list')}>取消</Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
             发布竞拍
           </Button>
         </div>

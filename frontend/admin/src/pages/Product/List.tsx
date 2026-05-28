@@ -12,39 +12,38 @@ const ProductList: React.FC = () => {
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'id',
+      dataIndex: 'id'
     },
     {
       title: '商品名称',
-      dataIndex: 'name',
+      dataIndex: 'name'
     },
     {
       title: '描述',
-      dataIndex: 'description',
+      dataIndex: 'description'
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
+      dataIndex: 'createdAt'
     },
     {
       title: '操作',
       render: () => (
         <Space>
           <Button size="small">编辑</Button>
-          <Button size="small" theme="danger">删除</Button>
+          <Button size="small" theme="danger">
+            删除
+          </Button>
         </Space>
-      ),
-    },
+      )
+    }
   ];
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Title heading={4}>商品列表</Title>
-        <Button
-          icon={<IconPlus />}
-          onClick={() => navigate('/product/create')}
-        >
+        <Button icon={<IconPlus />} onClick={() => navigate('/product/create')}>
           添加商品
         </Button>
       </div>

@@ -14,7 +14,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/dashboard',
     name: '数据概览',
-    icon: null,
+    icon: null
   },
   {
     path: '/auction',
@@ -22,21 +22,21 @@ export const routes: RouteConfig[] = [
     children: [
       {
         path: '/auction/list',
-        name: '竞拍列表',
+        name: '竞拍列表'
       },
       {
         path: '/auction/create',
-        name: '发布竞拍',
+        name: '发布竞拍'
       },
       {
         path: '/auction/:id',
-        name: '竞拍详情',
-      },
-    ],
+        name: '竞拍详情'
+      }
+    ]
   },
   {
     path: '/order',
-    name: '订单管理',
+    name: '订单管理'
   },
   {
     path: '/product',
@@ -44,12 +44,12 @@ export const routes: RouteConfig[] = [
     children: [
       {
         path: '/product/list',
-        name: '商品列表',
+        name: '商品列表'
       },
       {
         path: '/product/create',
-        name: '添加商品',
-      },
-    ],
-  },
+        name: '添加商品'
+      }
+    ]
+  }
 ];

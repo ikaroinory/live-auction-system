@@ -36,5 +36,5 @@ export const auctionService = {
 
   stop: async (id: number): Promise<void> => {
     await api.post(`/auctions/${id}/stop`);
-  },
+  }
 };

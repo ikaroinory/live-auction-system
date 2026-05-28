@@ -14,13 +14,10 @@ export const useAuctionStore = create<AuctionState>((set) => ({
   auctions: [],
   currentAuction: null,
   setAuctions: (auctions) => set({ auctions }),
-  addAuction: (auction) =>
-    set((state) => ({ auctions: [...state.auctions, auction] })),
+  addAuction: (auction) => set((state) => ({ auctions: [...state.auctions, auction] })),
   updateAuction: (id, updates) =>
     set((state) => ({
-      auctions: state.auctions.map((a) =>
-        a.id === id ? { ...a, ...updates } : a
-      ),
+      auctions: state.auctions.map((a) => (a.id === id ? { ...a, ...updates } : a))
     })),
-  setCurrentAuction: (auction) => set({ currentAuction: auction }),
+  setCurrentAuction: (auction) => set({ currentAuction: auction })
 }));
