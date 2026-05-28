@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
   Card,
   Form,
@@ -10,7 +10,6 @@ import {
   Toast,
   Space,
 } from '@douyinfe/semi-ui';
-import { auctionService } from '@/services';
 import './Create.scss';
 
 const { Title, Text } = Typography;

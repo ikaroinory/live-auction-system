@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   Form,
-  InputNumber,
-  Switch,
   Typography,
   Space,
   Card,

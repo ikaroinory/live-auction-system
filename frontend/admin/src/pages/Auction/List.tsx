@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import type { Auction } from '@/types';
 
 const { Title } = Typography;

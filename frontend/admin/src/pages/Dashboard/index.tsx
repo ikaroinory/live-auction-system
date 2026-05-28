@@ -2,9 +2,9 @@ import React from 'react';
 import { Card, Row, Col, Typography } from '@douyinfe/semi-ui';
 import {
   IconLive,
-  IconTicket,
+  IconTickCircle,
   IconGift,
-  IconTrendUp,
+  IconArrowUp,
 } from '@douyinfe/semi-icons';
 
 const { Title, Text } = Typography;
@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
     {
       title: '今日订单',
       value: '156',
-      icon: <IconTicket size={32} />,
+      icon: <IconTickCircle size={32} />,
       color: '#5856d6',
     },
     {
@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
     {
       title: 'GMV',
       value: '¥28,560',
-      icon: <IconTrendUp size={32} />,
+      icon: <IconArrowUp size={32} />,
       color: '#ff9500',
     },
   ];

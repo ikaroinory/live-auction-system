@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from '@douyinfe/semi-ui';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 const { Title } = Typography;
 

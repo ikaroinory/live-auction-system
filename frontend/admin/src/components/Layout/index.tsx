@@ -1,10 +1,10 @@
 import React from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Avatar, Dropdown, Button } from '@douyinfe/semi-ui';
+import { Outlet, useNavigate, useLocation } from 'react-router';
+import { Layout, Avatar, Dropdown, Button } from '@douyinfe/semi-ui';
 import {
   IconHome,
   IconLive,
-  IconTicket,
+  IconTickCircle,
   IconGift,
   IconExit,
 } from '@douyinfe/semi-icons';
@@ -15,25 +15,21 @@ const { Sider, Header, Content } = Layout;
 
 const menuItems = [
   {
-    node: 'item',
     text: '数据概览',
     icon: <IconHome size="large" />,
     path: '/dashboard',
   },
   {
-    node: 'item',
     text: '竞拍管理',
     icon: <IconLive size="large" />,
     path: '/auction/list',
   },
   {
-    node: 'item',
     text: '订单管理',
-    icon: <IconTicket size="large" />,
+    icon: <IconTickCircle size="large" />,
     path: '/order/list',
   },
   {
-    node: 'item',
     text: '商品管理',
     icon: <IconGift size="large" />,
     path: '/product/list',
@@ -54,35 +50,47 @@ const LayoutComponent: React.FC = () => {
     navigate('/login');
   };
 
-  const getSelectedKeys = () => {
-    const path = location.pathname;
-    const item = menuItems.find((item) => path.startsWith(item.path));
-    return item ? [item.path] : [];
+  const isActive = (path: string) => {
+    return location.pathname.startsWith(path);
   };
 
   const userMenu = (
-    <Menu>
-      <Menu.Item onClick={handleLogout} icon={<IconExit />}>
+    <div style={{ padding: 8 }}>
+      <Button
+        block
+        type="tertiary"
+        icon={<IconExit />}
+        onClick={handleLogout}
+        theme="borderless"
+      >
         退出登录
-      </Menu.Item>
-    </Menu>
+      </Button>
+    </div>
   );
 
   return (
     <div className="admin-layout">
       <Sider className="admin-sider">
         <div className="admin-logo">直播竞拍管理</div>
-        <Menu
-          className="admin-menu"
-          selectedKeys={getSelectedKeys()}
-          onClick={(data) => handleMenuClick(data.itemKey as string)}
-        >
+        <div className="admin-menu">
           {menuItems.map((item) => (
-            <Menu.Item key={item.path} icon={item.icon}>
+            <Button
+              key={item.path}
+              block
+              type={isActive(item.path) ? 'primary' : 'tertiary'}
+              theme={isActive(item.path) ? 'solid' : 'borderless'}
+              icon={item.icon}
+              onClick={() => handleMenuClick(item.path)}
+              style={{
+                justifyContent: 'flex-start',
+                marginBottom: 8,
+                padding: '12px 16px',
+              }}
+            >
               {item.text}
-            </Menu.Item>
+            </Button>
           ))}
-        </Menu>
+        </div>
       </Sider>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Header className="admin-header">

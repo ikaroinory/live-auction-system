@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Button, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const { Title } = Typography;
 
