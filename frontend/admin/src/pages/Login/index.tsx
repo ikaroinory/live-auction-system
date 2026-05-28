@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Form, Input, Button, Toast } from '@douyinfe/semi-ui';
-import { IconPhone, IconVerification } from '@douyinfe/semi-icons';
+import { IconPhone, IconKey } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import { authService } from '@/services';
 import './Login.scss';
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
             field="code"
             label="验证码"
             placeholder="请输入验证码"
-            prefix={<IconVerification />}
+            prefix={<IconKey />}
             rules={[
               { required: true, message: '请输入验证码' },
               { pattern: /^\d{6}$/, message: '请输入6位验证码' },
