@@ -5,12 +5,6 @@ import styles from './Create.module.scss';
 
 const { Title, Text } = Typography;
 
-interface FormValues {
-  name?: string;
-  description?: string;
-  price?: number;
-}
-
 const ProductCreate: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -27,7 +21,7 @@ const ProductCreate: React.FC = () => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (_values: FormValues) => {
+  const handleSubmit = async () => {
     setLoading(true);
     try {
       Toast.success('商品添加成功');
