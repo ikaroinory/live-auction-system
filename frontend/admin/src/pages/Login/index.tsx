@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { Form, Input, Button, Toast } from '@douyinfe/semi-ui';
+import { Form, Button, Toast } from '@douyinfe/semi-ui';
 import { IconPhone, IconKey } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import { authService } from '@/services';
 import styles from './Login.module.scss';
+
+interface FormValues {
+  phone: string;
+  code: string;
+}
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -13,15 +18,16 @@ const Login: React.FC = () => {
   const [codeLoading, setCodeLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
-  const handleSubmit = async (values: { phone: string; code: string }) => {
+  const handleSubmit = async (values: FormValues) => {
     setLoading(true);
     try {
       const response = await authService.login(values);
       login(response.user, response.token);
       Toast.success('登录成功');
       navigate('/dashboard');
-    } catch (error: any) {
-      Toast.error(error.response?.data?.message || '登录失败，请检查手机号和验证码');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Toast.error(err.response?.data?.message || '登录失败，请检查手机号和验证码');
     } finally {
       setLoading(false);
     }
@@ -37,14 +43,15 @@ const Login: React.FC = () => {
     try {
       Toast.success('验证码已发送，测试环境验证码为 123456 或 666666');
       setCountdown(60);
-    } catch (error: any) {
-      Toast.error(error.response?.data?.message || '发送验证码失败');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Toast.error(err.response?.data?.message || '发送验证码失败');
     } finally {
       setCodeLoading(false);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
