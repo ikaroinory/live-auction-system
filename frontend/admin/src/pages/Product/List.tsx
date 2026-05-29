@@ -132,7 +132,7 @@ const ProductList: React.FC = () => {
     {
       title: '出价次数',
       dataIndex: 'bidCount',
-      render: (count: number) => (
+      render: () => (
         <Button size="small" theme="borderless" type="tertiary">
           出价次数 &gt;
         </Button>
@@ -141,7 +141,7 @@ const ProductList: React.FC = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: (status: string, record: LiveProduct) => {
+      render: (status: string) => {
         if (status === 'live') {
           return (
             <div>
