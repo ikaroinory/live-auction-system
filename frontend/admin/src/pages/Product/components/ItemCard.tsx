@@ -115,7 +115,15 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         <div style={{ width: '100%', display: 'flex' }}>
-          <ItemInformation width={500} name={props.name} image={props.image} tags={props.tags} />
+          <ItemInformation
+            width={500}
+            name={props.name}
+            image={props.image}
+            lateCompensation={props.lateCompensation}
+            freeShipping={props.freeShipping}
+            shippingInsurance={props.shippingInsurance}
+            auction={props.auction}
+          />
           <ItemData
             startingPrice={props.startingPrice}
             fixedIncrement={props.fixedIncrement}
