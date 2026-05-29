@@ -116,4 +116,4 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
 }
 
 export default ProductTabContent
-export { ProductItem, ProductTagType }
+export { type ProductItem, ProductTagType }

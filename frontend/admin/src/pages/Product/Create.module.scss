@@ -84,14 +84,19 @@
 
 .ruleConfigRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.ruleConfigRow:last-child {
+  margin-bottom: 0;
 }
 
 .ruleConfigLabel {
   min-width: 120px;
   font-weight: 500;
+  padding-top: 8px;
 }
 
 .ruleConfigInput {
@@ -101,7 +106,8 @@
 .durationPresets {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .durationPresetBtn {
