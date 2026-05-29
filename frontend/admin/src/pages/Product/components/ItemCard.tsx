@@ -107,9 +107,23 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
   )
 }
 
-type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps
+type ItemCardProps = {
+  id: number
+  productId?: string
+} & Omit<ItemInformationProps, 'width'> & ItemDataProps & {
+    onStartAuction?: (id: number) => void
+    onRemove?: (id: number) => void
+  }
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
+  const handleStartAuction = () => {
+    props.onStartAuction?.(props.id)
+  }
+
+  const handleRemove = () => {
+    props.onRemove?.(props.id)
+  }
+
   return (
     <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
@@ -133,11 +147,11 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           />
         </div>
         <Space>
-          <Button theme="outline" type="tertiary">
+          <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
             开始竞拍
           </Button>
-          <Button theme="outline" type="tertiary">
-            下架
+          <Button theme="outline" type="danger" onClick={handleRemove}>
+            删除
           </Button>
         </Space>
       </div>

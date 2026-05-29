@@ -13,6 +13,8 @@ export interface ProductTabContentProps {
   dataSource: ProductItem[]
   loadingStatus?: LoadingStatus
   errorMessage?: string
+  onStartAuction?: (id: number) => void
+  onRemove?: (id: number) => void
 }
 
 const ProductTabContent: React.FC<ProductTabContentProps> = ({
@@ -20,7 +22,9 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
   onSearchChange,
   dataSource,
   loadingStatus = 'success',
-  errorMessage
+  errorMessage,
+  onStartAuction,
+  onRemove
 }) => {
   const navigate = useNavigate()
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
@@ -56,7 +60,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
       <div style={{ maxHeight: 'calc(100vh - 320px)', overflowY: 'auto' }}>
         <Space style={{ width: '100%' }} vertical spacing={12}>
           {dataSource.map((item) => (
-            <ItemCard key={item.id} {...item} />
+            <ItemCard key={item.id} {...item} onStartAuction={onStartAuction} onRemove={onRemove} />
           ))}
         </Space>
       </div>

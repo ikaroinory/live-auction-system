@@ -27,6 +27,7 @@ const ProductList: React.FC = () => {
     if (product.auction) tags.push(ProductTagType.Auction)
     return {
       id: index + 1,
+      productId: product.id,
       name: product.name,
       image: product.image,
       tags,
@@ -39,6 +40,28 @@ const ProductList: React.FC = () => {
       freeShipping: product.freeShipping,
       shippingInsurance: product.shippingInsurance,
       auction: product.auction
+    }
+  }
+
+  const handleStartAuction = (id: number): void => {
+    console.log('开始竞拍商品:', id)
+    Toast.info('功能开发中')
+  }
+
+  const handleRemove = async (id: number): Promise<void> => {
+    const product = liveProducts.find((p) => p.id === id) || pendingProducts.find((p) => p.id === id)
+    if (!product || !product.productId) {
+      Toast.error('商品信息不存在')
+      return
+    }
+
+    try {
+      await productService.delete(Number(product.productId))
+      Toast.success('商品删除成功')
+      await handleRefresh()
+    } catch (error) {
+      console.error('删除商品失败:', error)
+      Toast.error('删除失败，请稍后重试')
     }
   }
 
@@ -137,6 +160,8 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
+            onStartAuction={handleStartAuction}
+            onRemove={handleRemove}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -146,6 +171,8 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
+            onStartAuction={handleStartAuction}
+            onRemove={handleRemove}
           />
         </Tabs.TabPane>
       </Tabs>

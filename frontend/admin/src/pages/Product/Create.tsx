@@ -306,7 +306,7 @@ const ProductCreate: React.FC = () => {
         </div>
 
         <div className={styles.auctionFormActions}>
-          <Button onClick={() => navigate('/product/list')}>取消</Button>
+          <Button onClick={() => navigate('/product/list')}>返回</Button>
           <Button type="primary" htmlType="submit" loading={loading}>
             添加商品
           </Button>
