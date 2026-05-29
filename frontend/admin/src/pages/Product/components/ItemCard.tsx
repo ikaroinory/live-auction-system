@@ -107,7 +107,7 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
   )
 }
 
-type ItemCardProps = { id: string } & Omit<ItemInformationProps, 'width'> & ItemDataProps
+type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
   return (

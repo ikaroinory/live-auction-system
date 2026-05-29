@@ -6,7 +6,7 @@ export enum ProductTagType {
 }
 
 export type ProductItem = {
-  id: string
+  id: number
   name: string
   image?: string
   tags?: ProductTagType[]
