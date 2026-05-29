@@ -34,7 +34,11 @@ const ProductList: React.FC = () => {
       fixedIncrement: Number(product.fixedIncrement),
       capPrice: product.capPrice ? Number(product.capPrice) : undefined,
       bidCount: 0,
-      status: product.status
+      status: product.status,
+      lateCompensation: product.lateCompensation,
+      freeShipping: product.freeShipping,
+      shippingInsurance: product.shippingInsurance,
+      auction: product.auction
     }
   }
 

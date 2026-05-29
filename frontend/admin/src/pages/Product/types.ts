@@ -16,4 +16,8 @@ export type ProductItem = {
   currentPrice?: number
   bidCount?: number
   status?: number
+  lateCompensation?: boolean
+  freeShipping?: boolean
+  shippingInsurance?: boolean
+  auction?: boolean
 }
