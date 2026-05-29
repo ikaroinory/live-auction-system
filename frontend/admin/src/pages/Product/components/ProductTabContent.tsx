@@ -3,6 +3,7 @@ import { Button, Input, Checkbox, Space, Spin, Empty } from '@douyinfe/semi-ui'
 import { IconFilter, IconPlus } from '@douyinfe/semi-icons'
 import { ItemCard } from './ItemCard'
 import { ProductItem, ProductTagType } from '../types'
+import { useNavigate } from 'react-router'
 
 export type LoadingStatus = 'loading' | 'success' | 'error'
 
@@ -10,8 +11,6 @@ export interface ProductTabContentProps {
   searchValue: string
   onSearchChange: (value: string) => void
   dataSource: ProductItem[]
-  showAddButton?: boolean
-  onAddClick?: () => void
   loadingStatus?: LoadingStatus
   errorMessage?: string
 }
@@ -20,11 +19,10 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
   searchValue,
   onSearchChange,
   dataSource,
-  showAddButton = false,
-  onAddClick,
   loadingStatus = 'success',
   errorMessage
 }) => {
+  const navigate = useNavigate()
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
 
   const isAllSelected = dataSource.length > 0 && selectedKeys.length === dataSource.length
@@ -37,14 +35,6 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
     }
   }
 
-  const handleStartAuction = (id: number) => {
-    console.log('Start auction for product:', id)
-  }
-
-  const handleRemove = (id: number) => {
-    console.log('Remove product:', id)
-  }
-
   const renderContent = () => {
     if (loadingStatus === 'loading') {
       return (
@@ -55,12 +45,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
     }
 
     if (loadingStatus === 'error') {
-      return (
-        <Empty
-          description={errorMessage || '加载失败，请稍后重试'}
-          style={{ padding: 48 }}
-        />
-      )
+      return <Empty description={errorMessage || '加载失败，请稍后重试'} style={{ padding: 48 }} />
     }
 
     if (dataSource.length === 0) {
@@ -68,16 +53,13 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
     }
 
     return (
-      <Space vertical spacing={12}>
-        {dataSource.map((item) => (
-          <ItemCard
-            key={item.id}
-            data={item}
-            onStartAuction={handleStartAuction}
-            onRemove={handleRemove}
-          />
-        ))}
-      </Space>
+      <div style={{ maxHeight: 'calc(100vh - 320px)', overflowY: 'auto' }}>
+        <Space vertical spacing={12}>
+          {dataSource.map((item) => (
+            <ItemCard key={item.id} {...item} />
+          ))}
+        </Space>
+      </div>
     )
   }
 
@@ -104,11 +86,9 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
             筛选
           </Button>
         </div>
-        {showAddButton && onAddClick && (
-          <Button icon={<IconPlus />} onClick={onAddClick}>
-            添加商品
-          </Button>
-        )}
+        <Button icon={<IconPlus />} onClick={() => navigate('/product/create')}>
+          添加商品
+        </Button>
       </div>
       {renderContent()}
     </>

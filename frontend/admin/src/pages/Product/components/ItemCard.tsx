@@ -1,117 +1,131 @@
 import { Button, Card, Image, Skeleton, Space, Tag, Typography } from '@douyinfe/semi-ui'
 import { TagProps } from '@douyinfe/semi-ui/lib/es/tag'
-import { ProductItem, ProductTagType } from '../types'
+import { Property } from 'csstype'
+import { ProductTagType } from '../types'
 
-interface ItemCardProps {
-  data: ProductItem
-  onStartAuction?: (id: number) => void
-  onRemove?: (id: number) => void
+interface ItemInformationProps {
+  width?: Property.Width<string | number>
+  name?: string
+  image?: string
+  tags?: ProductTagType[]
 }
 
-const tagMapping: Record<ProductTagType, string | TagProps> = {
-  [ProductTagType.LateCompensation]: { children: '晚发即赔', color: 'white' },
-  [ProductTagType.FreeShipping]: { children: '包邮', color: 'white' },
-  [ProductTagType.ShippingInsurance]: { children: '运费险', color: 'white' },
-  [ProductTagType.Auction]: { children: '竞拍', color: 'red', type: 'solid' }
-}
-
-const formatPrice = (price?: number): string => {
-  if (price === undefined || price === null) return '-'
-  return `¥${price.toLocaleString('zh-CN')}`
-}
-
-const formatNumber = (num?: number): string => {
-  if (num === undefined || num === null) return '-'
-  return num.toLocaleString('zh-CN')
-}
-
-export const ItemCard: React.FC<ItemCardProps> = ({ data, onStartAuction, onRemove }) => {
-  const { id, name, image, tags, startingPrice, fixedIncrement, capPrice, currentPrice, bidCount } = data
+const ItemInformation: React.FC<ItemInformationProps> = ({ width, name, image, tags }) => {
+  const tagMapping: Record<ProductTagType, string | TagProps> = {
+    [ProductTagType.LateCompensation]: '晚发即赔',
+    [ProductTagType.FreeShipping]: '包邮',
+    [ProductTagType.ShippingInsurance]: '运费险',
+    [ProductTagType.Auction]: { children: '竞拍', color: 'red', type: 'solid' }
+  }
 
   return (
-    <Card bodyStyle={{ display: 'flex', gap: 24, alignItems: 'center', padding: 16 }}>
-      <Typography.Text type="quaternary" style={{ fontSize: 12, width: 40 }}>
-        {String(id).padStart(3, '0')}
-      </Typography.Text>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: 380 }}>
+    <Space style={{ width: width }} align="center">
+      <Image width={64} height={64} src={image} />
+      <Space vertical align="start" spacing={4}>
         <Skeleton
-          placeholder={<Skeleton.Image style={{ width: 64, height: 64, borderRadius: 8 }} />}
-          loading={!image}
+          placeholder={<Skeleton.Paragraph rows={2} style={{ width: 80 }} />}
+          loading={name === undefined && tags === undefined}
         >
-          <Image
-            width={64}
-            height={64}
-            src={image || ''}
-            style={{ borderRadius: 8, objectFit: 'cover' }}
-            fallback="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=product%20placeholder%20image&image_size=square"
-          />
-        </Skeleton>
-
-        <div style={{ flex: 1 }}>
-          <Skeleton
-            placeholder={<Skeleton.Paragraph rows={1} style={{ width: '100%' }} />}
-            loading={!name}
-          >
-            <Typography.Text
-              style={{
-                fontSize: 14,
-                fontWeight: 500,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                display: 'block',
-                maxWidth: 250
-              }}
-            >
-              {name || '-'}
-            </Typography.Text>
-          </Skeleton>
-
-          <Space style={{ marginTop: 8 }}>
-            {tags?.map((tag, index) => (
-              <Tag key={index} size="small" {...(typeof tagMapping[tag] === 'string' ? { children: tagMapping[tag] } : tagMapping[tag])} />
-            ))}
+          <Typography.Text>{name}</Typography.Text>
+          <Space style={{ height: 20 }}>
+            {tags &&
+              tags.map((tag) =>
+                typeof tagMapping[tag] === 'string' ? (
+                  <Tag size="small" color="white" children={tagMapping[tag]} />
+                ) : (
+                  <Tag {...tagMapping[tag]} />
+                )
+              )}
           </Space>
-        </div>
-      </div>
+        </Skeleton>
+      </Space>
+    </Space>
+  )
+}
 
-      <div style={{ display: 'flex', gap: 32, flex: 1 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 100 }}>
-          <Typography.Text type="tertiary" style={{ fontSize: 12 }}>起拍价</Typography.Text>
-          <Typography.Numeral style={{ fontSize: 14 }}>{formatPrice(startingPrice)}</Typography.Numeral>
-        </div>
+interface ItemDataProps {
+  startingPrice?: number
+  fixedIncrement?: number
+  capPrice?: number
+  currentPrice?: number
+  bidCount?: number
+}
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 100 }}>
-          <Typography.Text type="tertiary" style={{ fontSize: 12 }}>固定加价</Typography.Text>
-          <Typography.Numeral style={{ fontSize: 14 }}>{formatPrice(fixedIncrement)}</Typography.Numeral>
-        </div>
+const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capPrice, currentPrice, bidCount }) => {
+  const parseCurrency = (value: string): string =>
+    Number(value) ? '¥' + value.replace(/(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,') : value
+  const parseNumber = (value: string): string =>
+    Number(value) ? value.replace(/(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,') : value
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 100 }}>
-          <Typography.Text type="tertiary" style={{ fontSize: 12 }}>封顶价</Typography.Text>
-          <Typography.Numeral style={{ fontSize: 14 }}>{formatPrice(capPrice)}</Typography.Numeral>
-        </div>
+  const parseParser = (type: 'currency' | 'number') => (type === 'currency' ? parseCurrency : parseNumber)
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 100 }}>
-          <Typography.Text type="tertiary" style={{ fontSize: 12 }}>当前出价</Typography.Text>
-          <Typography.Numeral style={{ fontSize: 16, color: '#ff2d55', fontWeight: 600 }}>
-            {formatPrice(currentPrice)}
+  const items: { name: string; value: number | undefined; type: 'currency' | 'number' }[] = [
+    {
+      name: '起拍价',
+      value: startingPrice,
+      type: 'currency'
+    },
+    {
+      name: '固定加价',
+      value: fixedIncrement,
+      type: 'currency'
+    },
+    {
+      name: '封顶价',
+      value: capPrice,
+      type: 'currency'
+    },
+    {
+      name: '成交金额',
+      value: currentPrice,
+      type: 'currency'
+    },
+    {
+      name: '出价次数',
+      value: bidCount,
+      type: 'number'
+    }
+  ]
+
+  return (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {items.map((item) => (
+        <Space key={item.name} style={{ width: 128 }} vertical spacing={4}>
+          <Typography.Numeral strong parser={parseParser(item.type)}>
+            {item.value ?? '-'}
           </Typography.Numeral>
-        </div>
+          <Typography.Text type="tertiary">{item.name}</Typography.Text>
+        </Space>
+      ))}
+    </div>
+  )
+}
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 80 }}>
-          <Typography.Text type="tertiary" style={{ fontSize: 12 }}>出价次数</Typography.Text>
-          <Typography.Numeral style={{ fontSize: 14 }}>{formatNumber(bidCount)}</Typography.Numeral>
-        </div>
-      </div>
+type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps
 
-      <div style={{ display: 'flex', gap: 8 }}>
-        <Button theme="outline" type="primary" size="small" onClick={() => onStartAuction?.(id)}>
-          开始竞拍
-        </Button>
-        <Button theme="outline" type="danger" size="small" onClick={() => onRemove?.(id)}>
-          下架
-        </Button>
+export const ItemCard: React.FC<ItemCardProps> = (props) => {
+  return (
+    <Card bodyStyle={{ display: 'flex', gap: 32 }}>
+      <Typography.Text type="quaternary">{props.id}</Typography.Text>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <div style={{ width: '100%', display: 'flex' }}>
+          <ItemInformation width={500} name={props.name} image={props.image} tags={props.tags} />
+          <ItemData
+            startingPrice={props.startingPrice}
+            fixedIncrement={props.fixedIncrement}
+            capPrice={props.capPrice}
+            currentPrice={props.currentPrice}
+            bidCount={props.bidCount}
+          />
+        </div>
+        <Space>
+          <Button theme="outline" type="tertiary">
+            开始竞拍
+          </Button>
+          <Button theme="outline" type="tertiary">
+            下架
+          </Button>
+        </Space>
       </div>
     </Card>
   )

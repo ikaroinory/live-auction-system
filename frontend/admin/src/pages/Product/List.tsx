@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
 import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
-import { useNavigate } from 'react-router'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
 import { productService } from '@/services'
@@ -11,7 +10,6 @@ import type { Product } from '@/types'
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
-  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('live')
   const [searchValue, setSearchValue] = useState('')
   const [liveProducts, setLiveProducts] = useState<ProductItem[]>([])
@@ -126,8 +124,6 @@ const ProductList: React.FC = () => {
             searchValue={searchValue}
             onSearchChange={setSearchValue}
             dataSource={filteredLiveProducts}
-            showAddButton
-            onAddClick={() => navigate('/product/create')}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
           />
