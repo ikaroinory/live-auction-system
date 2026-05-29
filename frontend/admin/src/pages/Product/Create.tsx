@@ -9,7 +9,6 @@ const { Title, Text } = Typography
 
 interface FormValues {
   title: string
-  description: string
   startPrice: number
   minIncrement: number
   maxPrice?: number
@@ -47,10 +46,6 @@ const ProductCreate: React.FC = () => {
 
     if (!values.title || values.title.trim().length === 0) {
       errors.title = '请输入商品名称'
-    }
-
-    if (!values.description || values.description.trim().length === 0) {
-      errors.description = '请输入商品描述'
     }
 
     if (images.length === 0) {
@@ -132,7 +127,6 @@ const ProductCreate: React.FC = () => {
 
       <Form onSubmit={handleSubmit} initValues={{
         title: '',
-        description: '',
         startPrice: 100,
         minIncrement: 10,
         maxPrice: undefined,
@@ -147,14 +141,6 @@ const ProductCreate: React.FC = () => {
             label="商品名称"
             placeholder="请输入商品名称"
             rules={[{ required: true, message: '请输入商品名称' }]}
-            style={{ marginBottom: 20 }}
-          />
-
-          <Form.TextArea
-            field="description"
-            label="商品描述"
-            placeholder="请输入商品详细描述"
-            rules={[{ required: true, message: '请输入商品描述' }]}
             style={{ marginBottom: 20 }}
           />
 
