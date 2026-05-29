@@ -35,12 +35,14 @@ model User {
   wonAuctions   Auction[]        @relation("winnerAuctions")
   liveRooms     LiveRoom[]       @relation("UserToLiveRoom")
   followedRooms LiveRoomFollow[] @relation("UserToLiveRoomFollow")
+  products      Product[]        @relation("UserToProduct")
 }
 
 model Auction {
   id                String    @id @default(uuid())
   sellerId          String
   liveRoomId        String?
+  productId         String?
   title             String
   description       String?
   images            Json?
@@ -61,12 +63,14 @@ model Auction {
   seller   User      @relation("sellerAuctions", fields: [sellerId], references: [id])
   winner   User?     @relation("winnerAuctions", fields: [winnerId], references: [id])
   liveRoom LiveRoom? @relation(fields: [liveRoomId], references: [id])
+  product  Product?  @relation("ProductToAuction", fields: [productId], references: [id])
   bids     Bid[]
   order    Order?
 
   @@index([status])
   @@index([startTime])
   @@index([liveRoomId])
+  @@index([productId])
 }
 
 model Bid {
@@ -134,4 +138,24 @@ model LiveRoomFollow {
   @@unique([userId, liveRoomId])
   @@index([userId])
   @@index([liveRoomId])
+}
+
+model Product {
+  id             String    @id @default(uuid())
+  creatorId      String
+  name           String
+  image          String    @db.LongText
+  tags           Json?
+  startingPrice  Decimal   @db.Decimal(10, 2)
+  fixedIncrement Decimal   @db.Decimal(10, 2)
+  capPrice       Decimal?  @db.Decimal(10, 2)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // 关联关系
+  creator  User     @relation("UserToProduct", fields: [creatorId], references: [id])
+  auctions Auction[] @relation("ProductToAuction")
+
+  @@index([creatorId])
+  @@index([createdAt])
 }
