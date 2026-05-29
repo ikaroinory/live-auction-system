@@ -239,10 +239,7 @@ const ProductList: React.FC = () => {
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane tab="直播商品" itemKey="live">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <Input
-              type="checkbox"
-              style={{ marginRight: 8 }}
-            />
+            <Checkbox style={{ marginRight: 8 }} />
             <Text type="tertiary">全选</Text>
             <Input
               placeholder="请搜索商品名称或ID"
@@ -256,10 +253,7 @@ const ProductList: React.FC = () => {
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <Input
-              type="checkbox"
-              style={{ marginRight: 8 }}
-            />
+            <Checkbox style={{ marginRight: 8 }} />
             <Text type="tertiary">全选</Text>
             <Input
               placeholder="请搜索商品名称或ID"
