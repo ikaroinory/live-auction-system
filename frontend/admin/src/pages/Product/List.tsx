@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Tabs, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
-import { IconPlus, IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
+import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router';
 import ProductTabContent from './components/ProductTabContent';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface LiveProduct {
   id: number;
