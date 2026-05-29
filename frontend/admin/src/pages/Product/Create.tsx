@@ -14,6 +14,10 @@ interface FormValues {
   maxPrice?: number
   durationHours: number
   autoExtendHours: number
+  lateCompensation: boolean
+  freeShipping: boolean
+  shippingInsurance: boolean
+  auction: boolean
 }
 
 const formatDuration = (hours: number): string => {
@@ -87,7 +91,11 @@ const ProductCreate: React.FC = () => {
         tags: [],
         startingPrice: values.startPrice,
         fixedIncrement: values.minIncrement,
-        capPrice: values.maxPrice
+        capPrice: values.maxPrice,
+        lateCompensation: values.lateCompensation,
+        freeShipping: values.freeShipping,
+        shippingInsurance: values.shippingInsurance,
+        auction: values.auction
       }
 
       await productService.create(productData)
@@ -131,7 +139,11 @@ const ProductCreate: React.FC = () => {
         minIncrement: 10,
         maxPrice: undefined,
         durationHours: 2,
-        autoExtendHours: 1
+        autoExtendHours: 1,
+        lateCompensation: false,
+        freeShipping: false,
+        shippingInsurance: false,
+        auction: false
       }}>
         <div className={styles.auctionFormSection}>
           <div className={styles.auctionFormSectionTitle}>商品信息</div>
@@ -179,6 +191,16 @@ const ProductCreate: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className={styles.tagSelection}>
+            <Form.Label>商品标签</Form.Label>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <Form.Checkbox field="lateCompensation" label="晚发即赔" />
+              <Form.Checkbox field="freeShipping" label="包邮" />
+              <Form.Checkbox field="shippingInsurance" label="运费险" />
+              <Form.Checkbox field="auction" label="竞拍" />
+            </div>
           </div>
         </div>
 

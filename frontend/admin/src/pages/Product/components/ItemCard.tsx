@@ -1,41 +1,47 @@
 import { Button, Card, Image, Skeleton, Space, Tag, Typography } from '@douyinfe/semi-ui'
-import { TagProps } from '@douyinfe/semi-ui/lib/es/tag'
 import { Property } from 'csstype'
-import { ProductTagType } from '../types'
 
 interface ItemInformationProps {
   width?: Property.Width<string | number>
   name?: string
   image?: string
-  tags?: ProductTagType[]
+  lateCompensation?: boolean
+  freeShipping?: boolean
+  shippingInsurance?: boolean
+  auction?: boolean
 }
 
-const ItemInformation: React.FC<ItemInformationProps> = ({ width, name, image, tags }) => {
-  const tagMapping: Record<ProductTagType, string | TagProps> = {
-    [ProductTagType.LateCompensation]: '晚发即赔',
-    [ProductTagType.FreeShipping]: '包邮',
-    [ProductTagType.ShippingInsurance]: '运费险',
-    [ProductTagType.Auction]: { children: '竞拍', color: 'red', type: 'solid' }
-  }
-
+const ItemInformation: React.FC<ItemInformationProps> = (props) => {
   return (
-    <Space style={{ width: width }} align="center">
-      <Image width={64} height={64} src={image} />
+    <Space style={{ width: props.width }} align="center">
+      <Image width={64} height={64} src={props.image} />
       <Space vertical align="start" spacing={4}>
         <Skeleton
           placeholder={<Skeleton.Paragraph rows={2} style={{ width: 80 }} />}
-          loading={name === undefined && tags === undefined}
+          loading={props.name === undefined}
         >
-          <Typography.Text>{name}</Typography.Text>
+          <Typography.Text>{props.name}</Typography.Text>
           <Space style={{ height: 20 }}>
-            {tags &&
-              tags.map((tag) =>
-                typeof tagMapping[tag] === 'string' ? (
-                  <Tag size="small" color="white" children={tagMapping[tag]} />
-                ) : (
-                  <Tag {...tagMapping[tag]} />
-                )
-              )}
+            {props.lateCompensation && (
+              <Tag size="small" color="white">
+                晚发即赔
+              </Tag>
+            )}
+            {props.freeShipping && (
+              <Tag size="small" color="white">
+                包邮
+              </Tag>
+            )}
+            {props.shippingInsurance && (
+              <Tag size="small" color="white">
+                运费险
+              </Tag>
+            )}
+            {props.auction && (
+              <Tag size="small" color="red" type="solid">
+                竞拍
+              </Tag>
+            )}
           </Space>
         </Skeleton>
       </Space>

@@ -19,15 +19,12 @@ const ProductList: React.FC = () => {
   const [liveErrorMessage, setLiveErrorMessage] = useState<string>('')
   const [pendingErrorMessage, setPendingErrorMessage] = useState<string>('')
 
-  const tagStringToType: Record<string, ProductTagType> = {
-    '晚发即赔': ProductTagType.LateCompensation,
-    '包邮': ProductTagType.FreeShipping,
-    '运费险': ProductTagType.ShippingInsurance,
-    '竞拍': ProductTagType.Auction
-  }
-
   const convertProductToItem = (product: Product): ProductItem => {
-    const tags = (product.tags || []).map((tag: string) => tagStringToType[tag]).filter((tag: ProductTagType) => tag !== undefined)
+    const tags: ProductTagType[] = []
+    if (product.lateCompensation) tags.push(ProductTagType.LateCompensation)
+    if (product.freeShipping) tags.push(ProductTagType.FreeShipping)
+    if (product.shippingInsurance) tags.push(ProductTagType.ShippingInsurance)
+    if (product.auction) tags.push(ProductTagType.Auction)
     return {
       id: Number(product.id),
       name: product.name,

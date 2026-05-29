@@ -9,6 +9,10 @@ export interface Product {
   startingPrice: number
   fixedIncrement: number
   capPrice?: number
+  lateCompensation: boolean
+  freeShipping: boolean
+  shippingInsurance: boolean
+  auction: boolean
   status: ProductStatus
   createdAt: string
   updatedAt: string
@@ -21,6 +25,10 @@ export interface ProductFormData {
   startingPrice: number
   fixedIncrement?: number
   capPrice?: number
+  lateCompensation?: boolean
+  freeShipping?: boolean
+  shippingInsurance?: boolean
+  auction?: boolean
 }
 
 export interface ProductWithAuctionRule extends Product {

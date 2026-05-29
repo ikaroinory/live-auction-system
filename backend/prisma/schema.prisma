@@ -141,17 +141,21 @@ model LiveRoomFollow {
 }
 
 model Product {
-  id             String    @id @default(uuid())
-  creatorId      String
-  name           String
-  image          String    @db.LongText
-  tags           Json?
-  startingPrice  Decimal   @db.Decimal(10, 2)
-  fixedIncrement Decimal   @db.Decimal(10, 2)
-  capPrice       Decimal?  @db.Decimal(10, 2)
-  status         Int       @default(0) // 0: 待上架 1: 已上架 2: 已下架
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               String    @id @default(uuid())
+  creatorId        String
+  name             String
+  image            String    @db.LongText
+  tags             Json?
+  startingPrice    Decimal   @db.Decimal(10, 2)
+  fixedIncrement   Decimal   @db.Decimal(10, 2)
+  capPrice         Decimal?  @db.Decimal(10, 2)
+  lateCompensation Boolean   @default(false)
+  freeShipping     Boolean   @default(false)
+  shippingInsurance Boolean  @default(false)
+  auction          Boolean   @default(false)
+  status           Int       @default(0) // 0: 待上架 1: 已上架 2: 已下架
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   // 关联关系
   creator  User     @relation("UserToProduct", fields: [creatorId], references: [id])

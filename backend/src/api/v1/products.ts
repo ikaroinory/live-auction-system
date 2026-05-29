@@ -78,7 +78,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       return res.status(401).json({ message: '未认证' })
     }
 
-    const { name, image, tags, startingPrice, fixedIncrement, capPrice } = req.body
+    const { name, image, tags, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
 
     if (!name || !image) {
       return res.status(400).json({ message: '商品名称和图片不能为空' })
@@ -93,6 +93,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         startingPrice: startingPrice || 0,
         fixedIncrement: fixedIncrement || 10,
         capPrice: capPrice || null,
+        lateCompensation: lateCompensation || false,
+        freeShipping: freeShipping || false,
+        shippingInsurance: shippingInsurance || false,
+        auction: auction || false,
         status: 0
       }
     })
@@ -110,7 +114,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
     }
 
     const { id } = req.params
-    const { name, image, tags, startingPrice, fixedIncrement, capPrice } = req.body
+    const { name, image, tags, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
 
     const existingProduct = await prisma.product.findUnique({
       where: { id }
@@ -132,7 +136,11 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
         tags: tags || existingProduct.tags,
         startingPrice: startingPrice || existingProduct.startingPrice,
         fixedIncrement: fixedIncrement || existingProduct.fixedIncrement,
-        capPrice: capPrice !== undefined ? capPrice : existingProduct.capPrice
+        capPrice: capPrice !== undefined ? capPrice : existingProduct.capPrice,
+        lateCompensation: lateCompensation !== undefined ? lateCompensation : existingProduct.lateCompensation,
+        freeShipping: freeShipping !== undefined ? freeShipping : existingProduct.freeShipping,
+        shippingInsurance: shippingInsurance !== undefined ? shippingInsurance : existingProduct.shippingInsurance,
+        auction: auction !== undefined ? auction : existingProduct.auction
       }
     })
 
