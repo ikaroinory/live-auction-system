@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Table, Button, Tabs, Input, Tag, Space, Checkbox } from '@douyinfe/semi-ui';
+import { Button, Tabs, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { IconPlus, IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router';
+import ProductTabContent from './components/ProductTabContent';
 
 const { Title, Text } = Typography;
 
@@ -225,48 +226,37 @@ const ProductList: React.FC = () => {
   ];
 
   return (
-    <div>
+    <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title heading={4}>商品管理</Title>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button size="small" theme="borderless" icon={<IconArrowUp />}>刷新列表</Button>
-          <Button size="small" theme="borderless" icon={<IconFilter />}>查看分组</Button>
-          <Button size="small" theme="borderless" icon={<IconMore />}>搭配管理</Button>
-          <Button icon={<IconPlus />} onClick={() => navigate('/product/create')}>添加商品</Button>
-        </div>
+        <Space>
+          <Button theme="borderless" icon={<IconArrowUp />}>刷新列表</Button>
+          <Button theme="borderless" icon={<IconFilter />}>查看分组</Button>
+          <Button theme="borderless" icon={<IconMore />}>搭配管理</Button>
+        </Space>
       </div>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane tab="直播商品" itemKey="live">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <Checkbox style={{ marginRight: 8 }} />
-            <Text type="tertiary">全选</Text>
-            <Input
-              placeholder="请搜索商品名称或ID"
-              value={searchValue}
-              onChange={setSearchValue}
-              style={{ width: 300 }}
-            />
-            <Button size="small" theme="borderless" icon={<IconFilter />}>筛选</Button>
-          </div>
-          <Table columns={liveColumns} dataSource={liveProducts} rowKey="id" />
+          <ProductTabContent
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            columns={liveColumns}
+            dataSource={liveProducts}
+            showAddButton
+            onAddClick={() => navigate('/product/create')}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <Checkbox style={{ marginRight: 8 }} />
-            <Text type="tertiary">全选</Text>
-            <Input
-              placeholder="请搜索商品名称或ID"
-              value={searchValue}
-              onChange={setSearchValue}
-              style={{ width: 300 }}
-            />
-            <Button size="small" theme="borderless" icon={<IconFilter />}>筛选</Button>
-          </div>
-          <Table columns={pendingColumns} dataSource={pendingProducts} rowKey="id" />
+          <ProductTabContent
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            columns={pendingColumns}
+            dataSource={pendingProducts}
+          />
         </Tabs.TabPane>
       </Tabs>
-    </div>
+    </>
   );
 };
 
