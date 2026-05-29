@@ -1,51 +1,91 @@
-import React, { useState } from 'react';
-import { Table, Button, Input, Checkbox } from '@douyinfe/semi-ui';
-import { IconFilter, IconPlus } from '@douyinfe/semi-icons';
-import { ColumnProps, TableProps } from '@douyinfe/semi-ui/lib/es/table';
+import React, { useState } from 'react'
+import { Button, Input, Checkbox, Space, Spin, Empty } from '@douyinfe/semi-ui'
+import { IconFilter, IconPlus } from '@douyinfe/semi-icons'
+import { ItemCard } from './ItemCard'
+import { ProductItem, ProductTagType } from '../types'
 
-interface RecordType {
-  id: number;
-  [key: string]: unknown;
-}
+export type LoadingStatus = 'loading' | 'success' | 'error'
 
-interface ProductTabContentProps {
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  columns: ColumnProps<RecordType>[];
-  dataSource: RecordType[];
-  showAddButton?: boolean;
-  onAddClick?: () => void;
+export interface ProductTabContentProps {
+  searchValue: string
+  onSearchChange: (value: string) => void
+  dataSource: ProductItem[]
+  showAddButton?: boolean
+  onAddClick?: () => void
+  loadingStatus?: LoadingStatus
+  errorMessage?: string
 }
 
 const ProductTabContent: React.FC<ProductTabContentProps> = ({
   searchValue,
   onSearchChange,
-  columns,
   dataSource,
   showAddButton = false,
-  onAddClick
+  onAddClick,
+  loadingStatus = 'success',
+  errorMessage
 }) => {
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
 
-  const rowSelection: TableProps<RecordType>['rowSelection'] = {
-    selectedRowKeys: selectedKeys,
-    onChange: (keys) => setSelectedKeys(keys),
-    type: 'checkbox'
-  };
-
-  const isAllSelected = dataSource.length > 0 && selectedKeys.length === dataSource.length;
+  const isAllSelected = dataSource.length > 0 && selectedKeys.length === dataSource.length
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedKeys(dataSource.map(item => item.id));
+      setSelectedKeys(dataSource.map((item) => item.id))
     } else {
-      setSelectedKeys([]);
+      setSelectedKeys([])
     }
-  };
+  }
+
+  const handleStartAuction = (id: number) => {
+    console.log('Start auction for product:', id)
+  }
+
+  const handleRemove = (id: number) => {
+    console.log('Remove product:', id)
+  }
+
+  const renderContent = () => {
+    if (loadingStatus === 'loading') {
+      return (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
+          <Spin size="large" />
+        </div>
+      )
+    }
+
+    if (loadingStatus === 'error') {
+      return (
+        <Empty
+          description={errorMessage || '加载失败，请稍后重试'}
+          style={{ padding: 48 }}
+        />
+      )
+    }
+
+    if (dataSource.length === 0) {
+      return <Empty description="暂无商品数据" style={{ padding: 48 }} />
+    }
+
+    return (
+      <Space vertical spacing={12}>
+        {dataSource.map((item) => (
+          <ItemCard
+            key={item.id}
+            data={item}
+            onStartAuction={handleStartAuction}
+            onRemove={handleRemove}
+          />
+        ))}
+      </Space>
+    )
+  }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+    <>
+      <div
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 16 }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Checkbox
             style={{ marginRight: 8 }}
@@ -60,20 +100,20 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
             onChange={onSearchChange}
             style={{ width: 300 }}
           />
-          <Button size="small" theme="borderless" icon={<IconFilter />}>筛选</Button>
+          <Button size="small" theme="borderless" icon={<IconFilter />}>
+            筛选
+          </Button>
         </div>
         {showAddButton && onAddClick && (
-          <Button icon={<IconPlus />} onClick={onAddClick}>添加商品</Button>
+          <Button icon={<IconPlus />} onClick={onAddClick}>
+            添加商品
+          </Button>
         )}
       </div>
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        rowKey="id"
-        rowSelection={rowSelection}
-      />
-    </div>
-  );
-};
+      {renderContent()}
+    </>
+  )
+}
 
-export default ProductTabContent;
+export default ProductTabContent
+export { ProductItem, ProductTagType }

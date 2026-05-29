@@ -1,230 +1,123 @@
-import React, { useState } from 'react';
-import { Button, Tabs, Tag, Space } from '@douyinfe/semi-ui';
-import { Typography } from '@douyinfe/semi-ui';
-import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
-import { useNavigate } from 'react-router';
-import ProductTabContent from './components/ProductTabContent';
+import React, { useState, useEffect, useRef } from 'react'
+import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
+import { Typography } from '@douyinfe/semi-ui'
+import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
+import { useNavigate } from 'react-router'
+import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
+import { ProductItem, ProductTagType } from './types'
+import { auctionService } from '@/services'
+import type { Auction } from '@/types'
 
-const { Title } = Typography;
-
-interface LiveProduct {
-  id: number;
-  name: string;
-  startPrice: number;
-  fixedIncrement: number;
-  maxPrice: number;
-  currentPrice: number;
-  bidCount: number;
-  status: 'live' | 'ended';
-  endTime?: string;
-}
-
-interface PendingProduct {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  status: 'pending';
-}
+const { Title } = Typography
 
 const ProductList: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('live');
-  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState('live')
+  const [searchValue, setSearchValue] = useState('')
+  const [liveProducts, setLiveProducts] = useState<ProductItem[]>([])
+  const [pendingProducts, setPendingProducts] = useState<ProductItem[]>([])
+  const [liveLoadingStatus, setLiveLoadingStatus] = useState<LoadingStatus>('loading')
+  const [pendingLoadingStatus, setPendingLoadingStatus] = useState<LoadingStatus>('loading')
+  const [liveErrorMessage, setLiveErrorMessage] = useState<string>('')
+  const [pendingErrorMessage, setPendingErrorMessage] = useState<string>('')
 
-  const liveProducts: LiveProduct[] = [
-    {
-      id: 1,
-      name: '爆款和风生巧福团特价食品解馋零食休闲小吃巧克力大福糯米糍...',
-      startPrice: 100,
-      fixedIncrement: 10,
-      maxPrice: 1000,
-      currentPrice: 240,
-      bidCount: 13,
-      status: 'live',
-      endTime: '05:59:59'
-    },
-    {
-      id: 2,
-      name: '爆款和风生巧福团特价食品解馋零食休闲小吃巧克力大福糯米糍...',
-      startPrice: 100,
-      fixedIncrement: 10,
-      maxPrice: 1000,
-      currentPrice: 960,
-      bidCount: 30,
-      status: 'ended'
+  const convertAuctionToProductItem = (auction: Auction): ProductItem => ({
+    id: auction.id,
+    name: auction.title,
+    image: auction.images?.[0],
+    tags: [ProductTagType.LateCompensation, ProductTagType.FreeShipping, ProductTagType.ShippingInsurance, ProductTagType.Auction],
+    startingPrice: auction.startPrice,
+    fixedIncrement: auction.minIncrement,
+    capPrice: auction.maxPrice,
+    currentPrice: auction.finalPrice,
+    bidCount: 0,
+    status: auction.status
+  })
+
+  const fetchLiveProductsRef = useRef(async (): Promise<void> => {
+    setLiveLoadingStatus('loading')
+    try {
+      const result = await auctionService.getList({ status: 1 })
+      const products = result.list.map(convertAuctionToProductItem)
+      setLiveProducts(products)
+      setLiveLoadingStatus('success')
+      setLiveErrorMessage('')
+    } catch (error) {
+      console.error('Failed to fetch live products:', error)
+      setLiveLoadingStatus('error')
+      setLiveErrorMessage('获取直播商品失败，请稍后重试')
+      Toast.error('获取直播商品失败')
     }
-  ];
+  })
 
-  const pendingProducts: PendingProduct[] = [
-    {
-      id: 3,
-      name: '新款时尚休闲运动鞋透气轻便跑步鞋男女同款',
-      price: 199,
-      image: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=sport%20shoes%20product%20photo%20white%20background&image_size=square',
-      status: 'pending'
-    },
-    {
-      id: 4,
-      name: '高端护肤套装补水保湿精华液面霜组合',
-      price: 399,
-      image: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=skincare%20set%20product%20photo%20white%20background&image_size=square',
-      status: 'pending'
+  const fetchPendingProductsRef = useRef(async (): Promise<void> => {
+    setPendingLoadingStatus('loading')
+    try {
+      const result = await auctionService.getList({ status: 0 })
+      const products = result.list.map(convertAuctionToProductItem)
+      setPendingProducts(products)
+      setPendingLoadingStatus('success')
+      setPendingErrorMessage('')
+    } catch (error) {
+      console.error('Failed to fetch pending products:', error)
+      setPendingLoadingStatus('error')
+      setPendingErrorMessage('获取待上架商品失败，请稍后重试')
+      Toast.error('获取待上架商品失败')
     }
-  ];
+  })
 
-  const liveColumns = [
-    {
-      title: '',
-      dataIndex: 'id',
-      render: (id: number) => <span style={{ color: '#999' }}>{String(id).padStart(2, '0')}</span>
-    },
-    {
-      title: '商品信息',
-      dataIndex: 'name',
-      width: 300,
-      render: (name: string) => (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img
-              src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=food%20snack%20product%20photo%20colorful&image_size=square"
-              alt=""
-              style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
-            />
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>
-                {name}
-              </div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                <Tag size="small" color="orange">限</Tag>
-                <Tag size="small" color="red">包邮</Tag>
-                <Tag size="small" color="green">运费险</Tag>
-                <Tag size="small" color="red">质检</Tag>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: '起拍价',
-      dataIndex: 'startPrice',
-      render: (price: number) => <span style={{ color: '#666' }}>¥{price}</span>
-    },
-    {
-      title: '固定加价',
-      dataIndex: 'fixedIncrement',
-      render: (price: number) => <span style={{ color: '#666' }}>¥{price}</span>
-    },
-    {
-      title: '封顶价',
-      dataIndex: 'maxPrice',
-      render: (price: number) => <span style={{ color: '#666' }}>¥{price}</span>
-    },
-    {
-      title: '当前出价',
-      dataIndex: 'currentPrice',
-      render: (price: number) => <span style={{ color: '#ff2d55', fontWeight: 600, fontSize: 16 }}>¥{price}</span>
-    },
-    {
-      title: '出价次数',
-      dataIndex: 'bidCount',
-      render: () => (
-        <Button size="small" theme="borderless" type="tertiary">
-          出价次数 &gt;
-        </Button>
-      )
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      render: (status: string) => {
-        if (status === 'live') {
-          return (
-            <div>
-              <Tag color="red">讲解中</Tag>
-              <div style={{ marginTop: 8 }}>
-                <Button size="small" theme="solid" type="primary">取消讲解</Button>
-              </div>
-            </div>
-          );
-        }
-        return (
-          <div>
-            <Tag color="green">已成交</Tag>
-            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-              <Button size="small" theme="borderless" type="tertiary">竞拍结束</Button>
-              <Button size="small" theme="borderless" type="tertiary">下架</Button>
-              <Button size="small" theme="borderless" type="tertiary">讲解</Button>
-            </div>
-          </div>
-        );
+  useEffect(() => {
+    let isMounted = true
+    const fetchData = async (): Promise<void> => {
+      if (activeTab === 'live') {
+        await fetchLiveProductsRef.current()
+      } else {
+        await fetchPendingProductsRef.current()
       }
-    },
-    {
-      title: '操作',
-      render: () => (
-        <Button size="small" theme="borderless" icon={<IconMore />} />
-      )
     }
-  ];
+    if (isMounted) {
+      void fetchData()
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [activeTab])
 
-  const pendingColumns = [
-    {
-      title: '',
-      dataIndex: 'id',
-      render: (id: number) => <span style={{ color: '#999' }}>{String(id).padStart(2, '0')}</span>
-    },
-    {
-      title: '商品信息',
-      dataIndex: 'name',
-      width: 300,
-      render: (name: string, record: PendingProduct) => (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img
-              src={record.image}
-              alt=""
-              style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
-            />
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>
-                {name}
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: '价格',
-      dataIndex: 'price',
-      render: (price: number) => <span style={{ color: '#ff2d55', fontWeight: 600 }}>¥{price}</span>
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      render: () => <Tag color="grey">待上架</Tag>
-    },
-    {
-      title: '操作',
-      render: () => (
-        <Space>
-          <Button size="small" theme="borderless" type="primary">上架</Button>
-          <Button size="small" theme="borderless" type="danger">删除</Button>
-        </Space>
-      )
+  const handleRefresh = async (): Promise<void> => {
+    if (activeTab === 'live') {
+      await fetchLiveProductsRef.current()
+    } else {
+      await fetchPendingProductsRef.current()
     }
-  ];
+    Toast.success('刷新成功')
+  }
+
+  const filteredLiveProducts = liveProducts.filter(
+    (item) =>
+      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      String(item.id).includes(searchValue)
+  )
+
+  const filteredPendingProducts = pendingProducts.filter(
+    (item) =>
+      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      String(item.id).includes(searchValue)
+  )
 
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title heading={4}>商品管理</Title>
         <Space>
-          <Button theme="borderless" icon={<IconArrowUp />}>刷新列表</Button>
-          <Button theme="borderless" icon={<IconFilter />}>查看分组</Button>
-          <Button theme="borderless" icon={<IconMore />}>搭配管理</Button>
+          <Button theme="borderless" icon={<IconArrowUp />} onClick={handleRefresh}>
+            刷新列表
+          </Button>
+          <Button theme="borderless" icon={<IconFilter />}>
+            查看分组
+          </Button>
+          <Button theme="borderless" icon={<IconMore />}>
+            搭配管理
+          </Button>
         </Space>
       </div>
 
@@ -233,23 +126,25 @@ const ProductList: React.FC = () => {
           <ProductTabContent
             searchValue={searchValue}
             onSearchChange={setSearchValue}
-            columns={liveColumns}
-            dataSource={liveProducts}
+            dataSource={filteredLiveProducts}
             showAddButton
             onAddClick={() => navigate('/product/create')}
+            loadingStatus={liveLoadingStatus}
+            errorMessage={liveErrorMessage}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
           <ProductTabContent
             searchValue={searchValue}
             onSearchChange={setSearchValue}
-            columns={pendingColumns}
-            dataSource={pendingProducts}
+            dataSource={filteredPendingProducts}
+            loadingStatus={pendingLoadingStatus}
+            errorMessage={pendingErrorMessage}
           />
         </Tabs.TabPane>
       </Tabs>
     </>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList

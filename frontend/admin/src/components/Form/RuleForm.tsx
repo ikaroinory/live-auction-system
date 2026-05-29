@@ -1,12 +1,12 @@
-import React from 'react';
-import { Form, Typography, Space, Card } from '@douyinfe/semi-ui';
-import type { RuleConfig } from '@/types';
+import React from 'react'
+import { Form, Typography, Space, Card } from '@douyinfe/semi-ui'
+import type { RuleConfig } from '@/types'
 
-const { Title, Text } = Typography;
+const { Title, Text } = Typography
 
 interface RuleFormProps {
-  initialValues?: Partial<RuleConfig>;
-  onValuesChange?: (values: Partial<RuleConfig>) => void;
+  initialValues?: Partial<RuleConfig>
+  onValuesChange?: (values: Partial<RuleConfig>) => void
 }
 
 const RuleForm: React.FC<RuleFormProps> = ({ initialValues, onValuesChange }) => {
@@ -95,7 +95,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ initialValues, onValuesChange }) =>
             label="启用自动延时"
             initValue={initialValues?.enableAutoExtend ?? true}
             onChange={(checked) => {
-              onValuesChange?.({ enableAutoExtend: checked });
+              onValuesChange?.({ enableAutoExtend: checked })
             }}
           />
           <Text type="tertiary" size="small">
@@ -127,7 +127,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ initialValues, onValuesChange }) =>
         )}
       </Space>
     </Card>
-  );
-};
+  )
+}
 
-export default RuleForm;
+export default RuleForm

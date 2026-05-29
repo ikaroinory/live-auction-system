@@ -1,8 +1,8 @@
-import React from 'react';
-import { Table, Tag } from '@douyinfe/semi-ui';
-import { Typography } from '@douyinfe/semi-ui';
+import React from 'react'
+import { Table, Tag } from '@douyinfe/semi-ui'
+import { Typography } from '@douyinfe/semi-ui'
 
-const { Title } = Typography;
+const { Title } = Typography
 
 const OrderList: React.FC = () => {
   const columns = [
@@ -31,16 +31,16 @@ const OrderList: React.FC = () => {
           0: { text: '待支付', color: 'warning' },
           1: { text: '已支付', color: 'success' },
           2: { text: '已取消', color: 'default' }
-        };
-        const { text, color } = statusMap[status] || { text: '未知', color: 'default' };
-        return <Tag color={color}>{text}</Tag>;
+        }
+        const { text, color } = statusMap[status] || { text: '未知', color: 'default' }
+        return <Tag color={color}>{text}</Tag>
       }
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt'
     }
-  ];
+  ]
 
   return (
     <div>
@@ -49,7 +49,7 @@ const OrderList: React.FC = () => {
       </Title>
       <Table columns={columns} dataSource={[]} rowKey="id" />
     </div>
-  );
-};
+  )
+}
 
-export default OrderList;
+export default OrderList

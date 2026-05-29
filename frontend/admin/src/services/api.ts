@@ -1,33 +1,33 @@
-import axios from 'axios';
-import { useUserStore } from '@/store';
+import axios from 'axios'
+import { useUserStore } from '@/store'
 
 const api = axios.create({
   baseURL: '/api/v1',
   timeout: 10000
-});
+})
 
 api.interceptors.request.use(
   (config) => {
-    const token = useUserStore.getState().token;
+    const token = useUserStore.getState().token
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`
     }
-    return config;
+    return config
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useUserStore.getState().logout();
-      window.location.href = '/login';
+      useUserStore.getState().logout()
+      window.location.href = '/login'
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default api;
+export default api

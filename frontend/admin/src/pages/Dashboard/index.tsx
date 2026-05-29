@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, Row, Col, Typography } from '@douyinfe/semi-ui';
-import { IconLive, IconTickCircle, IconGift, IconArrowUp } from '@douyinfe/semi-icons';
+import React from 'react'
+import { Card, Row, Col, Typography } from '@douyinfe/semi-ui'
+import { IconLive, IconTickCircle, IconGift, IconArrowUp } from '@douyinfe/semi-icons'
 
-const { Title, Text } = Typography;
+const { Title, Text } = Typography
 
 const Dashboard: React.FC = () => {
   const stats = [
@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
       icon: <IconArrowUp size="extra-large" />,
       color: '#ff9500'
     }
-  ];
+  ]
 
   return (
     <div>
@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
         ))}
       </Row>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

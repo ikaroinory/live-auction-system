@@ -1,13 +1,13 @@
 export interface RouteConfig {
-  path: string;
-  name: string;
-  icon?: React.ReactNode;
-  component?: React.ComponentType;
-  children?: RouteConfig[];
+  path: string
+  name: string
+  icon?: React.ReactNode
+  component?: React.ComponentType
+  children?: RouteConfig[]
   meta?: {
-    requiresAuth?: boolean;
-    roles?: ('admin' | 'seller')[];
-  };
+    requiresAuth?: boolean
+    roles?: ('admin' | 'seller')[]
+  }
 }
 
 export const routes: RouteConfig[] = [
@@ -52,4 +52,4 @@ export const routes: RouteConfig[] = [
       }
     ]
   }
-];
+]

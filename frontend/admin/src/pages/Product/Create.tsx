@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { Form, Button, Typography, Toast } from '@douyinfe/semi-ui';
-import styles from './Create.module.scss';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { Form, Button, Typography, Toast } from '@douyinfe/semi-ui'
+import styles from './Create.module.scss'
 
-const { Title, Text } = Typography;
+const { Title, Text } = Typography
 
 const ProductCreate: React.FC = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [images, setImages] = useState<string[]>([])
 
   const handleImageUpload = () => {
-    const url = prompt('请输入图片URL:');
+    const url = prompt('请输入图片URL:')
     if (url && images.length < 4) {
-      setImages([...images, url]);
+      setImages([...images, url])
     }
-  };
+  }
 
   const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
+    setImages(images.filter((_, i) => i !== index))
+  }
 
   const handleSubmit = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      Toast.success('商品添加成功');
-      navigate('/product/list');
+      Toast.success('商品添加成功')
+      navigate('/product/list')
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      Toast.error(err.response?.data?.message || '添加失败');
+      const err = error as { response?: { data?: { message?: string } } }
+      Toast.error(err.response?.data?.message || '添加失败')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className={styles.auctionFormContainer}>
@@ -116,7 +116,7 @@ const ProductCreate: React.FC = () => {
         </div>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default ProductCreate;
+export default ProductCreate

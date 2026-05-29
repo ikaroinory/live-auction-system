@@ -1,64 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { Form, Button, Toast } from '@douyinfe/semi-ui';
-import { IconPhone, IconKey } from '@douyinfe/semi-icons';
-import { useUserStore } from '@/store';
-import { authService } from '@/services';
-import styles from './Login.module.scss';
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router'
+import { Form, Button, Toast } from '@douyinfe/semi-ui'
+import { IconPhone, IconKey } from '@douyinfe/semi-icons'
+import { useUserStore } from '@/store'
+import { authService } from '@/services'
+import styles from './Login.module.scss'
 
 interface FormValues {
-  phone: string;
-  code: string;
+  phone: string
+  code: string
 }
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const login = useUserStore((state) => state.login);
-  const [loading, setLoading] = useState(false);
-  const [codeLoading, setCodeLoading] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const navigate = useNavigate()
+  const login = useUserStore((state) => state.login)
+  const [loading, setLoading] = useState(false)
+  const [codeLoading, setCodeLoading] = useState(false)
+  const [countdown, setCountdown] = useState(0)
 
   const handleSubmit = async (values: FormValues) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await authService.login(values);
-      login(response.user, response.token);
-      Toast.success('登录成功');
-      navigate('/dashboard');
+      const response = await authService.login(values)
+      login(response.user, response.token)
+      Toast.success('登录成功')
+      navigate('/dashboard')
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      Toast.error(err.response?.data?.message || '登录失败，请检查手机号和验证码');
+      const err = error as { response?: { data?: { message?: string } } }
+      Toast.error(err.response?.data?.message || '登录失败，请检查手机号和验证码')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSendCode = async (values: { phone: string }) => {
     if (!/^1[3-9]\d{9}$/.test(values.phone)) {
-      Toast.error('请输入正确的手机号');
-      return;
+      Toast.error('请输入正确的手机号')
+      return
     }
 
-    setCodeLoading(true);
+    setCodeLoading(true)
     try {
-      Toast.success('验证码已发送，测试环境验证码为 123456 或 666666');
-      setCountdown(60);
+      Toast.success('验证码已发送，测试环境验证码为 123456 或 666666')
+      setCountdown(60)
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      Toast.error(err.response?.data?.message || '发送验证码失败');
+      const err = error as { response?: { data?: { message?: string } } }
+      Toast.error(err.response?.data?.message || '发送验证码失败')
     } finally {
-      setCodeLoading(false);
+      setCodeLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
+        setCountdown(countdown - 1)
+      }, 1000)
+      return () => clearTimeout(timer)
     }
-  }, [countdown]);
+  }, [countdown])
 
   return (
     <div className={styles.loginContainer}>
@@ -91,7 +91,7 @@ const Login: React.FC = () => {
                 size="small"
                 disabled={countdown > 0 || codeLoading}
                 onClick={() => {
-                  handleSendCode({ phone: '' });
+                  handleSendCode({ phone: '' })
                 }}
               >
                 {countdown > 0 ? `${countdown}s` : '获取验证码'}
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
         </Form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

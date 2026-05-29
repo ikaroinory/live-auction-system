@@ -1,22 +1,22 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
-import { useUserStore } from '@/store';
-import Login from '@/pages/Login';
-import Dashboard from '@/pages/Dashboard';
-import ProductList from '@/pages/Product/List';
-import ProductCreate from '@/pages/Product/Create';
-import OrderList from '@/pages/Order/List';
-import Layout from '@/components/Layout';
+import React from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
+import { useUserStore } from '@/store'
+import Login from '@/pages/Login'
+import Dashboard from '@/pages/Dashboard'
+import ProductList from '@/pages/Product/List'
+import ProductCreate from '@/pages/Product/Create'
+import OrderList from '@/pages/Order/List'
+import Layout from '@/components/Layout'
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated)
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />
   }
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}
 
 const AppRoutes: React.FC = () => {
   return (
@@ -39,7 +39,7 @@ const AppRoutes: React.FC = () => {
         </Route>
       </Routes>
     </BrowserRouter>
-  );
-};
+  )
+}
 
-export default AppRoutes;
+export default AppRoutes
