@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
+import { Button, Tabs, Toast } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
-import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
+import { useNavigate } from 'react-router'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
 import { productService } from '@/services'
@@ -10,8 +10,8 @@ import type { Product } from '@/types'
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('live')
-  const [searchValue, setSearchValue] = useState('')
   const [liveProducts, setLiveProducts] = useState<ProductItem[]>([])
   const [pendingProducts, setPendingProducts] = useState<ProductItem[]>([])
   const [liveLoadingStatus, setLiveLoadingStatus] = useState<LoadingStatus>('loading')
@@ -26,7 +26,7 @@ const ProductList: React.FC = () => {
     if (product.shippingInsurance) tags.push(ProductTagType.ShippingInsurance)
     if (product.auction) tags.push(ProductTagType.Auction)
     return {
-      id: Number(product.id),
+      id: product.id,
       name: product.name,
       image: product.image,
       tags,
@@ -75,81 +75,36 @@ const ProductList: React.FC = () => {
   })
 
   useEffect(() => {
-    let isMounted = true
-    const fetchData = async (): Promise<void> => {
-      if (activeTab === 'live') {
-        await fetchLiveProductsRef.current()
-      } else {
-        await fetchPendingProductsRef.current()
-      }
-    }
-    if (isMounted) {
-      void fetchData()
-    }
-    return () => {
-      isMounted = false
-    }
-  }, [activeTab])
-
-  const handleRefresh = async (): Promise<void> => {
-    if (activeTab === 'live') {
-      await fetchLiveProductsRef.current()
-    } else {
-      await fetchPendingProductsRef.current()
-    }
-    Toast.success('刷新成功')
-  }
-
-  const filteredLiveProducts = liveProducts.filter(
-    (item) =>
-      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      String(item.id).includes(searchValue)
-  )
-
-  const filteredPendingProducts = pendingProducts.filter(
-    (item) =>
-      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      String(item.id).includes(searchValue)
-  )
+    fetchLiveProductsRef.current()
+    fetchPendingProductsRef.current()
+  }, [])
 
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Title heading={4}>商品管理</Title>
-        <Space>
-          <Button theme="borderless" icon={<IconArrowUp />} onClick={handleRefresh}>
-            刷新列表
-          </Button>
-          <Button theme="borderless" icon={<IconFilter />}>
-            查看分组
-          </Button>
-          <Button theme="borderless" icon={<IconMore />}>
-            搭配管理
-          </Button>
-        </Space>
+    <div style={{ padding: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <Title heading={3}>商品管理</Title>
+        <Button type="primary" onClick={() => navigate('/product/create')}>
+          添加商品
+        </Button>
       </div>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane tab="直播商品" itemKey="live">
           <ProductTabContent
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            dataSource={filteredLiveProducts}
+            dataSource={liveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
           <ProductTabContent
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            dataSource={filteredPendingProducts}
+            dataSource={pendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
           />
         </Tabs.TabPane>
       </Tabs>
-    </>
+    </div>
   )
 }
 

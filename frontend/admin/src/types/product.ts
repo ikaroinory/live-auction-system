@@ -1,8 +1,8 @@
 export type ProductStatus = 0 | 1 | 2
 
 export interface Product {
-  id: number
-  creatorId: number
+  id: string
+  creatorId: string
   name: string
   image: string
   tags: string[]

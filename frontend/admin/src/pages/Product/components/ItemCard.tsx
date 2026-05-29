@@ -107,16 +107,16 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
   )
 }
 
-type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps
+type ItemCardProps = { id: string } & Omit<ItemInformationProps, 'width'> & ItemDataProps
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
   return (
-    <Card bodyStyle={{ display: 'flex', gap: 32 }}>
+    <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', gap: 32 }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         <div style={{ width: '100%', display: 'flex' }}>
           <ItemInformation
-            width={500}
+            width={460}
             name={props.name}
             image={props.image}
             lateCompensation={props.lateCompensation}

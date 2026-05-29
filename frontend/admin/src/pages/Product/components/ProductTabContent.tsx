@@ -8,22 +8,21 @@ import { useNavigate } from 'react-router'
 export type LoadingStatus = 'loading' | 'success' | 'error'
 
 export interface ProductTabContentProps {
-  searchValue: string
-  onSearchChange: (value: string) => void
   dataSource: ProductItem[]
   loadingStatus?: LoadingStatus
   errorMessage?: string
+  onSearch?: (value: string) => void
 }
 
 const ProductTabContent: React.FC<ProductTabContentProps> = ({
-  searchValue,
-  onSearchChange,
   dataSource,
   loadingStatus = 'success',
-  errorMessage
+  errorMessage,
+  onSearch
 }) => {
   const navigate = useNavigate()
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
+  const [searchValue, setSearchValue] = useState('')
 
   const isAllSelected = dataSource.length > 0 && selectedKeys.length === dataSource.length
 
@@ -33,6 +32,11 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
     } else {
       setSelectedKeys([])
     }
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value)
+    onSearch?.(value)
   }
 
   const renderContent = () => {
@@ -54,7 +58,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
 
     return (
       <div style={{ maxHeight: 'calc(100vh - 320px)', overflowY: 'auto' }}>
-        <Space vertical spacing={12}>
+        <Space style={{ width: '100%' }} vertical spacing={12}>
           {dataSource.map((item) => (
             <ItemCard key={item.id} {...item} />
           ))}
@@ -79,7 +83,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
           <Input
             placeholder="请搜索商品名称或ID"
             value={searchValue}
-            onChange={onSearchChange}
+            onChange={handleSearchChange}
             style={{ width: 300 }}
           />
           <Button size="small" theme="borderless" icon={<IconFilter />}>

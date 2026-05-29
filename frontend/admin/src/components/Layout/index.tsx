@@ -46,37 +46,34 @@ const LayoutComponent: React.FC = () => {
   )
 
   return (
-    <div className={styles.adminLayout}>
-      <Sider className={styles.adminSider}>
-        <Nav
-          selectedKeys={[getCurrentKey()]}
-          items={navItems}
-          onSelect={handleSelect}
-          header={{
-            text: '直播竞拍管理'
-          }}
-          bodyStyle={{ flex: 1 }}
-        />
-      </Sider>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Header className={styles.adminHeader}>
-          <div style={{ fontSize: '16px', fontWeight: 500 }}>
-            {navItems.find((item) => location.pathname.startsWith(item.path))?.text || '后台管理'}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <Button theme="borderless" icon={mode === 'dark' ? <IconSun /> : <IconMoon />} onClick={toggleMode} />
-            <Dropdown render={userMenu} position="bottomRight">
-              <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
-                {user?.username?.charAt(0).toUpperCase()}
-              </Avatar>
-            </Dropdown>
-          </div>
-        </Header>
-        <Content className={styles.adminContent}>
+    <Layout>
+      <Header className={styles.adminHeader}>
+        <div style={{ fontSize: '16px', fontWeight: 500 }}>
+          {navItems.find((item) => location.pathname.startsWith(item.path))?.text || '后台管理'}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Button theme="borderless" icon={mode === 'dark' ? <IconSun /> : <IconMoon />} onClick={toggleMode} />
+          <Dropdown render={userMenu} position="bottomRight">
+            <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
+              {user?.username?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Dropdown>
+        </div>
+      </Header>
+      <Layout style={{ height: 'calc(100dvh - 64px)' }}>
+        <Sider>
+          <Nav
+            style={{ height: '100%' }}
+            selectedKeys={[getCurrentKey()]}
+            items={navItems}
+            onSelect={handleSelect}
+          />
+        </Sider>
+        <Content className={styles.mainContainer}>
           <Outlet />
         </Content>
-      </div>
-    </div>
+      </Layout>
+    </Layout>
   )
 }
 
