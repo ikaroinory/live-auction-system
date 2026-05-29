@@ -145,7 +145,6 @@ model Product {
   creatorId        String
   name             String
   image            String    @db.LongText
-  tags             Json?
   startingPrice    Decimal   @db.Decimal(10, 2)
   fixedIncrement   Decimal   @db.Decimal(10, 2)
   capPrice         Decimal?  @db.Decimal(10, 2)

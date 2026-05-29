@@ -78,7 +78,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       return res.status(401).json({ message: '未认证' })
     }
 
-    const { name, image, tags, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
+    const { name, image, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
 
     if (!name || !image) {
       return res.status(400).json({ message: '商品名称和图片不能为空' })
@@ -89,7 +89,6 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         creatorId: req.user.id,
         name,
         image,
-        tags: tags || [],
         startingPrice: startingPrice || 0,
         fixedIncrement: fixedIncrement || 10,
         capPrice: capPrice || null,
@@ -114,7 +113,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
     }
 
     const { id } = req.params
-    const { name, image, tags, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
+    const { name, image, startingPrice, fixedIncrement, capPrice, lateCompensation, freeShipping, shippingInsurance, auction } = req.body
 
     const existingProduct = await prisma.product.findUnique({
       where: { id }
@@ -133,7 +132,6 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
       data: {
         name: name || existingProduct.name,
         image: image || existingProduct.image,
-        tags: tags || existingProduct.tags,
         startingPrice: startingPrice || existingProduct.startingPrice,
         fixedIncrement: fixedIncrement || existingProduct.fixedIncrement,
         capPrice: capPrice !== undefined ? capPrice : existingProduct.capPrice,

@@ -86,7 +86,6 @@ const ProductCreate: React.FC = () => {
       const productData: ProductFormData = {
         name: values.title.trim(),
         image: images[0] || '',
-        tags: [],
         startingPrice: values.startPrice,
         fixedIncrement: values.minIncrement,
         capPrice: values.maxPrice,

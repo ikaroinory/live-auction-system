@@ -5,7 +5,6 @@ export interface Product {
   creatorId: number
   name: string
   image: string
-  tags: string[]
   startingPrice: number
   fixedIncrement: number
   capPrice?: number
@@ -21,7 +20,6 @@ export interface Product {
 export interface ProductFormData {
   name: string
   image: string
-  tags?: string[]
   startingPrice: number
   fixedIncrement?: number
   capPrice?: number
