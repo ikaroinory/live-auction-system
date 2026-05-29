@@ -211,7 +211,7 @@ const ProductList: React.FC = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: () => <Tag color="default">待上架</Tag>
+      render: () => <Tag color="grey">待上架</Tag>
     },
     {
       title: '操作',
