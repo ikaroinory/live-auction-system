@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Tabs, Input, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
-import { IconPlus, IconRefreshCircle, IconFilter, IconMore } from '@douyinfe/semi-icons';
+import { IconPlus, IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router';
 
 const { Title, Text } = Typography;
@@ -229,7 +229,7 @@ const ProductList: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title heading={4}>商品管理</Title>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button size="small" theme="borderless" icon={<IconRefreshCircle />}>刷新列表</Button>
+          <Button size="small" theme="borderless" icon={<IconArrowUp />}>刷新列表</Button>
           <Button size="small" theme="borderless" icon={<IconFilter />}>查看分组</Button>
           <Button size="small" theme="borderless" icon={<IconMore />}>搭配管理</Button>
           <Button icon={<IconPlus />} onClick={() => navigate('/product/create')}>添加商品</Button>
