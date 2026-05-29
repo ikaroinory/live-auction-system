@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { Layout, Avatar, Dropdown, Nav, Button } from '@douyinfe/semi-ui';
-import { IconHome, IconLive, IconTickCircle, IconGift, IconExit, IconMoon, IconSun } from '@douyinfe/semi-icons';
+import { IconHome, IconTickCircle, IconGift, IconExit, IconMoon, IconSun } from '@douyinfe/semi-icons';
 import { useUserStore } from '@/store';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import styles from './Layout.module.scss';
@@ -10,9 +10,8 @@ const { Sider, Header, Content } = Layout;
 
 const navItems = [
   { itemKey: 'dashboard', text: '数据概览', icon: <IconHome />, path: '/dashboard' },
-  { itemKey: 'auction', text: '竞拍管理', icon: <IconLive />, path: '/auction/list' },
-  { itemKey: 'order', text: '订单管理', icon: <IconTickCircle />, path: '/order/list' },
-  { itemKey: 'product', text: '商品管理', icon: <IconGift />, path: '/product/list' }
+  { itemKey: 'product', text: '商品管理', icon: <IconGift />, path: '/product/list' },
+  { itemKey: 'order', text: '订单管理', icon: <IconTickCircle />, path: '/order/list' }
 ];
 
 const LayoutComponent: React.FC = () => {
