@@ -6,13 +6,16 @@ const router = Router()
 
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
-    const { page = '1', pageSize = '10' } = req.query
+    const { page = '1', pageSize = '10', status } = req.query
     const pageNum = parseInt(page as string)
     const pageSizeNum = parseInt(pageSize as string)
     const skip = (pageNum - 1) * pageSizeNum
 
+    const where = status !== undefined ? { status: parseInt(status as string) } : {}
+
     const [products, total] = await Promise.all([
       prisma.product.findMany({
+        where,
         include: {
           creator: {
             select: {
@@ -29,7 +32,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
         take: pageSizeNum,
         orderBy: { createdAt: 'desc' }
       }),
-      prisma.product.count()
+      prisma.product.count({ where })
     ])
 
     res.json({ list: products, total, page: pageNum, pageSize: pageSizeNum })
@@ -89,7 +92,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         tags: tags || [],
         startingPrice: startingPrice || 0,
         fixedIncrement: fixedIncrement || 10,
-        capPrice: capPrice || null
+        capPrice: capPrice || null,
+        status: 0
       }
     })
 

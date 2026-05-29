@@ -5,8 +5,8 @@ import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
 import { useNavigate } from 'react-router'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
-import { auctionService } from '@/services'
-import type { Auction } from '@/types'
+import { productService } from '@/services'
+import type { Product } from '@/types'
 
 const { Title } = Typography
 
@@ -21,24 +21,23 @@ const ProductList: React.FC = () => {
   const [liveErrorMessage, setLiveErrorMessage] = useState<string>('')
   const [pendingErrorMessage, setPendingErrorMessage] = useState<string>('')
 
-  const convertAuctionToProductItem = (auction: Auction): ProductItem => ({
-    id: auction.id,
-    name: auction.title,
-    image: auction.images?.[0],
+  const convertProductToItem = (product: Product): ProductItem => ({
+    id: Number(product.id),
+    name: product.name,
+    image: product.image,
     tags: [ProductTagType.LateCompensation, ProductTagType.FreeShipping, ProductTagType.ShippingInsurance, ProductTagType.Auction],
-    startingPrice: auction.startPrice,
-    fixedIncrement: auction.minIncrement,
-    capPrice: auction.maxPrice,
-    currentPrice: auction.finalPrice,
+    startingPrice: Number(product.startingPrice),
+    fixedIncrement: Number(product.fixedIncrement),
+    capPrice: product.capPrice ? Number(product.capPrice) : undefined,
     bidCount: 0,
-    status: auction.status
+    status: product.status
   })
 
   const fetchLiveProductsRef = useRef(async (): Promise<void> => {
     setLiveLoadingStatus('loading')
     try {
-      const result = await auctionService.getList({ status: 1 })
-      const products = result.list.map(convertAuctionToProductItem)
+      const result = await productService.getList({ status: 1 })
+      const products = result.list.map(convertProductToItem)
       setLiveProducts(products)
       setLiveLoadingStatus('success')
       setLiveErrorMessage('')
@@ -53,8 +52,8 @@ const ProductList: React.FC = () => {
   const fetchPendingProductsRef = useRef(async (): Promise<void> => {
     setPendingLoadingStatus('loading')
     try {
-      const result = await auctionService.getList({ status: 0 })
-      const products = result.list.map(convertAuctionToProductItem)
+      const result = await productService.getList({ status: 0 })
+      const products = result.list.map(convertProductToItem)
       setPendingProducts(products)
       setPendingLoadingStatus('success')
       setPendingErrorMessage('')
