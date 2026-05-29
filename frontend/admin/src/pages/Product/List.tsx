@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Tabs, Tag, Space, Checkbox } from '@douyinfe/semi-ui';
+import { Button, Tabs, Tag, Space } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons';
 import { useNavigate } from 'react-router';
@@ -74,10 +74,6 @@ const ProductList: React.FC = () => {
   ];
 
   const liveColumns = [
-    {
-      title: '全选',
-      render: () => <Checkbox />
-    },
     {
       title: '',
       dataIndex: 'id',
@@ -174,10 +170,6 @@ const ProductList: React.FC = () => {
   ];
 
   const pendingColumns = [
-    {
-      title: '全选',
-      render: () => <Checkbox />
-    },
     {
       title: '',
       dataIndex: 'id',
