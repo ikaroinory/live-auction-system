@@ -19,17 +19,27 @@ const ProductList: React.FC = () => {
   const [liveErrorMessage, setLiveErrorMessage] = useState<string>('')
   const [pendingErrorMessage, setPendingErrorMessage] = useState<string>('')
 
-  const convertProductToItem = (product: Product): ProductItem => ({
-    id: Number(product.id),
-    name: product.name,
-    image: product.image,
-    tags: [ProductTagType.LateCompensation, ProductTagType.FreeShipping, ProductTagType.ShippingInsurance, ProductTagType.Auction],
-    startingPrice: Number(product.startingPrice),
-    fixedIncrement: Number(product.fixedIncrement),
-    capPrice: product.capPrice ? Number(product.capPrice) : undefined,
-    bidCount: 0,
-    status: product.status
-  })
+  const tagStringToType: Record<string, ProductTagType> = {
+    '晚发即赔': ProductTagType.LateCompensation,
+    '包邮': ProductTagType.FreeShipping,
+    '运费险': ProductTagType.ShippingInsurance,
+    '竞拍': ProductTagType.Auction
+  }
+
+  const convertProductToItem = (product: Product): ProductItem => {
+    const tags = (product.tags || []).map((tag: string) => tagStringToType[tag]).filter((tag: ProductTagType) => tag !== undefined)
+    return {
+      id: Number(product.id),
+      name: product.name,
+      image: product.image,
+      tags,
+      startingPrice: Number(product.startingPrice),
+      fixedIncrement: Number(product.fixedIncrement),
+      capPrice: product.capPrice ? Number(product.capPrice) : undefined,
+      bidCount: 0,
+      status: product.status
+    }
+  }
 
   const fetchLiveProductsRef = useRef(async (): Promise<void> => {
     setLiveLoadingStatus('loading')
