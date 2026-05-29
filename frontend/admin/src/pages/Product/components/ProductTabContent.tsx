@@ -1,24 +1,18 @@
 import React from 'react';
 import { Table, Button, Input, Checkbox } from '@douyinfe/semi-ui';
 import { IconFilter, IconPlus } from '@douyinfe/semi-icons';
+import { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
 
-interface TableRecord {
+interface RecordType {
   id: number;
   [key: string]: unknown;
-}
-
-interface TableColumn<T extends TableRecord = TableRecord> {
-  title: string;
-  dataIndex?: string;
-  width?: number | string;
-  render?: (text: unknown, record: T, index: number) => React.ReactNode;
 }
 
 interface ProductTabContentProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
-  columns: TableColumn[];
-  dataSource: TableRecord[];
+  columns: ColumnProps<RecordType>[];
+  dataSource: RecordType[];
   showAddButton?: boolean;
   onAddClick?: () => void;
 }
