@@ -9,25 +9,25 @@ const Dashboard: React.FC = () => {
     {
       title: '进行中竞拍',
       value: '12',
-      icon: <IconLive size={32} />,
+      icon: <IconLive size="extra-large" />,
       color: '#ff2d55'
     },
     {
       title: '今日订单',
       value: '156',
-      icon: <IconTickCircle size={32} />,
+      icon: <IconTickCircle size="extra-large" />,
       color: '#5856d6'
     },
     {
       title: '商品总数',
       value: '320',
-      icon: <IconGift size={32} />,
+      icon: <IconGift size="extra-large" />,
       color: '#34c759'
     },
     {
       title: 'GMV',
       value: '¥28,560',
-      icon: <IconArrowUp size={32} />,
+      icon: <IconArrowUp size="extra-large" />,
       color: '#ff9500'
     }
   ];
