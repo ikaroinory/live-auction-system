@@ -56,7 +56,7 @@ const ProductList: React.FC = () => {
     }
 
     try {
-      await productService.delete(Number(product.productId))
+      await productService.delete(product.productId)
       Toast.success('商品删除成功')
       await handleRefresh()
     } catch (error) {

@@ -11,7 +11,7 @@ export const productService = {
     return response.data
   },
 
-  getById: async (id: number): Promise<Product> => {
+  getById: async (id: string): Promise<Product> => {
     const response = await api.get(`/products/${id}`)
     return response.data
   },
@@ -21,16 +21,16 @@ export const productService = {
     return response.data
   },
 
-  update: async (id: number, data: Partial<ProductFormData>): Promise<Product> => {
+  update: async (id: string, data: Partial<ProductFormData>): Promise<Product> => {
     const response = await api.put(`/products/${id}`, data)
     return response.data
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     await api.delete(`/products/${id}`)
   },
 
-  updateStatus: async (id: number, status: number): Promise<void> => {
+  updateStatus: async (id: string, status: number): Promise<void> => {
     await api.patch(`/products/${id}/status`, { status })
   }
 }
