@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Form, Button, Typography, Toast, Slider } from '@douyinfe/semi-ui'
 import styles from './Create.module.scss'
-import { auctionService } from '@/services'
-import type { AuctionFormData } from '@/types'
+import { productService } from '@/services'
+import type { ProductFormData } from '@/types'
 
 const { Title, Text } = Typography
 
@@ -86,18 +86,14 @@ const ProductCreate: React.FC = () => {
 
     setLoading(true)
     try {
-      const auctionData: AuctionFormData = {
-        title: values.title.trim(),
+      const productData: ProductFormData = {
+        name: values.title.trim(),
         description: values.description.trim(),
         images: images,
-        startPrice: values.startPrice,
-        minIncrement: values.minIncrement,
-        maxPrice: values.maxPrice,
-        durationSeconds: Math.floor(durationHours * 3600),
-        autoExtendSeconds: Math.floor(autoExtendHours * 3600)
+        price: values.startPrice
       }
 
-      await auctionService.create(auctionData)
+      await productService.create(productData)
       Toast.success('商品添加成功')
       navigate('/product/list')
     } catch (error: unknown) {
