@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Form, Button, Typography, Toast, Slider, CheckboxGroup, Checkbox } from '@douyinfe/semi-ui'
+import { Form, Button, Typography, Toast, Slider } from '@douyinfe/semi-ui'
 import styles from './Create.module.scss'
 import { productService } from '@/services'
 import type { ProductFormData } from '@/types'
@@ -31,7 +31,6 @@ const ProductCreate: React.FC = () => {
   const [images, setImages] = useState<string[]>([])
   const [durationHours, setDurationHours] = useState(2)
   const [autoExtendHours, setAutoExtendHours] = useState(1)
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const handleImageUpload = () => {
     const url = prompt('请输入图片URL:')
@@ -91,10 +90,10 @@ const ProductCreate: React.FC = () => {
         startingPrice: values.startPrice,
         fixedIncrement: values.minIncrement,
         capPrice: values.maxPrice,
-        lateCompensation: selectedTags.includes('lateCompensation'),
-        freeShipping: selectedTags.includes('freeShipping'),
-        shippingInsurance: selectedTags.includes('shippingInsurance'),
-        auction: selectedTags.includes('auction')
+        lateCompensation: values.tags.includes('lateCompensation'),
+        freeShipping: values.tags.includes('freeShipping'),
+        shippingInsurance: values.tags.includes('shippingInsurance'),
+        auction: values.tags.includes('auction')
       }
 
       await productService.create(productData)
@@ -190,19 +189,12 @@ const ProductCreate: React.FC = () => {
             )}
           </div>
 
-          <div>
-            <Typography.Text type="tertiary" size="small" style={{ marginBottom: 8, display: 'block' }}>商品标签</Typography.Text>
-            <CheckboxGroup
-              style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
-              value={selectedTags}
-              onChange={(tags) => setSelectedTags(tags as string[])}
-            >
-              <Checkbox value="lateCompensation">晚发即赔</Checkbox>
-              <Checkbox value="freeShipping">包邮</Checkbox>
-              <Checkbox value="shippingInsurance">运费险</Checkbox>
-              <Checkbox value="auction">竞拍</Checkbox>
-            </CheckboxGroup>
-          </div>
+          <Form.CheckboxGroup field="tags" direction="horizontal" label="商品标签">
+            <Form.Checkbox value="lateCompensation">晚发即赔</Form.Checkbox>
+            <Form.Checkbox value="freeShipping">包邮</Form.Checkbox>
+            <Form.Checkbox value="shippingInsurance">运费险</Form.Checkbox>
+            <Form.Checkbox value="auction">竞拍</Form.Checkbox>
+          </Form.CheckboxGroup>
         </FormCard>
 
         <div className={styles.formCard}>
