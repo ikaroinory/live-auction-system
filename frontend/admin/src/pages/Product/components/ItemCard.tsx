@@ -111,7 +111,7 @@ type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & Item
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
   return (
-    <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', gap: 32 }}>
+    <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         <div style={{ width: '100%', display: 'flex' }}>

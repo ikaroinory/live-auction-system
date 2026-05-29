@@ -1,0 +1,16 @@
+.formCard {
+  background: var(--semi-color-bg-1);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formCardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--semi-color-primary);
+  color: var(--semi-color-text-0);
+}

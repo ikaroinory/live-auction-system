@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Form, Button, Typography, Toast, Slider } from '@douyinfe/semi-ui'
+import { Form, Button, Typography, Toast, Slider, CheckboxGroup, Checkbox } from '@douyinfe/semi-ui'
 import styles from './Create.module.scss'
 import { productService } from '@/services'
 import type { ProductFormData } from '@/types'
+import { FormCard } from './components/FormCard'
 
 const { Title, Text } = Typography
 
@@ -14,10 +15,7 @@ interface FormValues {
   maxPrice?: number
   durationHours: number
   autoExtendHours: number
-  lateCompensation: boolean
-  freeShipping: boolean
-  shippingInsurance: boolean
-  auction: boolean
+  tags: string[]
 }
 
 const formatDuration = (hours: number): string => {
@@ -33,6 +31,7 @@ const ProductCreate: React.FC = () => {
   const [images, setImages] = useState<string[]>([])
   const [durationHours, setDurationHours] = useState(2)
   const [autoExtendHours, setAutoExtendHours] = useState(1)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const handleImageUpload = () => {
     const url = prompt('请输入图片URL:')
@@ -92,10 +91,10 @@ const ProductCreate: React.FC = () => {
         startingPrice: values.startPrice,
         fixedIncrement: values.minIncrement,
         capPrice: values.maxPrice,
-        lateCompensation: values.lateCompensation,
-        freeShipping: values.freeShipping,
-        shippingInsurance: values.shippingInsurance,
-        auction: values.auction
+        lateCompensation: selectedTags.includes('lateCompensation'),
+        freeShipping: selectedTags.includes('freeShipping'),
+        shippingInsurance: selectedTags.includes('shippingInsurance'),
+        auction: selectedTags.includes('auction')
       }
 
       await productService.create(productData)
@@ -133,21 +132,19 @@ const ProductCreate: React.FC = () => {
         添加商品
       </Title>
 
-      <Form onSubmit={handleSubmit} initValues={{
-        title: '',
-        startPrice: 100,
-        minIncrement: 10,
-        maxPrice: undefined,
-        durationHours: 2,
-        autoExtendHours: 1,
-        lateCompensation: false,
-        freeShipping: false,
-        shippingInsurance: false,
-        auction: false
-      }}>
-        <div className={styles.auctionFormSection}>
-          <div className={styles.auctionFormSectionTitle}>商品信息</div>
-
+      <Form
+        onSubmit={handleSubmit}
+        initValues={{
+          title: '',
+          startPrice: 100,
+          minIncrement: 10,
+          maxPrice: undefined,
+          durationHours: 2,
+          autoExtendHours: 1,
+          tags: []
+        }}
+      >
+        <FormCard title="商品信息">
           <Form.Input
             field="title"
             label="商品名称"
@@ -193,19 +190,23 @@ const ProductCreate: React.FC = () => {
             )}
           </div>
 
-          <div className={styles.tagSelection}>
-            <Form.Label>商品标签</Form.Label>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              <Form.Checkbox field="lateCompensation" label="晚发即赔" />
-              <Form.Checkbox field="freeShipping" label="包邮" />
-              <Form.Checkbox field="shippingInsurance" label="运费险" />
-              <Form.Checkbox field="auction" label="竞拍" />
-            </div>
+          <div>
+            <Typography.Text type="tertiary" size="small" style={{ marginBottom: 8, display: 'block' }}>商品标签</Typography.Text>
+            <CheckboxGroup
+              style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
+              value={selectedTags}
+              onChange={(tags) => setSelectedTags(tags as string[])}
+            >
+              <Checkbox value="lateCompensation">晚发即赔</Checkbox>
+              <Checkbox value="freeShipping">包邮</Checkbox>
+              <Checkbox value="shippingInsurance">运费险</Checkbox>
+              <Checkbox value="auction">竞拍</Checkbox>
+            </CheckboxGroup>
           </div>
-        </div>
+        </FormCard>
 
-        <div className={styles.auctionFormSection}>
-          <div className={styles.auctionFormSectionTitle}>竞拍规则配置</div>
+        <div className={styles.formCard}>
+          <div className={styles.formCardTitle}>竞拍规则配置</div>
 
           <div className={styles.ruleConfigCard}>
             <div className={styles.ruleConfigRow}>
