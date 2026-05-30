@@ -1,39 +1,31 @@
-import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Form, Button, Typography, Toast, Slider, UploadProps } from '@douyinfe/semi-ui'
-import { IconPlus } from '@douyinfe/semi-icons'
+import { Form, Button, Typography, Toast } from '@douyinfe/semi-ui'
 import styles from './Create.module.scss'
 import { productService } from '@/services'
 import type { ProductFormData } from '@/types'
 import { FormCard } from './components/FormCard'
-
-const { Title, Text } = Typography
-
+import { IconPlus } from '@douyinfe/semi-icons'
+import { customRequestArgs, FileItem } from '@douyinfe/semi-ui/lib/es/upload'
 interface FormValues {
   title: string
+  images: FileItem[]
   startPrice: number
   fixedIncrement: number
   maxPrice?: number
   durationHours: number
   autoExtendHours: number
   tags: string[]
-  images: UploadProps.FileItem[]
+  durationMinutes: number
+  extendSeconds: number
 }
 
-const formatDuration = (hours: number): string => {
-  if (hours >= 24) {
-    return `${Math.floor(hours / 24)}天${hours % 24 > 0 ? `${hours % 24}小时` : ''}`
-  }
-  return `${hours}小时`
-}
-
-const customUpload: UploadProps['customRequest'] = ({ file, onSuccess, onProgress, onError }) => {
+const customUpload = ({ file, onSuccess, onProgress, onError }: customRequestArgs) => {
   const reader = new FileReader()
   const fileInstance = file.fileInstance as Blob
 
   reader.onload = () => {
     const result = reader.result as string
-    onSuccess?.({ url: result }, file as UploadProps.FileItem)
+    onSuccess?.(result)
   }
 
   reader.onerror = (error) => {
@@ -43,29 +35,20 @@ const customUpload: UploadProps['customRequest'] = ({ file, onSuccess, onProgres
 
   reader.readAsDataURL(fileInstance)
 
-  onProgress?.({ total: 100, loaded: 50 }, file as UploadProps.FileItem)
+  onProgress?.({ total: 100, loaded: 50 })
 }
 
 const ProductCreate: React.FC = () => {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [durationHours, setDurationHours] = useState(2)
-  const [autoExtendHours, setAutoExtendHours] = useState(1)
 
   const handleSubmit = async (values: FormValues) => {
-    if (!values.images || values.images.length === 0) {
-      Toast.error('请至少上传一张商品图片')
-      return
-    }
-
-    setLoading(true)
     try {
       const productData: ProductFormData = {
         name: values.title.trim(),
-        image: values.images[0]?.url || '',
+        image: values.images[0].response,
         startingPrice: values.startPrice,
-        fixedIncrement: values.minIncrement,
-        capPrice: values.maxPrice,
+        fixedIncrement: values.fixedIncrement,
+        maxPrice: values.maxPrice,
         lateCompensation: values.tags?.includes('lateCompensation') || false,
         freeShipping: values.tags?.includes('freeShipping') || false,
         shippingInsurance: values.tags?.includes('shippingInsurance') || false,
@@ -80,26 +63,8 @@ const ProductCreate: React.FC = () => {
       const errorMessage = err.response?.data?.message || err.message || '添加失败，请稍后重试'
       Toast.error(errorMessage)
     } finally {
-      setLoading(false)
     }
   }
-
-  const durationPresets = [
-    { label: '1小时', value: 1 },
-    { label: '2小时', value: 2 },
-    { label: '4小时', value: 4 },
-    { label: '8小时', value: 8 },
-    { label: '24小时', value: 24 },
-    { label: '48小时', value: 48 }
-  ]
-
-  const autoExtendPresets = [
-    { label: '5分钟', value: 5 / 60 },
-    { label: '15分钟', value: 15 / 60 },
-    { label: '30分钟', value: 0.5 },
-    { label: '1小时', value: 1 },
-    { label: '2小时', value: 2 }
-  ]
 
   const validator = async (values: FormValues) => {
     const errors: Partial<Record<keyof typeof values, string>> = {}
@@ -107,39 +72,47 @@ const ProductCreate: React.FC = () => {
     if (!values.title) {
       errors.title = '请输入商品名称'
     }
+
     if (values.images.length < 1) {
       errors.images = '请至少上传一张商品图片'
     }
-    if (!values.startPrice || values.startPrice < 0) {
+
+    if (values.startPrice === undefined || values.startPrice < 0) {
       errors.startPrice = '请输入有效的起拍价'
     }
-    if (!values.minIncrement || values.minIncrement < 0) {
-      errors.minIncrement = '请输入有效的最小加价'
+
+    if (values.fixedIncrement === undefined || values.fixedIncrement < 0) {
+      errors.fixedIncrement = '请输入有效的最小加价'
     }
-    if (values.maxPrice && values.maxPrice <= values.startPrice) {
+
+    if (values.maxPrice === undefined) {
+      errors.maxPrice = '请输入有效的封顶价'
+    } else if (values.maxPrice && values.maxPrice <= values.startPrice) {
       errors.maxPrice = '封顶价必须大于起拍价'
     }
 
-    return errors
+    return Object.keys(errors).length ? errors : ''
   }
 
   return (
     <div className={styles.auctionFormContainer}>
-      <Title heading={4} style={{ marginBottom: 24 }}>
+      <Typography.Title heading={4} style={{ marginBottom: 24 }}>
         添加商品
-      </Title>
+      </Typography.Title>
 
       <Form
         onSubmit={handleSubmit}
         initValues={{
           title: '',
-          startPrice: 100,
-          minIncrement: 10,
+          images: [],
+          startPrice: 0,
+          fixedIncrement: 10,
           maxPrice: undefined,
           durationHours: 2,
           autoExtendHours: 1,
           tags: [],
-          images: []
+          durationMinutes: 10,
+          extendSeconds: 10
         }}
         validator={validator}
       >
@@ -148,10 +121,10 @@ const ProductCreate: React.FC = () => {
 
           <Form.Upload
             field="images"
-            label={{ text: '商品图片（最多4张）', required: true }}
+            label={{ text: '商品图片', required: true }}
             listType="picture"
             accept=".jpg,.jpeg,.png"
-            limit={4}
+            limit={1}
             maxSize={2 * 1024 * 1024}
             customRequest={customUpload}
           >
@@ -195,72 +168,30 @@ const ProductCreate: React.FC = () => {
             style={{ width: '100%' }}
             placeholder="不设置则无上限"
           />
-          <div className={styles.ruleConfigCard}>
-            <div className={styles.ruleConfigRow}>
-              <div className={styles.ruleConfigLabel}>竞拍时长</div>
-              <div className={styles.ruleConfigInput}>
-                <div style={{ marginBottom: 12 }}>
-                  <Text type="tertiary" size="small">
-                    当前设置：{formatDuration(durationHours)}
-                  </Text>
-                </div>
-                <Slider
-                  value={durationHours}
-                  onChange={(value) => setDurationHours(value as number)}
-                  min={1}
-                  max={72}
-                  step={1}
-                />
-                <div className={styles.durationPresets}>
-                  {durationPresets.map((preset) => (
-                    <Button
-                      key={preset.value}
-                      size="small"
-                      theme={durationHours === preset.value ? 'solid' : 'light'}
-                      onClick={() => setDurationHours(preset.value)}
-                    >
-                      {preset.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.ruleConfigRow}>
-              <div className={styles.ruleConfigLabel}>延时周期</div>
-              <div className={styles.ruleConfigInput}>
-                <div style={{ marginBottom: 12 }}>
-                  <Text type="tertiary" size="small">
-                    当前设置：有人出价时延时 {formatDuration(autoExtendHours)}
-                  </Text>
-                </div>
-                <Slider
-                  value={autoExtendHours}
-                  onChange={(value) => setAutoExtendHours(value as number)}
-                  min={5 / 60}
-                  max={4}
-                  step={5 / 60}
-                />
-                <div className={styles.durationPresets}>
-                  {autoExtendPresets.map((preset) => (
-                    <Button
-                      key={preset.value}
-                      size="small"
-                      theme={autoExtendHours === preset.value ? 'solid' : 'light'}
-                      onClick={() => setAutoExtendHours(preset.value)}
-                    >
-                      {preset.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <Form.InputNumber
+            field="durationMinutes"
+            label={{ text: '竞拍时长', required: true }}
+            suffix="分钟"
+            min={1}
+            step={1}
+            precision={0}
+            style={{ width: '100%' }}
+          />
+          <Form.InputNumber
+            field="extendSeconds"
+            label={{ text: '出价延时', required: true }}
+            suffix="秒"
+            min={10}
+            max={30}
+            step={1}
+            precision={0}
+            style={{ width: '100%' }}
+          />
         </FormCard>
 
         <div className={styles.auctionFormActions}>
           <Button onClick={() => navigate('/product/list')}>返回</Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button theme="solid" type="primary" htmlType="submit">
             添加商品
           </Button>
         </div>

@@ -124,9 +124,9 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({ productId }: ButtonGroupProps
 
     try {
       await deleteProduct(productId)
-      Toast.success('商品删除成功')
+      Toast.success('商品下架成功')
     } catch {
-      Toast.error('删除失败，请稍后重试')
+      Toast.error('下架失败，请稍后重试')
     }
   }
 
@@ -169,7 +169,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           <ItemData
             startingPrice={props.startingPrice}
             fixedIncrement={props.fixedIncrement}
-            capPrice={props.capPrice}
+            maxPrice={props.maxPrice}
             currentPrice={props.currentPrice}
             bidCount={props.bidCount}
           />
