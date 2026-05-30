@@ -1,10 +1,12 @@
-import { Button, Form, Modal, Space, Toast } from '@douyinfe/semi-ui'
+import { Button, Form, Space, Toast } from '@douyinfe/semi-ui'
 import { FormCard } from './FormCard'
 import { customRequestArgs, FileItem } from '@douyinfe/semi-ui/lib/es/upload'
-import { ProductFormData } from '@/types'
+import { Product, ProductFormData } from '@/types'
 import { productService } from '@/services'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { IconPlus } from '@douyinfe/semi-icons'
+import { useProduct, useProductMutations } from '@/hooks'
+import React from 'react'
 
 interface FormValues {
   title: string
@@ -19,7 +21,11 @@ interface FormValues {
   extendSeconds: number
 }
 
-const ProductForm: React.FC = () => {
+interface ProductFormProps {
+  product?: Product | null
+}
+
+const ProductForm: React.FC<ProductFormProps> = () => {
   const customUpload = ({ file, onSuccess, onProgress, onError }: customRequestArgs) => {
     const reader = new FileReader()
     const fileInstance = file.fileInstance as Blob
@@ -137,7 +143,7 @@ export const ProductFormPage: React.FC = () => {
     }
 
     if (values.fixedIncrement === undefined || values.fixedIncrement < 0) {
-      errors.fixedIncrement = '请输入有效的最小加价'
+      errors.fixedIncrement = '请输入有效的固定加价'
     }
 
     if (values.maxPrice && values.maxPrice <= values.startPrice) {
@@ -200,18 +206,99 @@ export const ProductFormPage: React.FC = () => {
   )
 }
 
-interface EditProductDialogProps {
-  visible: boolean
-  onOk: (e: React.MouseEvent) => void | Promise<any>
-  onCancel: (e: React.MouseEvent) => void | Promise<any>
-}
+export const ProductEditPage: React.FC = () => {
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const { data: product, isLoading } = useProduct(id)
+  const { updateProduct } = useProductMutations()
 
-export const EditProductDialog: React.FC<EditProductDialogProps> = (props) => {
+  const validator = async (values: FormValues) => {
+    const errors: Partial<Record<keyof typeof values, string>> = {}
+
+    if (!values.title) {
+      errors.title = '请输入商品名称'
+    }
+
+    if (values.images.length < 1 && !product?.image) {
+      errors.images = '请至少上传一张商品图片'
+    }
+
+    if (values.startPrice === undefined || values.startPrice < 0) {
+      errors.startPrice = '请输入有效的起拍价'
+    }
+
+    if (values.fixedIncrement === undefined || values.fixedIncrement < 0) {
+      errors.fixedIncrement = '请输入有效的固定加价'
+    }
+
+    if (values.maxPrice && values.maxPrice <= values.startPrice) {
+      errors.maxPrice = '封顶价必须大于起拍价'
+    }
+
+    return Object.keys(errors).length ? errors : ''
+  }
+
+  const handleSubmit = async (values: FormValues) => {
+    if (!id) return
+
+    try {
+      const productData: Partial<ProductFormData> = {
+        name: values.title.trim(),
+        image: values.images.length > 0 ? values.images[0].response : product?.image,
+        startingPrice: values.startPrice,
+        fixedIncrement: values.fixedIncrement,
+        maxPrice: values.maxPrice,
+        lateCompensation: values.tags?.includes('lateCompensation') || false,
+        freeShipping: values.tags?.includes('freeShipping') || false,
+        shippingInsurance: values.tags?.includes('shippingInsurance') || false,
+        auction: values.tags?.includes('auction') || false
+      }
+
+      await updateProduct(id, productData)
+      Toast.success('商品更新成功')
+      navigate('/product/list')
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string }
+      const errorMessage = err.response?.data?.message || err.message || '更新失败，请稍后重试'
+      Toast.error(errorMessage)
+    }
+  }
+
+  if (isLoading) {
+    return <div>加载中...</div>
+  }
+
+  const tags: string[] = []
+  if (product?.lateCompensation) tags.push('lateCompensation')
+  if (product?.freeShipping) tags.push('freeShipping')
+  if (product?.shippingInsurance) tags.push('shippingInsurance')
+  if (product?.auction) tags.push('auction')
+
   return (
-    <Modal width={800} closable={false} onCancel={props.onCancel} onOk={props.onOk} visible={props.visible}>
-      <Form>
-        <ProductForm />
-      </Form>
-    </Modal>
+    <Form
+      validator={validator}
+      onSubmit={handleSubmit}
+      initValues={{
+        title: product?.name || '',
+        images: product?.image ? [{ response: product.image, name: '商品图片' } as unknown as FileItem] : [],
+        startPrice: product?.startingPrice || 0,
+        fixedIncrement: product?.fixedIncrement || 10,
+        maxPrice: product?.maxPrice,
+        durationHours: 2,
+        autoExtendHours: 1,
+        tags,
+        durationMinutes: 10,
+        extendSeconds: 10
+      }}
+    >
+      <ProductForm />
+
+      <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+        <Button onClick={() => navigate('/product/list')}>返回</Button>
+        <Button theme="solid" type="primary" htmlType="submit">
+          保存修改
+        </Button>
+      </Space>
+    </Form>
   )
 }

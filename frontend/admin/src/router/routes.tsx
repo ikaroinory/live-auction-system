@@ -49,6 +49,10 @@ export const routes: RouteConfig[] = [
       {
         path: '/product/create',
         name: '添加商品'
+      },
+      {
+        path: '/product/:id',
+        name: '编辑商品'
       }
     ]
   }

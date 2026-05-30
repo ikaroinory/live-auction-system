@@ -5,6 +5,7 @@ import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import ProductList from '@/pages/Product/List'
 import ProductCreate from '@/pages/Product/Create'
+import ProductEdit from '@/pages/Product/Edit'
 import OrderList from '@/pages/Order/List'
 import Layout from '@/components/Layout'
 
@@ -35,6 +36,7 @@ const AppRoutes: React.FC = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="product/list" element={<ProductList />} />
           <Route path="product/create" element={<ProductCreate />} />
+          <Route path="product/:id" element={<ProductEdit />} />
           <Route path="order/list" element={<OrderList />} />
         </Route>
       </Routes>

@@ -2,6 +2,7 @@ import { useProductMutations } from '@/hooks'
 import { IconMicrophone, IconEdit } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
+import { useNavigate } from 'react-router'
 
 interface ItemInformationProps {
   width?: Property.Width<string | number>
@@ -114,6 +115,7 @@ interface ButtonGroupProps {
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
+  const navigate = useNavigate()
   const { deleteProduct } = useProductMutations()
 
   const handleStartAuction = async () => {
@@ -131,9 +133,14 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     }
   }
 
+  const handleEdit = () => {
+    if (!props.productId) return
+    navigate(`/product/${props.productId}`)
+  }
+
   return (
     <Space>
-      <Button theme="outline" type="tertiary" icon={<IconEdit />}>
+      <Button theme="outline" type="tertiary" icon={<IconEdit />} onClick={handleEdit}>
         编辑
       </Button>
       <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
