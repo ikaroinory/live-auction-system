@@ -6,12 +6,15 @@ import ProductTabContent, { LoadingStatus } from './components/ProductTabContent
 import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
+import { useSearchParams } from 'react-router-dom'
 
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('live')
+  const [searchParams, setSearchParams] = useSearchParams()
   const [searchValue, setSearchValue] = useState('')
+
+  const activeTab = searchParams.get('tab') || 'live'
 
   const {
     data: liveProductsData,
@@ -84,6 +87,10 @@ const ProductList: React.FC = () => {
     }
   }
 
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab })
+  }
+
   const filteredLiveProducts = liveProducts.filter(
     (item) => item.name?.toLowerCase().includes(searchValue.toLowerCase()) || String(item.id).includes(searchValue)
   )
@@ -103,7 +110,7 @@ const ProductList: React.FC = () => {
         </Space>
       </div>
 
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
+      <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.TabPane tab="直播商品" itemKey="live">
           <ProductTabContent
             searchValue={searchValue}
