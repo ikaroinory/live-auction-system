@@ -131,6 +131,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
       Toast.error('删除失败，请稍后重试')
     }
   }
+
   const handleStartAuction = async () => {
     Toast.info('功能开发中')
   }
@@ -169,15 +170,15 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
       <Button theme="outline" type="danger" onClick={handleRemove}>
         删除
       </Button>
-      <Button theme="outline" type="tertiary" onClick={handleEdit}>
+      <Button theme="outline" type="tertiary" icon={<IconEdit />} onClick={handleEdit}>
         编辑
       </Button>
       {props.status === ProductStatus.Pending ? (
-        <Button theme="outline" type="tertiary" onClick={handlePublish}>
+        <Button theme="solid" type="primary" icon={<IconUpload />} onClick={handlePublish}>
           上架
         </Button>
       ) : (
-        <Button theme="outline" type="tertiary" onClick={handleUnpublish}>
+        <Button theme="outline" type="warning" icon={<IconMinusCircle />} onClick={handleUnpublish}>
           下架
         </Button>
       )}

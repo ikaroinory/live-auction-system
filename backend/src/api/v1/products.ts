@@ -212,7 +212,7 @@ router.patch(
       const { id } = req.params
       const { status } = req.body
 
-      if (status === undefined || ![0, 1, 2].includes(status)) {
+      if (status === undefined || ![0, 1].includes(status)) {
         return res.status(400).json({ message: '无效的状态值' })
       }
 

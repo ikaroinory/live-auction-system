@@ -1,7 +1,6 @@
 export enum ProductStatus {
-  Pending = 0,
-  Published = 1,
-  Unpublished = 2
+  Pending = 0,        // 待上架
+  Published = 1       // 已上架
 }
 
 export interface Product {
