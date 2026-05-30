@@ -8,9 +8,11 @@ import { IconPlus } from '@douyinfe/semi-icons'
 import { useProduct, useProductMutations } from '@/hooks'
 import React from 'react'
 
+type ImageItem = Omit<FileItem, 'response'> & { response: { url: string } }
+
 interface FormValues {
   title: string
-  images: FileItem[]
+  images: ImageItem[]
   startPrice: number
   fixedIncrement: number
   maxPrice?: number
@@ -32,7 +34,7 @@ const ProductForm: React.FC<ProductFormProps> = () => {
 
     reader.onload = () => {
       const result = reader.result as string
-      onSuccess?.(result)
+      onSuccess?.({ url: result })
     }
 
     reader.onerror = (error) => {
@@ -157,7 +159,7 @@ export const ProductFormPage: React.FC = () => {
     try {
       const productData: ProductFormData = {
         name: values.title.trim(),
-        image: values.images[0].response,
+        image: values.images[0].response.url,
         startingPrice: values.startPrice,
         fixedIncrement: values.fixedIncrement,
         maxPrice: values.maxPrice,
@@ -244,7 +246,7 @@ export const ProductEditPage: React.FC = () => {
     try {
       const productData: Partial<ProductFormData> = {
         name: values.title.trim(),
-        image: values.images.length > 0 ? values.images[0].response : product?.image,
+        image: values.images.length > 0 ? values.images[0].response.url : product?.image,
         startingPrice: values.startPrice,
         fixedIncrement: values.fixedIncrement,
         maxPrice: values.maxPrice,
@@ -280,7 +282,7 @@ export const ProductEditPage: React.FC = () => {
       onSubmit={handleSubmit}
       initValues={{
         title: product?.name || '',
-        images: product?.image ? [{ response: product.image, name: '商品图片' } as unknown as FileItem] : [],
+        images: product?.image ? [{ response: { url: product.image }, name: '商品图片' } as unknown as ImageItem] : [],
         startPrice: product?.startingPrice || 0,
         fixedIncrement: product?.fixedIncrement || 10,
         maxPrice: product?.maxPrice,
