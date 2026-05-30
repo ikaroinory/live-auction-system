@@ -1,8 +1,9 @@
 import { useProductMutations } from '@/hooks'
-import { IconMicrophone, IconEdit } from '@douyinfe/semi-icons'
+import { IconMicrophone, IconEdit, IconUpload, IconMinusCircle } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
+import { ProductStatus } from '@/types'
 
 interface ItemInformationProps {
   width?: Property.Width<string | number>
@@ -112,22 +113,37 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, maxP
 
 interface ButtonGroupProps {
   productId?: string
+  status?: ProductStatus
+  onStatusChange?: () => void
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   const navigate = useNavigate()
-  const { deleteProduct } = useProductMutations()
+  const { updateProductStatus } = useProductMutations()
 
   const handleStartAuction = async () => {
     Toast.info('功能开发中')
   }
 
-  const handleRemove = async () => {
+  const handlePublish = async () => {
     if (!props.productId) return
 
     try {
-      await deleteProduct(props.productId)
+      await updateProductStatus(props.productId, ProductStatus.Published)
+      Toast.success('商品上架成功')
+      props.onStatusChange?.()
+    } catch {
+      Toast.error('上架失败，请稍后重试')
+    }
+  }
+
+  const handleUnpublish = async () => {
+    if (!props.productId) return
+
+    try {
+      await updateProductStatus(props.productId, ProductStatus.Pending)
       Toast.success('商品下架成功')
+      props.onStatusChange?.()
     } catch {
       Toast.error('下架失败，请稍后重试')
     }
@@ -143,11 +159,17 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
       <Button theme="outline" type="tertiary" icon={<IconEdit />} onClick={handleEdit}>
         编辑
       </Button>
+      {props.status === ProductStatus.Pending ? (
+        <Button theme="solid" type="primary" icon={<IconUpload />} onClick={handlePublish}>
+          上架
+        </Button>
+      ) : (
+        <Button theme="outline" type="warning" icon={<IconMinusCircle />} onClick={handleUnpublish}>
+          下架
+        </Button>
+      )}
       <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
         开始竞拍
-      </Button>
-      <Button theme="outline" type="tertiary" onClick={handleRemove}>
-        下架
       </Button>
       <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
         讲解
@@ -159,6 +181,8 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 type ItemCardProps = {
   id: number
   productId?: string
+  status?: ProductStatus
+  onStatusChange?: () => void
 } & Omit<ItemInformationProps, 'width'> &
   ItemDataProps
 
@@ -185,7 +209,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <ButtonGroup productId={props.productId} />
+        <ButtonGroup productId={props.productId} status={props.status} onStatusChange={props.onStatusChange} />
       </div>
     </Card>
   )

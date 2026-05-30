@@ -1,4 +1,8 @@
-export type ProductStatus = 0 | 1 | 2
+export enum ProductStatus {
+  Pending = 0,
+  Published = 1,
+  Unpublished = 2
+}
 
 export interface Product {
   id: string

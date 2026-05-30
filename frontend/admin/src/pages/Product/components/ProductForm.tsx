@@ -8,7 +8,7 @@ import { IconPlus } from '@douyinfe/semi-icons'
 import { useProduct, useProductMutations } from '@/hooks'
 import React from 'react'
 
-type ImageItem = Omit<FileItem, 'response'> & { response: { url: string } }
+type ImageItem = Partial<Omit<FileItem, 'response'>> & { response: { url: string } }
 
 interface FormValues {
   title: string
@@ -282,7 +282,7 @@ export const ProductEditPage: React.FC = () => {
       onSubmit={handleSubmit}
       initValues={{
         title: product?.name || '',
-        images: product?.image ? [{ response: { url: product.image }, name: '商品图片' } as unknown as ImageItem] : [],
+        images: product?.image ? [{ url: product.image, response: { url: product.image } } as ImageItem] : [],
         startPrice: product?.startingPrice || 0,
         fixedIncrement: product?.fixedIncrement || 10,
         maxPrice: product?.maxPrice,

@@ -76,6 +76,14 @@ const ProductList: React.FC = () => {
     Toast.success('刷新成功')
   }
 
+  const handleStatusChange = async (): Promise<void> => {
+    if (activeTab === 'live') {
+      await mutateLiveProducts()
+    } else {
+      await mutatePendingProducts()
+    }
+  }
+
   const filteredLiveProducts = liveProducts.filter(
     (item) => item.name?.toLowerCase().includes(searchValue.toLowerCase()) || String(item.id).includes(searchValue)
   )
@@ -109,6 +117,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
+            onStatusChange={handleStatusChange}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -118,6 +127,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
+            onStatusChange={handleStatusChange}
           />
         </Tabs.TabPane>
       </Tabs>

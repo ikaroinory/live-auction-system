@@ -200,4 +200,44 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response, ne
   }
 })
 
+router.patch(
+  '/:id/status',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: (err?: unknown) => void) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' })
+      }
+
+      const { id } = req.params
+      const { status } = req.body
+
+      if (status === undefined || ![0, 1, 2].includes(status)) {
+        return res.status(400).json({ message: '无效的状态值' })
+      }
+
+      const existingProduct = await prisma.product.findUnique({
+        where: { id }
+      })
+
+      if (!existingProduct) {
+        return res.status(404).json({ message: '商品不存在' })
+      }
+
+      if (existingProduct.creatorId !== req.user.id) {
+        return res.status(403).json({ message: '没有权限修改此商品' })
+      }
+
+      const product = await prisma.product.update({
+        where: { id },
+        data: { status }
+      })
+
+      res.json(product)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 export default router
