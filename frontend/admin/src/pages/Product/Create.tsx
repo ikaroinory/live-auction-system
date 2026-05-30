@@ -62,7 +62,6 @@ const ProductCreate: React.FC = () => {
       const err = error as { response?: { data?: { message?: string } }; message?: string }
       const errorMessage = err.response?.data?.message || err.message || '添加失败，请稍后重试'
       Toast.error(errorMessage)
-    } finally {
     }
   }
 
