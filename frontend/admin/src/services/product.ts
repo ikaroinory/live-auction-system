@@ -32,5 +32,9 @@ export const productService = {
 
   updateStatus: async (id: string, status: number): Promise<void> => {
     await api.patch(`/products/${id}/status`, { status })
+  },
+
+  toggleExplaining: async (id: string): Promise<void> => {
+    await api.patch(`/products/${id}/explaining`)
   }
 }

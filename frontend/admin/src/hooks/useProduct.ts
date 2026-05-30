@@ -59,10 +59,17 @@ export function useProductMutations() {
     mutate((key) => typeof key === 'string' && key.startsWith('/products'))
   }
 
+  const toggleExplaining = async (id: string) => {
+    await productService.toggleExplaining(id)
+    mutate(`/products/${id}`)
+    mutate((key) => typeof key === 'string' && key.startsWith('/products'))
+  }
+
   return {
     createProduct,
     updateProduct,
     deleteProduct,
-    updateProductStatus
+    updateProductStatus,
+    toggleExplaining
   }
 }

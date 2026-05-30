@@ -15,6 +15,7 @@ export interface Product {
   freeShipping: boolean
   shippingInsurance: boolean
   auction: boolean
+  isExplaining: boolean
   status: ProductStatus
   createdAt: string
   updatedAt: string

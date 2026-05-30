@@ -152,6 +152,7 @@ model Product {
   freeShipping     Boolean   @default(false)
   shippingInsurance Boolean  @default(false)
   auction          Boolean   @default(false)
+  isExplaining     Boolean   @default(false)
   status           Int       @default(0) // 0: 待上架 1: 已上架 2: 已下架
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt

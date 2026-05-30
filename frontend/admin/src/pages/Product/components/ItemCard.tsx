@@ -114,12 +114,13 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, maxP
 interface ButtonGroupProps {
   productId?: string
   status?: ProductStatus
+  isExplaining?: boolean
   onStatusChange?: () => void
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   const navigate = useNavigate()
-  const { deleteProduct, updateProductStatus } = useProductMutations()
+  const { deleteProduct, updateProductStatus, toggleExplaining } = useProductMutations()
 
   const handleRemove = async () => {
     if (!props.productId) return
@@ -160,6 +161,18 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     }
   }
 
+  const handleToggleExplaining = async () => {
+    if (!props.productId) return
+
+    try {
+      await toggleExplaining(props.productId)
+      Toast.success(props.isExplaining ? '已取消讲解' : '开始讲解')
+      props.onStatusChange?.()
+    } catch {
+      Toast.error('操作失败，请稍后重试')
+    }
+  }
+
   const handleEdit = () => {
     if (!props.productId) return
     navigate(`/products/${props.productId}`)
@@ -191,8 +204,13 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
             开始竞拍
           </Button>
-          <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
-            讲解
+          <Button
+            theme="outline"
+            type={props.isExplaining ? 'warning' : 'tertiary'}
+            icon={<IconMicrophone />}
+            onClick={handleToggleExplaining}
+          >
+            {props.isExplaining ? '取消讲解' : '讲解'}
           </Button>
         </>
       )}
@@ -204,6 +222,7 @@ type ItemCardProps = {
   id: number
   productId?: string
   status?: ProductStatus
+  isExplaining?: boolean
   onStatusChange?: () => void
 } & Omit<ItemInformationProps, 'width'> &
   ItemDataProps
@@ -231,7 +250,12 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <ButtonGroup productId={props.productId} status={props.status} onStatusChange={props.onStatusChange} />
+        <ButtonGroup
+          productId={props.productId}
+          status={props.status}
+          isExplaining={props.isExplaining}
+          onStatusChange={props.onStatusChange}
+        />
       </div>
     </Card>
   )
