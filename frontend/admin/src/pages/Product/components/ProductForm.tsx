@@ -171,7 +171,7 @@ export const ProductFormPage: React.FC = () => {
 
       await productService.create(productData)
       Toast.success('商品添加成功')
-      navigate('/product/list')
+      navigate(-1)
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } }; message?: string }
       const errorMessage = err.response?.data?.message || err.message || '添加失败，请稍后重试'
@@ -258,7 +258,7 @@ export const ProductEditPage: React.FC = () => {
 
       await updateProduct(id, productData)
       Toast.success('商品更新成功')
-      navigate('/product/list')
+      navigate(-1)
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } }; message?: string }
       const errorMessage = err.response?.data?.message || err.message || '更新失败，请稍后重试'

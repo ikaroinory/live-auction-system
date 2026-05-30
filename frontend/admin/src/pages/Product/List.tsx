@@ -6,7 +6,7 @@ import ProductTabContent, { LoadingStatus } from './components/ProductTabContent
 import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 
 const { Title } = Typography
 
