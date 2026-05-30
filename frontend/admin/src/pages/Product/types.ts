@@ -13,7 +13,7 @@ export type ProductItem = {
   tags?: ProductTagType[]
   startingPrice?: number
   fixedIncrement?: number
-  capPrice?: number
+  maxPrice?: number
   currentPrice?: number
   bidCount?: number
   status?: number

@@ -12,7 +12,7 @@ const { Title, Text } = Typography
 interface FormValues {
   title: string
   startPrice: number
-  minIncrement: number
+  fixedIncrement: number
   maxPrice?: number
   durationHours: number
   autoExtendHours: number
@@ -177,8 +177,8 @@ const ProductCreate: React.FC = () => {
             style={{ width: '100%' }}
           />
           <Form.InputNumber
-            field="minIncrement"
-            label={{ text: '最小加价', required: true }}
+            field="fixedIncrement"
+            label={{ text: '固定加价', required: true }}
             prefix="¥"
             min={0.01}
             step={0.01}

@@ -41,7 +41,7 @@ const ProductList: React.FC = () => {
       tags,
       startingPrice: Number(product.startingPrice),
       fixedIncrement: Number(product.fixedIncrement),
-      capPrice: product.capPrice ? Number(product.capPrice) : undefined,
+      capPrice: product.maxPrice ? Number(product.maxPrice) : undefined,
       bidCount: 0,
       status: product.status,
       lateCompensation: product.lateCompensation,

@@ -54,12 +54,12 @@ const ItemInformation: React.FC<ItemInformationProps> = (props) => {
 interface ItemDataProps {
   startingPrice?: number
   fixedIncrement?: number
-  capPrice?: number
+  maxPrice?: number
   currentPrice?: number
   bidCount?: number
 }
 
-const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capPrice, currentPrice, bidCount }) => {
+const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, maxPrice, currentPrice, bidCount }) => {
   const parseCurrency = (value: string): string =>
     Number(value) ? '¥' + value.replace(/(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,') : value
   const parseNumber = (value: string): string =>
@@ -80,7 +80,7 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
     },
     {
       name: '封顶价',
-      value: capPrice,
+      value: maxPrice,
       type: 'currency'
     },
     {

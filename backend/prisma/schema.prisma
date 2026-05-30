@@ -147,7 +147,7 @@ model Product {
   image            String    @db.LongText
   startingPrice    Decimal   @db.Decimal(10, 2)
   fixedIncrement   Decimal   @db.Decimal(10, 2)
-  capPrice         Decimal?  @db.Decimal(10, 2)
+  maxPrice         Decimal?  @db.Decimal(10, 2)
   lateCompensation Boolean   @default(false)
   freeShipping     Boolean   @default(false)
   shippingInsurance Boolean  @default(false)

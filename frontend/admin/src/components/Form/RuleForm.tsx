@@ -19,22 +19,22 @@ const RuleForm: React.FC<RuleFormProps> = ({ initialValues, onValuesChange }) =>
       <Space vertical align="start" spacing="loose" style={{ width: '100%' }}>
         <div style={{ width: '100%' }}>
           <Form.InputNumber
-            field="minIncrement"
-            label="最小加价幅度"
-            placeholder="1.00"
+            field="fixedIncrement"
+            label="固定加价"
+            placeholder="10.00"
             prefix="¥"
             min={0.01}
             step={0.01}
             precision={2}
-            initValue={initialValues?.minIncrement}
+            initValue={initialValues?.fixedIncrement}
             style={{ width: '100%' }}
             rules={[
-              { required: true, message: '请输入最小加价幅度' },
-              { type: 'number', min: 0.01, message: '加价幅度必须大于0' }
+              { required: true, message: '请输入固定加价金额' },
+              { type: 'number', min: 0.01, message: '固定加价必须大于0' }
             ]}
           />
           <Text type="tertiary" size="small">
-            每次出价必须高于当前价格的最小增幅
+            每次出价的固定增加金额
           </Text>
         </div>
 

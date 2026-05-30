@@ -7,7 +7,7 @@ export interface Product {
   image: string
   startingPrice: number
   fixedIncrement: number
-  capPrice?: number
+  maxPrice?: number
   lateCompensation: boolean
   freeShipping: boolean
   shippingInsurance: boolean
@@ -22,7 +22,7 @@ export interface ProductFormData {
   image: string
   startingPrice: number
   fixedIncrement?: number
-  capPrice?: number
+  maxPrice?: number
   lateCompensation?: boolean
   freeShipping?: boolean
   shippingInsurance?: boolean
@@ -30,13 +30,13 @@ export interface ProductFormData {
 }
 
 export interface ProductWithAuctionRule extends Product {
-  minIncrement: number
+  fixedIncrement: number
   durationSeconds: number
   autoExtendSeconds: number
 }
 
 export interface ProductFormDataWithAuctionRule extends ProductFormData {
-  minIncrement: number
+  fixedIncrement: number
   maxPrice?: number
   durationSeconds: number
   autoExtendSeconds: number
