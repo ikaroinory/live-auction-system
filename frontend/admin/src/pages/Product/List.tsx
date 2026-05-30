@@ -50,7 +50,8 @@ const ProductList: React.FC = () => {
       lateCompensation: product.lateCompensation,
       freeShipping: product.freeShipping,
       shippingInsurance: product.shippingInsurance,
-      auction: product.auction
+      auction: product.auction,
+      isExplaining: product.isExplaining
     }
   }
 
@@ -58,6 +59,7 @@ const ProductList: React.FC = () => {
     if (!liveProductsData?.list) return []
     return liveProductsData.list.map((product, index) => convertProductToItem(product, index))
   }, [liveProductsData])
+  console.log(liveProducts)
 
   const pendingProducts = useMemo(() => {
     if (!pendingProductsData?.list) return []
@@ -70,21 +72,17 @@ const ProductList: React.FC = () => {
   const liveErrorMessage = liveError ? '获取直播商品失败，请稍后重试' : ''
   const pendingErrorMessage = pendingError ? '获取待上架商品失败，请稍后重试' : ''
 
-  const handleRefresh = async (): Promise<void> => {
+  const refresh = async (): Promise<void> => {
     if (activeTab === 'live') {
       await mutateLiveProducts()
     } else {
       await mutatePendingProducts()
     }
-    Toast.success('刷新成功')
   }
 
-  const handleStatusChange = async (): Promise<void> => {
-    if (activeTab === 'live') {
-      await mutateLiveProducts()
-    } else {
-      await mutatePendingProducts()
-    }
+  const handleRefresh = async (): Promise<void> => {
+    await refresh()
+    Toast.success('刷新成功')
   }
 
   const handleTabChange = (tab: string) => {
@@ -118,7 +116,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
-            onStatusChange={handleStatusChange}
+            onStatusChange={refresh}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -128,7 +126,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
-            onStatusChange={handleStatusChange}
+            onStatusChange={refresh}
           />
         </Tabs.TabPane>
       </Tabs>

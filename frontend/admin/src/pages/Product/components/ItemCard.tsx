@@ -115,7 +115,7 @@ interface ButtonGroupProps {
   productId?: string
   status?: ProductStatus
   isExplaining?: boolean
-  onStatusChange?: () => void
+  refresh?: () => void
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
@@ -143,7 +143,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     try {
       await updateProductStatus(props.productId, ProductStatus.Published)
       Toast.success('商品上架成功')
-      props.onStatusChange?.()
+      props.refresh?.()
     } catch {
       Toast.error('上架失败，请稍后重试')
     }
@@ -155,7 +155,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     try {
       await updateProductStatus(props.productId, ProductStatus.Unpublished)
       Toast.success('商品下架成功')
-      props.onStatusChange?.()
+      props.refresh?.()
     } catch {
       Toast.error('下架失败，请稍后重试')
     }
@@ -167,7 +167,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     try {
       await toggleExplaining(props.productId)
       Toast.success(props.isExplaining ? '已取消讲解' : '开始讲解')
-      props.onStatusChange?.()
+      props.refresh?.()
     } catch {
       Toast.error('操作失败，请稍后重试')
     }
@@ -204,34 +204,34 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
             开始竞拍
           </Button>
-          <Button
-            theme="outline"
-            type={props.isExplaining ? 'warning' : 'tertiary'}
-            icon={<IconMicrophone />}
-            onClick={handleToggleExplaining}
-          >
-            {props.isExplaining ? '取消讲解' : '讲解'}
-          </Button>
+          {props.isExplaining ? (
+            <Button
+              style={{ borderColor: 'var(--semi-color-primary)' }}
+              theme="outline"
+              type="primary"
+              icon={<IconMicrophone />}
+              onClick={handleToggleExplaining}
+            >
+              取消讲解
+            </Button>
+          ) : (
+            <Button theme="outline" type="tertiary" icon={<IconMicrophone />} onClick={handleToggleExplaining}>
+              讲解
+            </Button>
+          )}
         </>
       )}
     </Space>
   )
 }
 
-type ItemCardProps = {
-  id: number
-  productId?: string
-  status?: ProductStatus
-  isExplaining?: boolean
-  onStatusChange?: () => void
-} & Omit<ItemInformationProps, 'width'> &
-  ItemDataProps
+type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps & ButtonGroupProps
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
   return (
     <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
         <div style={{ width: '100%', display: 'flex' }}>
           <ItemInformation
             width={460}
@@ -250,11 +250,12 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
+        <Tag color='red'>未开始</Tag>
         <ButtonGroup
           productId={props.productId}
           status={props.status}
           isExplaining={props.isExplaining}
-          onStatusChange={props.onStatusChange}
+          refresh={props.refresh}
         />
       </div>
     </Card>

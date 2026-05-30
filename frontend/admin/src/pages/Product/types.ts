@@ -21,4 +21,5 @@ export type ProductItem = {
   freeShipping?: boolean
   shippingInsurance?: boolean
   auction?: boolean
+  isExplaining?: boolean
 }
