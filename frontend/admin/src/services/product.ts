@@ -36,5 +36,15 @@ export const productService = {
 
   toggleExplaining: async (id: string): Promise<void> => {
     await api.patch(`/products/${id}/explaining`)
+  },
+
+  startAuction: async (id: string): Promise<Product> => {
+    const response = await api.patch(`/products/${id}/start-auction`)
+    return response.data
+  },
+
+  endAuction: async (id: string): Promise<Product> => {
+    const response = await api.patch(`/products/${id}/end-auction`)
+    return response.data
   }
 }

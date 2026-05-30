@@ -275,4 +275,97 @@ router.patch(
   }
 )
 
+router.patch(
+  '/:id/start-auction',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: (err?: unknown) => void) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' })
+      }
+
+      const { id } = req.params
+
+      const existingProduct = await prisma.product.findUnique({
+        where: { id }
+      })
+
+      if (!existingProduct) {
+        return res.status(404).json({ message: '商品不存在' })
+      }
+
+      if (existingProduct.creatorId !== req.user.id) {
+        return res.status(403).json({ message: '没有权限修改此商品' })
+      }
+
+      if (existingProduct.auctionStatus === 'IN_PROGRESS') {
+        return res.status(400).json({ message: '竞拍已在进行中' })
+      }
+
+      if (existingProduct.auctionStatus === 'ENDED') {
+        return res.status(400).json({ message: '竞拍已结束' })
+      }
+
+      const now = new Date()
+      const endTime = new Date(now.getTime() + existingProduct.auctionDuration * 1000)
+
+      const product = await prisma.product.update({
+        where: { id },
+        data: {
+          auctionStatus: 'IN_PROGRESS',
+          auctionStartTime: now,
+          auctionEndTime: endTime,
+          currentBidPrice: existingProduct.startingPrice
+        }
+      })
+
+      res.json(product)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+router.patch(
+  '/:id/end-auction',
+  authMiddleware,
+  async (req: AuthRequest, res: Response, next: (err?: unknown) => void) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: '未认证' })
+      }
+
+      const { id } = req.params
+
+      const existingProduct = await prisma.product.findUnique({
+        where: { id }
+      })
+
+      if (!existingProduct) {
+        return res.status(404).json({ message: '商品不存在' })
+      }
+
+      if (existingProduct.creatorId !== req.user.id) {
+        return res.status(403).json({ message: '没有权限修改此商品' })
+      }
+
+      if (existingProduct.auctionStatus !== 'IN_PROGRESS') {
+        return res.status(400).json({ message: '竞拍未在进行中' })
+      }
+
+      const product = await prisma.product.update({
+        where: { id },
+        data: {
+          auctionStatus: 'ENDED',
+          auctionEndTime: new Date()
+        }
+      })
+
+      res.json(product)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 export default router

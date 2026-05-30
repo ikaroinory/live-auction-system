@@ -65,11 +65,25 @@ export function useProductMutations() {
     mutate((key) => typeof key === 'string' && key.startsWith('/products'))
   }
 
+  const startAuction = async (id: string) => {
+    await productService.startAuction(id)
+    mutate(`/products/${id}`)
+    mutate((key) => typeof key === 'string' && key.startsWith('/products'))
+  }
+
+  const endAuction = async (id: string) => {
+    await productService.endAuction(id)
+    mutate(`/products/${id}`)
+    mutate((key) => typeof key === 'string' && key.startsWith('/products'))
+  }
+
   return {
     createProduct,
     updateProduct,
     deleteProduct,
     updateProductStatus,
-    toggleExplaining
+    toggleExplaining,
+    startAuction,
+    endAuction
   }
 }

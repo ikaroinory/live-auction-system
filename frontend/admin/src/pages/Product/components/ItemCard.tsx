@@ -3,7 +3,7 @@ import { IconMicrophone } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
-import { ProductStatus } from '@/types'
+import { ProductStatus, ProductAuctionStatus } from '@/types'
 
 interface ItemInformationProps {
   width?: Property.Width<string | number>
@@ -115,12 +115,13 @@ interface ButtonGroupProps {
   productId?: string
   status?: ProductStatus
   isExplaining?: boolean
+  auctionStatus?: ProductAuctionStatus
   refresh?: () => void
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   const navigate = useNavigate()
-  const { deleteProduct, updateProductStatus, toggleExplaining } = useProductMutations()
+  const { deleteProduct, updateProductStatus, toggleExplaining, startAuction, endAuction } = useProductMutations()
 
   const handleRemove = async () => {
     if (!props.productId) return
@@ -134,7 +135,27 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   }
 
   const handleStartAuction = async () => {
-    Toast.info('功能开发中')
+    if (!props.productId) return
+
+    try {
+      await startAuction(props.productId)
+      Toast.success('开始竞拍成功')
+      props.refresh?.()
+    } catch {
+      Toast.error('开始竞拍失败，请稍后重试')
+    }
+  }
+
+  const handleEndAuction = async () => {
+    if (!props.productId) return
+
+    try {
+      await endAuction(props.productId)
+      Toast.success('结束竞拍成功')
+      props.refresh?.()
+    } catch {
+      Toast.error('结束竞拍失败，请稍后重试')
+    }
   }
 
   const handlePublish = async () => {
@@ -201,9 +222,16 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
       )}
       {props.status === ProductStatus.Published && (
         <>
-          <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
-            开始竞拍
-          </Button>
+          {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && (
+            <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
+              开始竞拍
+            </Button>
+          )}
+          {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && (
+            <Button theme="outline" type="warning" onClick={handleEndAuction}>
+              结束竞拍
+            </Button>
+          )}
           {props.isExplaining ? (
             <Button
               style={{ borderColor: 'var(--semi-color-primary)' }}
@@ -227,7 +255,20 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
 type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps & ButtonGroupProps
 
+const getAuctionStatusText = (status?: ProductAuctionStatus): { text: string; color: string } => {
+  switch (status) {
+    case ProductAuctionStatus.IN_PROGRESS:
+      return { text: '竞拍中', color: 'orange' }
+    case ProductAuctionStatus.ENDED:
+      return { text: '已结束', color: 'grey' }
+    default:
+      return { text: '未开始', color: 'red' }
+  }
+}
+
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
+  const auctionStatusInfo = getAuctionStatusText(props.auctionStatus)
+
   return (
     <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
@@ -250,11 +291,12 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <Tag color='red'>未开始</Tag>
+        <Tag color={auctionStatusInfo.color}>{auctionStatusInfo.text}</Tag>
         <ButtonGroup
           productId={props.productId}
           status={props.status}
           isExplaining={props.isExplaining}
+          auctionStatus={props.auctionStatus}
           refresh={props.refresh}
         />
       </div>

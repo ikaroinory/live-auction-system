@@ -3,6 +3,12 @@ export enum ProductStatus {
   Published = 1
 }
 
+export enum ProductAuctionStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  ENDED = 'ENDED'
+}
+
 export interface Product {
   id: string
   creatorId: string
@@ -16,6 +22,14 @@ export interface Product {
   shippingInsurance: boolean
   auction: boolean
   isExplaining: boolean
+  // 竞拍相关字段
+  auctionDuration: number
+  autoExtendSeconds: number
+  auctionStatus: ProductAuctionStatus
+  auctionStartTime?: string
+  auctionEndTime?: string
+  currentBidPrice?: number
+  bidCount: number
   status: ProductStatus
   createdAt: string
   updatedAt: string

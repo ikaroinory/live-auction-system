@@ -13,6 +13,12 @@ enum Gender {
   UNKNOWN
 }
 
+enum ProductAuctionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  ENDED
+}
+
 model User {
   id        String   @id @default(uuid())
   phone     String   @unique
@@ -141,21 +147,29 @@ model LiveRoomFollow {
 }
 
 model Product {
-  id               String    @id @default(uuid())
+  id               String               @id @default(uuid())
   creatorId        String
   name             String
-  image            String    @db.LongText
-  startingPrice    Decimal   @db.Decimal(10, 2)
-  fixedIncrement   Decimal   @db.Decimal(10, 2)
-  maxPrice         Decimal?  @db.Decimal(10, 2)
-  lateCompensation Boolean   @default(false)
-  freeShipping     Boolean   @default(false)
-  shippingInsurance Boolean  @default(false)
-  auction          Boolean   @default(false)
-  isExplaining     Boolean   @default(false)
-  status           Int       @default(0) // 0: 待上架 1: 已上架 2: 已下架
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  image            String               @db.LongText
+  startingPrice    Decimal              @db.Decimal(10, 2)
+  fixedIncrement   Decimal              @db.Decimal(10, 2)
+  maxPrice         Decimal?             @db.Decimal(10, 2)
+  lateCompensation Boolean              @default(false)
+  freeShipping     Boolean              @default(false)
+  shippingInsurance Boolean             @default(false)
+  auction          Boolean              @default(false)
+  isExplaining     Boolean              @default(false)
+  // 竞拍相关字段
+  auctionDuration  Int                  @default(3600) // 默认竞拍时长：3600秒（1小时）
+  autoExtendSeconds Int                 @default(15)  // 出价延时：默认15秒
+  auctionStatus    ProductAuctionStatus @default(NOT_STARTED)
+  auctionStartTime DateTime?
+  auctionEndTime   DateTime?
+  currentBidPrice  Decimal?             @db.Decimal(10, 2)
+  bidCount         Int                  @default(0)
+  status           Int                  @default(0) // 0: 待上架 1: 已上架 2: 已下架
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 
   // 关联关系
   creator  User     @relation("UserToProduct", fields: [creatorId], references: [id])

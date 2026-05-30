@@ -45,13 +45,17 @@ const ProductList: React.FC = () => {
       startingPrice: Number(product.startingPrice),
       fixedIncrement: Number(product.fixedIncrement),
       maxPrice: product.maxPrice ? Number(product.maxPrice) : undefined,
-      bidCount: 0,
+      currentPrice: product.currentBidPrice,
+      bidCount: product.bidCount,
       status: product.status,
       lateCompensation: product.lateCompensation,
       freeShipping: product.freeShipping,
       shippingInsurance: product.shippingInsurance,
       auction: product.auction,
-      isExplaining: product.isExplaining
+      isExplaining: product.isExplaining,
+      auctionStatus: product.auctionStatus,
+      auctionStartTime: product.auctionStartTime,
+      auctionEndTime: product.auctionEndTime
     }
   }
 
