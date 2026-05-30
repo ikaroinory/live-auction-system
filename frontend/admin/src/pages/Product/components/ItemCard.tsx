@@ -1,4 +1,6 @@
-import { Button, Card, Image, Skeleton, Space, Tag, Typography } from '@douyinfe/semi-ui'
+import { productService } from '@/services'
+import { IconMicrophone } from '@douyinfe/semi-icons'
+import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
 
 interface ItemInformationProps {
@@ -107,10 +109,27 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
   )
 }
 
+const ButtonGroup = ({ handleStartAuction, handleRemove }) => {
+  return (
+    <Space>
+      <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
+        开始竞拍
+      </Button>
+      <Button theme="outline" type="tertiary" onClick={handleRemove}>
+        下架
+      </Button>
+      <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
+        讲解
+      </Button>
+    </Space>
+  )
+}
+
 type ItemCardProps = {
   id: number
   productId?: string
-} & Omit<ItemInformationProps, 'width'> & ItemDataProps & {
+} & Omit<ItemInformationProps, 'width'> &
+  ItemDataProps & {
     onStartAuction?: (id: number) => void
     onRemove?: (id: number) => void
   }
@@ -146,14 +165,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <Space>
-          <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
-            开始竞拍
-          </Button>
-          <Button theme="outline" type="danger" onClick={handleRemove}>
-            删除
-          </Button>
-        </Space>
+        <ButtonGroup handleStartAuction={handleStartAuction} handleRemove={handleRemove} />
       </div>
     </Card>
   )

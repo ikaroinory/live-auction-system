@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     semiTheming({
-      theme: '@semi-bot/semi-theme-doucreator'
+      theme: '@semi-bot/semi-theme-volcano_engine'
     })
   ],
   resolve: {

@@ -124,15 +124,11 @@ const ProductList: React.FC = () => {
   }
 
   const filteredLiveProducts = liveProducts.filter(
-    (item) =>
-      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      String(item.id).includes(searchValue)
+    (item) => item.name?.toLowerCase().includes(searchValue.toLowerCase()) || String(item.id).includes(searchValue)
   )
 
   const filteredPendingProducts = pendingProducts.filter(
-    (item) =>
-      item.name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      String(item.id).includes(searchValue)
+    (item) => item.name?.toLowerCase().includes(searchValue.toLowerCase()) || String(item.id).includes(searchValue)
   )
 
   return (
