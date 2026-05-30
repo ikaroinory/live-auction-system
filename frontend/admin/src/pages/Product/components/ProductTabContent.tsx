@@ -13,8 +13,6 @@ export interface ProductTabContentProps {
   dataSource: ProductItem[]
   loadingStatus?: LoadingStatus
   errorMessage?: string
-  onStartAuction?: (id: number) => void
-  onRemove?: (id: number) => void
 }
 
 const ProductTabContent: React.FC<ProductTabContentProps> = ({
@@ -22,9 +20,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
   onSearchChange,
   dataSource,
   loadingStatus = 'success',
-  errorMessage,
-  onStartAuction,
-  onRemove
+  errorMessage
 }) => {
   const navigate = useNavigate()
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
@@ -60,7 +56,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
       <div style={{ maxHeight: 'calc(100vh - 320px)', overflowY: 'auto' }}>
         <Space style={{ width: '100%' }} vertical spacing={12}>
           {dataSource.map((item) => (
-            <ItemCard key={item.id} {...item} onStartAuction={onStartAuction} onRemove={onRemove} />
+            <ItemCard key={item.id} {...item} />
           ))}
         </Space>
       </div>
@@ -78,19 +74,20 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
             checked={isAllSelected}
             indeterminate={selectedKeys.length > 0 && !isAllSelected}
             onChange={handleSelectAll}
-          />
-          <span style={{ color: '#999', fontSize: 14 }}>全选</span>
+          >
+            全选
+          </Checkbox>
           <Input
             placeholder="请搜索商品名称或ID"
             value={searchValue}
             onChange={onSearchChange}
             style={{ width: 300 }}
           />
-          <Button size="small" theme="borderless" icon={<IconFilter />}>
+          <Button theme="outline" icon={<IconFilter />}>
             筛选
           </Button>
         </div>
-        <Button icon={<IconPlus />} onClick={() => navigate('/product/create')}>
+        <Button icon={<IconPlus />} onClick={() => navigate('/product/create')} theme="solid">
           添加商品
         </Button>
       </div>

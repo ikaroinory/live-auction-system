@@ -1,4 +1,4 @@
-import { productService } from '@/services'
+import { useProductMutations } from '@/hooks'
 import { IconMicrophone } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
@@ -109,7 +109,27 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, capP
   )
 }
 
-const ButtonGroup = ({ handleStartAuction, handleRemove }) => {
+interface ButtonGroupProps {
+  productId?: string
+}
+
+const ButtonGroup: React.FC<ButtonGroupProps> = ({ productId }: ButtonGroupProps) => {
+  const { deleteProduct } = useProductMutations()
+  const handleStartAuction = async () => {
+    Toast.info('功能开发中')
+  }
+
+  const handleRemove = async () => {
+    if (!productId) return
+
+    try {
+      await deleteProduct(productId)
+      Toast.success('商品删除成功')
+    } catch (error) {
+      Toast.error('删除失败，请稍后重试')
+    }
+  }
+
   return (
     <Space>
       <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
@@ -129,20 +149,9 @@ type ItemCardProps = {
   id: number
   productId?: string
 } & Omit<ItemInformationProps, 'width'> &
-  ItemDataProps & {
-    onStartAuction?: (id: number) => void
-    onRemove?: (id: number) => void
-  }
+  ItemDataProps
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
-  const handleStartAuction = () => {
-    props.onStartAuction?.(props.id)
-  }
-
-  const handleRemove = () => {
-    props.onRemove?.(props.id)
-  }
-
   return (
     <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
@@ -165,7 +174,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <ButtonGroup handleStartAuction={handleStartAuction} handleRemove={handleRemove} />
+        <ButtonGroup productId={props.productId} />
       </div>
     </Card>
   )

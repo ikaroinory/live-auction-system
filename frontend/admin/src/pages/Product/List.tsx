@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useMemo } from 'react'
 import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
 import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
-import { productService } from '@/services'
+import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
 
 const { Title } = Typography
@@ -12,12 +12,20 @@ const { Title } = Typography
 const ProductList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('live')
   const [searchValue, setSearchValue] = useState('')
-  const [liveProducts, setLiveProducts] = useState<ProductItem[]>([])
-  const [pendingProducts, setPendingProducts] = useState<ProductItem[]>([])
-  const [liveLoadingStatus, setLiveLoadingStatus] = useState<LoadingStatus>('loading')
-  const [pendingLoadingStatus, setPendingLoadingStatus] = useState<LoadingStatus>('loading')
-  const [liveErrorMessage, setLiveErrorMessage] = useState<string>('')
-  const [pendingErrorMessage, setPendingErrorMessage] = useState<string>('')
+
+  const {
+    data: liveProductsData,
+    isLoading: liveIsLoading,
+    error: liveError,
+    mutate: mutateLiveProducts
+  } = useProductList({ status: 1 })
+
+  const {
+    data: pendingProductsData,
+    isLoading: pendingIsLoading,
+    error: pendingError,
+    mutate: mutatePendingProducts
+  } = useProductList({ status: 0 })
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []
@@ -43,82 +51,27 @@ const ProductList: React.FC = () => {
     }
   }
 
-  const handleStartAuction = (id: number): void => {
-    console.log('开始竞拍商品:', id)
-    Toast.info('功能开发中')
-  }
+  const liveProducts = useMemo(() => {
+    if (!liveProductsData?.list) return []
+    return liveProductsData.list.map((product, index) => convertProductToItem(product, index))
+  }, [liveProductsData])
 
-  const handleRemove = async (id: number): Promise<void> => {
-    const product = liveProducts.find((p) => p.id === id) || pendingProducts.find((p) => p.id === id)
-    if (!product || !product.productId) {
-      Toast.error('商品信息不存在')
-      return
-    }
+  const pendingProducts = useMemo(() => {
+    if (!pendingProductsData?.list) return []
+    return pendingProductsData.list.map((product, index) => convertProductToItem(product, index))
+  }, [pendingProductsData])
 
-    try {
-      await productService.delete(product.productId)
-      Toast.success('商品删除成功')
-      await handleRefresh()
-    } catch (error) {
-      console.error('删除商品失败:', error)
-      Toast.error('删除失败，请稍后重试')
-    }
-  }
+  const liveLoadingStatus: LoadingStatus = liveIsLoading ? 'loading' : liveError ? 'error' : 'success'
+  const pendingLoadingStatus: LoadingStatus = pendingIsLoading ? 'loading' : pendingError ? 'error' : 'success'
 
-  const fetchLiveProductsRef = useRef(async (): Promise<void> => {
-    setLiveLoadingStatus('loading')
-    try {
-      const result = await productService.getList({ status: 1 })
-      const products = result.list.map((product, index) => convertProductToItem(product, index))
-      setLiveProducts(products)
-      setLiveLoadingStatus('success')
-      setLiveErrorMessage('')
-    } catch (error) {
-      console.error('Failed to fetch live products:', error)
-      setLiveLoadingStatus('error')
-      setLiveErrorMessage('获取直播商品失败，请稍后重试')
-      Toast.error('获取直播商品失败')
-    }
-  })
-
-  const fetchPendingProductsRef = useRef(async (): Promise<void> => {
-    setPendingLoadingStatus('loading')
-    try {
-      const result = await productService.getList({ status: 0 })
-      const products = result.list.map((product, index) => convertProductToItem(product, index))
-      setPendingProducts(products)
-      setPendingLoadingStatus('success')
-      setPendingErrorMessage('')
-    } catch (error) {
-      console.error('Failed to fetch pending products:', error)
-      setPendingLoadingStatus('error')
-      setPendingErrorMessage('获取待上架商品失败，请稍后重试')
-      Toast.error('获取待上架商品失败')
-    }
-  })
-
-  useEffect(() => {
-    let isMounted = true
-    const fetchData = async (): Promise<void> => {
-      if (activeTab === 'live') {
-        await fetchLiveProductsRef.current()
-      } else {
-        await fetchPendingProductsRef.current()
-      }
-    }
-    if (isMounted) {
-      void fetchData()
-    }
-    return () => {
-      isMounted = false
-    }
-  }, [activeTab])
+  const liveErrorMessage = liveError ? '获取直播商品失败，请稍后重试' : ''
+  const pendingErrorMessage = pendingError ? '获取待上架商品失败，请稍后重试' : ''
 
   const handleRefresh = async (): Promise<void> => {
     if (activeTab === 'live') {
-      await fetchLiveProductsRef.current()
+      await mutateLiveProducts()
     } else {
-      await fetchPendingProductsRef.current()
+      await mutatePendingProducts()
     }
     Toast.success('刷新成功')
   }
@@ -156,8 +109,6 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
-            onStartAuction={handleStartAuction}
-            onRemove={handleRemove}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -167,8 +118,6 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
-            onStartAuction={handleStartAuction}
-            onRemove={handleRemove}
           />
         </Tabs.TabPane>
       </Tabs>
