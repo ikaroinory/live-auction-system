@@ -1,17 +1,18 @@
-import React from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
 import { Layout, Avatar, Dropdown, Nav, Button, Image } from '@douyinfe/semi-ui'
 import { IconHome, IconTickCircle, IconGift, IconExit, IconMoon, IconSun } from '@douyinfe/semi-icons'
 import { useUserStore } from '@/store'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import styles from './Layout.module.scss'
+import { NavItemProps } from '@douyinfe/semi-ui/lib/es/navigation'
 
 const { Sider, Header, Content } = Layout
 
-const navItems = [
-  { itemKey: 'dashboard', text: '数据概览', icon: <IconHome />, path: '/dashboard' },
-  { itemKey: 'product', text: '商品管理', icon: <IconGift />, path: '/product/list' },
-  { itemKey: 'order', text: '订单管理', icon: <IconTickCircle />, path: '/order/list' }
+type NavigationItem = NavItemProps & { path: string }
+const navItems: NavigationItem[] = [
+  { itemKey: 'dashboard', text: '数据概览', icon: <IconHome />, path: 'dashboard' },
+  { itemKey: 'products', text: '商品管理', icon: <IconGift />, path: 'products/list' },
+  { itemKey: 'orders', text: '订单管理', icon: <IconTickCircle />, path: 'orders/list' }
 ]
 
 const LayoutComponent: React.FC = () => {
@@ -20,21 +21,9 @@ const LayoutComponent: React.FC = () => {
   const { user, logout } = useUserStore()
   const { mode, toggleMode } = useThemeMode()
 
-  const handleSelect = (data: { itemKey: string | number }) => {
-    const item = navItems.find((i) => i.itemKey === String(data.itemKey))
-    if (item) {
-      navigate(item.path)
-    }
-  }
-
   const handleLogout = () => {
     logout()
     navigate('/login')
-  }
-
-  const getCurrentKey = () => {
-    const item = navItems.find((i) => location.pathname.startsWith(i.path))
-    return item?.itemKey || 'dashboard'
   }
 
   const userMenu = (
@@ -44,6 +33,8 @@ const LayoutComponent: React.FC = () => {
       </Button>
     </div>
   )
+  console.log(location.pathname)
+  console.log(location.pathname.slice(1))
 
   return (
     <Layout>
@@ -66,7 +57,12 @@ const LayoutComponent: React.FC = () => {
       </Header>
       <Layout style={{ height: 'calc(100dvh - 64px)' }}>
         <Sider>
-          <Nav style={{ height: '100%' }} selectedKeys={[getCurrentKey()]} items={navItems} onSelect={handleSelect} />
+          <Nav
+            style={{ height: '100%' }}
+            selectedKeys={[location.pathname.slice(1).split('/')[0]]}
+            items={navItems}
+            onSelect={(data) => navigate(navItems.find((e) => data.itemKey === e.itemKey)?.path || 'dashboard')}
+          />
         </Sider>
         <Content className={styles.mainContainer}>
           <Outlet />

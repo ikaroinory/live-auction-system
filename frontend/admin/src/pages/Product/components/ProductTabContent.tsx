@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { Button, Input, Checkbox, Space, Spin, Empty } from '@douyinfe/semi-ui'
+import { Button, Input, Space, Spin, Empty } from '@douyinfe/semi-ui'
 import { IconFilter, IconPlus } from '@douyinfe/semi-icons'
 import { ItemCard } from './ItemCard'
 import { ProductItem, ProductTagType } from '../types'
@@ -25,17 +24,6 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
   onStatusChange
 }) => {
   const navigate = useNavigate()
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
-
-  const isAllSelected = dataSource.length > 0 && selectedKeys.length === dataSource.length
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedKeys(dataSource.map((item) => item.id))
-    } else {
-      setSelectedKeys([])
-    }
-  }
 
   const renderContent = () => {
     if (loadingStatus === 'loading') {
@@ -71,25 +59,17 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 16 }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Checkbox
-            style={{ marginRight: 8 }}
-            checked={isAllSelected}
-            indeterminate={selectedKeys.length > 0 && !isAllSelected}
-            onChange={handleSelectAll}
-          >
-            全选
-          </Checkbox>
           <Input
             placeholder="请搜索商品名称或ID"
             value={searchValue}
             onChange={onSearchChange}
             style={{ width: 300 }}
           />
-          <Button theme="outline" icon={<IconFilter />}>
+          <Button theme="outline" type="tertiary" icon={<IconFilter />}>
             筛选
           </Button>
         </div>
-        <Button icon={<IconPlus />} onClick={() => navigate('/product/create')} theme="solid">
+        <Button icon={<IconPlus />} onClick={() => navigate('/products/create')} theme="solid">
           添加商品
         </Button>
       </div>

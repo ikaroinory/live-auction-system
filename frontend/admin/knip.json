@@ -1,0 +1,9 @@
+{
+  "ignoreDependencies": [
+    "@semi-bot/semi-theme-volcano_engine",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "eslint-config-prettier",
+    "eslint-plugin-prettier"
+  ]
+}

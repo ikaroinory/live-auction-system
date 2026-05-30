@@ -1,5 +1,5 @@
 import { useProductMutations } from '@/hooks'
-import { IconMicrophone, IconEdit, IconUpload, IconMinusCircle } from '@douyinfe/semi-icons'
+import { IconMicrophone } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
@@ -152,7 +152,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     if (!props.productId) return
 
     try {
-      await updateProductStatus(props.productId, ProductStatus.Pending)
+      await updateProductStatus(props.productId, ProductStatus.Unpublished)
       Toast.success('商品下架成功')
       props.onStatusChange?.()
     } catch {
@@ -162,35 +162,39 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
   const handleEdit = () => {
     if (!props.productId) return
-    navigate(`/product/${props.productId}`)
+    navigate(`/products/${props.productId}`)
   }
 
   return (
     <Space>
-      <Button theme="outline" type="danger" onClick={handleRemove}>
-        删除
-      </Button>
-      <Button theme="outline" type="tertiary" icon={<IconEdit />} onClick={handleEdit}>
-        编辑
-      </Button>
-      {props.status === ProductStatus.Pending ? (
-        <Button theme="solid" type="primary" icon={<IconUpload />} onClick={handlePublish}>
+      {props.status === ProductStatus.Unpublished && (
+        <>
+          <Button theme="outline" type="danger" onClick={handleRemove}>
+            删除
+          </Button>
+          <Button theme="outline" type="tertiary" onClick={handleEdit}>
+            编辑
+          </Button>
+        </>
+      )}
+      {props.status === ProductStatus.Unpublished ? (
+        <Button theme="outline" type="tertiary" onClick={handlePublish}>
           上架
         </Button>
       ) : (
-        <Button theme="outline" type="warning" icon={<IconMinusCircle />} onClick={handleUnpublish}>
+        <Button theme="outline" type="tertiary" onClick={handleUnpublish}>
           下架
         </Button>
       )}
       {props.status === ProductStatus.Published && (
-        <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
-          开始竞拍
-        </Button>
-      )}
-      {props.status === ProductStatus.Published && (
-        <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
-          讲解
-        </Button>
+        <>
+          <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
+            开始竞拍
+          </Button>
+          <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
+            讲解
+          </Button>
+        </>
       )}
     </Space>
   )

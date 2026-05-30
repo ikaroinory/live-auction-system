@@ -1,59 +1,33 @@
-export interface RouteConfig {
-  path: string
-  name: string
-  icon?: React.ReactNode
-  component?: React.ComponentType
-  children?: RouteConfig[]
-  meta?: {
-    requiresAuth?: boolean
-    roles?: ('admin' | 'seller')[]
-  }
-}
+import { createBrowserRouter, Navigate } from 'react-router'
+import { ProtectedRoute } from './ProtectedRoute'
+import Dashboard from '@/pages/Dashboard'
+import ProductList from '@/pages/Product/List'
+import ProductCreate from '@/pages/Product/Create'
+import ProductEdit from '@/pages/Product/Edit'
+import OrderList from '@/pages/Order/List'
+import Layout from '@/components/Layout'
+import Login from '@/pages/Login'
 
-export const routes: RouteConfig[] = [
+export const routers = createBrowserRouter([
   {
-    path: '/dashboard',
-    name: '数据概览',
-    icon: null
-  },
-  {
-    path: '/auction',
-    name: '竞拍管理',
+    path: '/',
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
-      {
-        path: '/auction/list',
-        name: '竞拍列表'
-      },
-      {
-        path: '/auction/create',
-        name: '发布竞拍'
-      },
-      {
-        path: '/auction/:id',
-        name: '竞拍详情'
-      }
+      { index: true, element: <Navigate to="/dashboard" replace /> },
+
+      { path: 'dashboard', element: <Dashboard /> },
+
+      { path: 'products/list', element: <ProductList /> },
+      { path: 'products/create', element: <ProductCreate /> },
+      { path: 'products/:id', element: <ProductEdit /> },
+
+      { path: 'orders/list', element: <OrderList /> }
     ]
   },
-  {
-    path: '/order',
-    name: '订单管理'
-  },
-  {
-    path: '/product',
-    name: '商品管理',
-    children: [
-      {
-        path: '/product/list',
-        name: '商品列表'
-      },
-      {
-        path: '/product/create',
-        name: '添加商品'
-      },
-      {
-        path: '/product/:id',
-        name: '编辑商品'
-      }
-    ]
-  }
-]
+
+  { path: 'login', element: <Login /> }
+])

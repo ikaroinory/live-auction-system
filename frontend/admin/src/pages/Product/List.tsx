@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
-import { IconArrowUp, IconFilter, IconMore } from '@douyinfe/semi-icons'
+import { IconRefresh } from '@douyinfe/semi-icons'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
@@ -97,14 +97,8 @@ const ProductList: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title heading={4}>商品管理</Title>
         <Space>
-          <Button theme="borderless" icon={<IconArrowUp />} onClick={handleRefresh}>
+          <Button theme="borderless" type="tertiary" icon={<IconRefresh />} onClick={handleRefresh}>
             刷新列表
-          </Button>
-          <Button theme="borderless" icon={<IconFilter />}>
-            查看分组
-          </Button>
-          <Button theme="borderless" icon={<IconMore />}>
-            搭配管理
           </Button>
         </Space>
       </div>

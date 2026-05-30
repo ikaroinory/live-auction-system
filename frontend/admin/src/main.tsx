@@ -4,14 +4,15 @@ import { ConfigProvider } from '@douyinfe/semi-ui'
 import zhCN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN'
 import { SWRConfig } from 'swr'
 import { swrConfig, fetcher } from '@/hooks/useSWRConfig'
-import App from './App'
 import './assets/styles/index.css'
+import { RouterProvider } from 'react-router'
+import { routers } from './router'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider timeZone="GMT+08:00" locale={zhCN}>
       <SWRConfig value={{ ...swrConfig, fetcher }}>
-        <App />
+        <RouterProvider router={routers} />
       </SWRConfig>
     </ConfigProvider>
   </React.StrictMode>

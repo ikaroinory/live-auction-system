@@ -199,7 +199,7 @@ export const ProductFormPage: React.FC = () => {
       <ProductForm />
 
       <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-        <Button onClick={() => navigate('/product/list')}>返回</Button>
+        <Button onClick={() => navigate(-1)}>返回</Button>
         <Button theme="solid" type="primary" htmlType="submit">
           添加商品
         </Button>
@@ -296,7 +296,7 @@ export const ProductEditPage: React.FC = () => {
       <ProductForm />
 
       <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-        <Button onClick={() => navigate('/product/list')}>返回</Button>
+        <Button onClick={() => navigate(-1)}>返回</Button>
         <Button theme="solid" type="primary" htmlType="submit">
           保存修改
         </Button>
