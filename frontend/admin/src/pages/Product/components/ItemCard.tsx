@@ -125,7 +125,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({ productId }: ButtonGroupProps
     try {
       await deleteProduct(productId)
       Toast.success('商品删除成功')
-    } catch (error) {
+    } catch {
       Toast.error('删除失败，请稍后重试')
     }
   }
