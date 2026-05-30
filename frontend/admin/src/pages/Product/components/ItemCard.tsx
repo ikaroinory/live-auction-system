@@ -119,8 +119,18 @@ interface ButtonGroupProps {
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   const navigate = useNavigate()
-  const { updateProductStatus } = useProductMutations()
+  const { deleteProduct, updateProductStatus } = useProductMutations()
 
+  const handleRemove = async () => {
+    if (!props.productId) return
+
+    try {
+      await deleteProduct(props.productId)
+      Toast.success('商品删除成功')
+    } catch {
+      Toast.error('删除失败，请稍后重试')
+    }
+  }
   const handleStartAuction = async () => {
     Toast.info('功能开发中')
   }
@@ -156,24 +166,31 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
   return (
     <Space>
-      <Button theme="outline" type="tertiary" icon={<IconEdit />} onClick={handleEdit}>
+      <Button theme="outline" type="danger" onClick={handleRemove}>
+        删除
+      </Button>
+      <Button theme="outline" type="tertiary" onClick={handleEdit}>
         编辑
       </Button>
       {props.status === ProductStatus.Pending ? (
-        <Button theme="solid" type="primary" icon={<IconUpload />} onClick={handlePublish}>
+        <Button theme="outline" type="tertiary" onClick={handlePublish}>
           上架
         </Button>
       ) : (
-        <Button theme="outline" type="warning" icon={<IconMinusCircle />} onClick={handleUnpublish}>
+        <Button theme="outline" type="tertiary" onClick={handleUnpublish}>
           下架
         </Button>
       )}
-      <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
-        开始竞拍
-      </Button>
-      <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
-        讲解
-      </Button>
+      {props.status === ProductStatus.Published && (
+        <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
+          开始竞拍
+        </Button>
+      )}
+      {props.status === ProductStatus.Published && (
+        <Button theme="outline" type="tertiary" icon={<IconMicrophone />}>
+          讲解
+        </Button>
+      )}
     </Space>
   )
 }
