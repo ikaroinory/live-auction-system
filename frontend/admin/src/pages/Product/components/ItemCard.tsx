@@ -53,9 +53,11 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
   }
 
   return (
-    <Typography.Text strong type="warning" style={{ marginLeft: 8 }}>
-      {formatTime(remainingSeconds)}
-    </Typography.Text>
+    <div style={{ width: 60, display: 'flex', justifyContent: 'center' }}>
+      <Typography.Text type="danger" size="small">
+        {formatTime(remainingSeconds)}
+      </Typography.Text>
+    </div>
   )
 }
 
@@ -347,10 +349,22 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           <Space>
             {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
             {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && (
-              <Space>
-                <Tag color="red">进行中</Tag>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid rgba(var(--semi-red-5), 0.15)',
+                  borderRadius: 'var(--semi-border-radius-small)'
+                }}
+              >
+                <Tag
+                  style={{ color: 'var(--semi-color-danger)', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                  color="red"
+                >
+                  进行中
+                </Tag>
                 <AuctionCountdown endTime={props.auctionEndTime} onComplete={props.refresh} />
-              </Space>
+              </div>
             )}
             {props.auctionStatus === ProductAuctionStatus.ENDED && <Tag color="green">已结束</Tag>}
           </Space>
