@@ -16,8 +16,6 @@ interface FormValues {
   startPrice: number
   fixedIncrement: number
   maxPrice?: number
-  durationHours: number
-  autoExtendHours: number
   tags: string[]
   durationMinutes: number
   extendSeconds: number
@@ -166,7 +164,9 @@ export const ProductFormPage: React.FC = () => {
         lateCompensation: values.tags?.includes('lateCompensation') || false,
         freeShipping: values.tags?.includes('freeShipping') || false,
         shippingInsurance: values.tags?.includes('shippingInsurance') || false,
-        auction: values.tags?.includes('auction') || false
+        auction: values.tags?.includes('auction') || false,
+        durationMinutes: values.durationMinutes,
+        extendSeconds: values.extendSeconds
       }
 
       await productService.create(productData)
@@ -189,11 +189,9 @@ export const ProductFormPage: React.FC = () => {
         startPrice: 0,
         fixedIncrement: 10,
         maxPrice: undefined,
-        durationHours: 2,
-        autoExtendHours: 1,
         tags: [],
-        durationMinutes: 10,
-        extendSeconds: 10
+        durationMinutes: 60,
+        extendSeconds: 15
       }}
     >
       <ProductForm />
@@ -253,7 +251,9 @@ export const ProductEditPage: React.FC = () => {
         lateCompensation: values.tags?.includes('lateCompensation') || false,
         freeShipping: values.tags?.includes('freeShipping') || false,
         shippingInsurance: values.tags?.includes('shippingInsurance') || false,
-        auction: values.tags?.includes('auction') || false
+        auction: values.tags?.includes('auction') || false,
+        durationMinutes: values.durationMinutes,
+        extendSeconds: values.extendSeconds
       }
 
       await updateProduct(id, productData)
@@ -286,11 +286,9 @@ export const ProductEditPage: React.FC = () => {
         startPrice: product?.startingPrice || 0,
         fixedIncrement: product?.fixedIncrement || 10,
         maxPrice: product?.maxPrice,
-        durationHours: 2,
-        autoExtendHours: 1,
         tags,
-        durationMinutes: 10,
-        extendSeconds: 10
+        durationMinutes: product?.durationMinutes || 60,
+        extendSeconds: product?.extendSeconds || 15
       }}
     >
       <ProductForm />

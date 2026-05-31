@@ -55,7 +55,9 @@ const ProductList: React.FC = () => {
       isExplaining: product.isExplaining,
       auctionStatus: product.auctionStatus,
       auctionStartTime: product.auctionStartTime,
-      auctionEndTime: product.auctionEndTime
+      auctionEndTime: product.auctionEndTime,
+      durationMinutes: product.durationMinutes,
+      extendSeconds: product.extendSeconds
     }
   }
 

@@ -87,7 +87,9 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       lateCompensation,
       freeShipping,
       shippingInsurance,
-      auction
+      auction,
+      durationMinutes,
+      extendSeconds
     } = req.body
 
     if (!name || !image) {
@@ -106,6 +108,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         freeShipping: freeShipping || false,
         shippingInsurance: shippingInsurance || false,
         auction: auction || false,
+        durationMinutes: durationMinutes || 60,
+        extendSeconds: extendSeconds || 15,
         status: 0
       }
     })
@@ -132,7 +136,9 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
       lateCompensation,
       freeShipping,
       shippingInsurance,
-      auction
+      auction,
+      durationMinutes,
+      extendSeconds
     } = req.body
 
     const existingProduct = await prisma.product.findUnique({
@@ -160,7 +166,9 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
         freeShipping: freeShipping !== undefined ? freeShipping : existingProduct.freeShipping,
         shippingInsurance:
           shippingInsurance !== undefined ? shippingInsurance : existingProduct.shippingInsurance,
-        auction: auction !== undefined ? auction : existingProduct.auction
+        auction: auction !== undefined ? auction : existingProduct.auction,
+        durationMinutes: durationMinutes !== undefined ? durationMinutes : existingProduct.durationMinutes,
+        extendSeconds: extendSeconds !== undefined ? extendSeconds : existingProduct.extendSeconds
       }
     })
 
@@ -307,7 +315,7 @@ router.patch(
       }
 
       const now = new Date()
-      const endTime = new Date(now.getTime() + existingProduct.auctionDuration * 1000)
+      const endTime = new Date(now.getTime() + existingProduct.durationMinutes * 60 * 1000)
 
       const product = await prisma.product.update({
         where: { id },

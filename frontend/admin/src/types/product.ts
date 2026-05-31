@@ -23,8 +23,8 @@ export interface Product {
   auction: boolean
   isExplaining: boolean
   // 竞拍相关字段
-  auctionDuration: number
-  autoExtendSeconds: number
+  durationMinutes: number
+  extendSeconds: number
   auctionStatus: ProductAuctionStatus
   auctionStartTime?: string
   auctionEndTime?: string
@@ -45,6 +45,8 @@ export interface ProductFormData {
   freeShipping?: boolean
   shippingInsurance?: boolean
   auction?: boolean
+  durationMinutes?: number
+  extendSeconds?: number
 }
 
 export interface ProductWithAuctionRule extends Product {

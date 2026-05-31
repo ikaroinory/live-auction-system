@@ -160,8 +160,8 @@ model Product {
   auction          Boolean              @default(false)
   isExplaining     Boolean              @default(false)
   // 竞拍相关字段
-  auctionDuration  Int                  @default(3600) // 默认竞拍时长：3600秒（1小时）
-  autoExtendSeconds Int                 @default(15)  // 出价延时：默认15秒
+  durationMinutes  Int                  @default(60) // 默认竞拍时长：60分钟（1小时）
+  extendSeconds    Int                  @default(15)  // 出价延时：默认15秒
   auctionStatus    ProductAuctionStatus @default(NOT_STARTED)
   auctionStartTime DateTime?
   auctionEndTime   DateTime?
