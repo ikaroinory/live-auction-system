@@ -9,9 +9,10 @@ import { ProductStatus, ProductAuctionStatus } from '@/types'
 interface AuctionCountdownProps {
   endTime?: string
   onComplete?: () => void
+  refresh?: () => void
 }
 
-const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete }) => {
+const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete, refresh }) => {
   const [remainingSeconds, setRemainingSeconds] = useState<number>(() => {
     if (!endTime) return 0
     const end = new Date(endTime).getTime()
@@ -32,6 +33,9 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
 
       if (remaining <= 0) {
         clearInterval(interval)
+        if (refresh) {
+          refresh()
+        }
         if (onComplete) {
           onComplete()
         }
@@ -39,7 +43,7 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [endTime, onComplete])
+  }, [endTime, onComplete, refresh])
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
@@ -363,7 +367,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
                 >
                   进行中
                 </Tag>
-                <AuctionCountdown endTime={props.auctionEndTime} onComplete={props.refresh} />
+                <AuctionCountdown endTime={props.auctionEndTime} refresh={props.refresh} />
               </div>
             )}
             {props.auctionStatus === ProductAuctionStatus.ENDED && <Tag color="green">已结束</Tag>}

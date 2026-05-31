@@ -18,7 +18,6 @@ const redisClient = new Redis({
   db,
   connectTimeout: timeout,
   maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
   enableReadyCheck: true,
   lazyConnect: true,
   connectionName: 'auction-service',
@@ -32,7 +31,6 @@ const subscriberClient = new Redis({
   db,
   connectTimeout: timeout,
   maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
   enableReadyCheck: true,
   lazyConnect: true,
   connectionName: 'auction-subscriber'
@@ -91,7 +89,7 @@ export async function disconnectRedis(): Promise<void> {
 export { redisClient, subscriberClient }
 
 export const REDIS_KEYS = {
-  AUCTION_EXPIRE: (auctionId: string) => `expire:${auctionId}`,
-  AUCTION_CURRENT_PRICE: (auctionId: string) => `price:${auctionId}`,
-  AUCTION_BID_COUNT: (auctionId: string) => `bids:${auctionId}`
+  AUCTION_EXPIRE: (productId: string) => `expire:product:${productId}`,
+  AUCTION_CURRENT_PRICE: (productId: string) => `price:product:${productId}`,
+  AUCTION_BID_COUNT: (productId: string) => `bids:product:${productId}`
 }
