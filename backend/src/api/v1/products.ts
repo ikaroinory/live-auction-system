@@ -167,7 +167,8 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
         shippingInsurance:
           shippingInsurance !== undefined ? shippingInsurance : existingProduct.shippingInsurance,
         auction: auction !== undefined ? auction : existingProduct.auction,
-        durationMinutes: durationMinutes !== undefined ? durationMinutes : existingProduct.durationMinutes,
+        durationMinutes:
+          durationMinutes !== undefined ? durationMinutes : existingProduct.durationMinutes,
         extendSeconds: extendSeconds !== undefined ? extendSeconds : existingProduct.extendSeconds
       }
     })
