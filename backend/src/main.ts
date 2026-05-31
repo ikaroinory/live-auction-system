@@ -6,32 +6,52 @@ import config from './config'
 import { swaggerSpec } from './config/swagger'
 import apiRouter from './api'
 import { errorHandler } from './middleware/errorHandler'
+import { connectRedis, disconnectRedis } from './lib/redis'
+import { startExpireListener } from './services/auctionExpire.service'
 
 dotenv.config()
 
 const app = express()
 
-// Middleware
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
-// API Routes
 app.use('/api', apiRouter)
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
 
-// Error handler
 app.use(errorHandler)
 
-// Start server
-app.listen(config.port, () => {
-  console.log(`🚀 服务器运行在 http://localhost:${config.port}`)
-  console.log(`📚 API 文档: http://localhost:${config.port}/api-docs`)
+async function startServer(): Promise<void> {
+  try {
+    await connectRedis()
+    await startExpireListener()
+
+    app.listen(config.port, () => {
+      console.log(`🚀 服务器运行在 http://localhost:${config.port}`)
+      console.log(`📚 API 文档: http://localhost:${config.port}/api-docs`)
+    })
+  } catch (error) {
+    console.error('❌ 服务器启动失败:', error)
+    process.exit(1)
+  }
+}
+
+process.on('SIGTERM', async () => {
+  console.log('📢 收到 SIGTERM 信号，正在关闭服务器...')
+  await disconnectRedis()
+  process.exit(0)
 })
+
+process.on('SIGINT', async () => {
+  console.log('📢 收到 SIGINT 信号，正在关闭服务器...')
+  await disconnectRedis()
+  process.exit(0)
+})
+
+startServer()

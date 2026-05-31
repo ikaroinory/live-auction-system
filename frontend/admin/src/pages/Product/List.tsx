@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Button, Tabs, Space, Toast } from '@douyinfe/semi-ui'
+import { Tabs, Space } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
-import { IconRefresh } from '@douyinfe/semi-icons'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
 import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
@@ -16,19 +15,9 @@ const ProductList: React.FC = () => {
 
   const activeTab = searchParams.get('tab') || 'live'
 
-  const {
-    data: liveProductsData,
-    isLoading: liveIsLoading,
-    error: liveError,
-    mutate: mutateLiveProducts
-  } = useProductList({ status: 1 })
+  const { data: liveProductsData, isLoading: liveIsLoading, error: liveError } = useProductList({ status: 1 })
 
-  const {
-    data: pendingProductsData,
-    isLoading: pendingIsLoading,
-    error: pendingError,
-    mutate: mutatePendingProducts
-  } = useProductList({ status: 0 })
+  const { data: pendingProductsData, isLoading: pendingIsLoading, error: pendingError } = useProductList({ status: 0 })
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []
@@ -55,9 +44,7 @@ const ProductList: React.FC = () => {
       isExplaining: product.isExplaining,
       auctionStatus: product.auctionStatus,
       auctionStartTime: product.auctionStartTime,
-      auctionEndTime: product.auctionEndTime,
-      durationMinutes: product.durationMinutes,
-      extendSeconds: product.extendSeconds
+      auctionEndTime: product.auctionEndTime
     }
   }
 
@@ -65,7 +52,6 @@ const ProductList: React.FC = () => {
     if (!liveProductsData?.list) return []
     return liveProductsData.list.map((product, index) => convertProductToItem(product, index))
   }, [liveProductsData])
-  console.log(liveProducts)
 
   const pendingProducts = useMemo(() => {
     if (!pendingProductsData?.list) return []
@@ -77,19 +63,6 @@ const ProductList: React.FC = () => {
 
   const liveErrorMessage = liveError ? '获取直播商品失败，请稍后重试' : ''
   const pendingErrorMessage = pendingError ? '获取待上架商品失败，请稍后重试' : ''
-
-  const refresh = async (): Promise<void> => {
-    if (activeTab === 'live') {
-      await mutateLiveProducts()
-    } else {
-      await mutatePendingProducts()
-    }
-  }
-
-  const handleRefresh = async (): Promise<void> => {
-    await refresh()
-    Toast.success('刷新成功')
-  }
 
   const handleTabChange = (tab: string) => {
     setSearchParams({ tab })
@@ -107,11 +80,7 @@ const ProductList: React.FC = () => {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title heading={4}>商品管理</Title>
-        <Space>
-          <Button theme="borderless" type="tertiary" icon={<IconRefresh />} onClick={handleRefresh}>
-            刷新列表
-          </Button>
-        </Space>
+        <Space />
       </div>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
@@ -122,7 +91,6 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
-            onStatusChange={refresh}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -132,7 +100,6 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
-            onStatusChange={refresh}
           />
         </Tabs.TabPane>
       </Tabs>
