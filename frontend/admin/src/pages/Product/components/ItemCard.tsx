@@ -3,7 +3,61 @@ import { IconMicrophone } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
 import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
+import { useState, useEffect } from 'react'
 import { ProductStatus, ProductAuctionStatus } from '@/types'
+
+interface AuctionCountdownProps {
+  endTime?: string
+  onComplete?: () => void
+}
+
+const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete }) => {
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(() => {
+    if (!endTime) return 0
+    const end = new Date(endTime).getTime()
+    const now = Date.now()
+    return Math.max(0, Math.floor((end - now) / 1000))
+  })
+
+  useEffect(() => {
+    if (!endTime) {
+      return
+    }
+
+    const interval = setInterval(() => {
+      const end = new Date(endTime).getTime()
+      const now = Date.now()
+      const remaining = Math.max(0, Math.floor((end - now) / 1000))
+      setRemainingSeconds(remaining)
+
+      if (remaining <= 0) {
+        clearInterval(interval)
+        if (onComplete) {
+          onComplete()
+        }
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [endTime, onComplete])
+
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }
+
+  if (!endTime || remainingSeconds <= 0) {
+    return null
+  }
+
+  return (
+    <Typography.Text strong type="warning" style={{ marginLeft: 8 }}>
+      {formatTime(remainingSeconds)}
+    </Typography.Text>
+  )
+}
 
 interface ItemInformationProps {
   width?: Property.Width<string | number>
@@ -290,11 +344,16 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           />
         </div>
         {props.status === ProductStatus.Published && (
-          <>
+          <Space>
             {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
-            {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && <Tag color="red">进行中</Tag>}
+            {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && (
+              <Space>
+                <Tag color="red">进行中</Tag>
+                <AuctionCountdown endTime={props.auctionEndTime} onComplete={props.refresh} />
+              </Space>
+            )}
             {props.auctionStatus === ProductAuctionStatus.ENDED && <Tag color="green">已结束</Tag>}
-          </>
+          </Space>
         )}
         <ButtonGroup
           productId={props.productId}
