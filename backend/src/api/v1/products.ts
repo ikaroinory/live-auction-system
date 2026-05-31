@@ -1,8 +1,72 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../../lib/prisma'
+import { redisClient, REDIS_KEYS } from '../../lib/redis'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
 
 const router = Router()
+
+async function setAuctionProductInfo(
+  productId: string,
+  info: {
+    name: string
+    currentPrice: number
+    bidCount: number
+    startPrice: number
+    minIncrement: number
+    endTime: Date
+    sellerId: string
+  },
+  expireSeconds: number
+): Promise<void> {
+  try {
+    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
+    const productInfo = {
+      ...info,
+      productId,
+      createdAt: new Date().toISOString()
+    }
+    await redisClient.hset(key, 'info', JSON.stringify(productInfo))
+    await redisClient.expire(key, expireSeconds)
+    console.log(`✅ 竞拍商品信息已写入Redis: ${productId}`)
+  } catch (error) {
+    console.error(`❌ 写入竞拍商品信息失败: ${productId}`, error)
+  }
+}
+
+async function removeAuctionProductInfo(productId: string): Promise<void> {
+  try {
+    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
+    await redisClient.del(key)
+    console.log(`✅ 竞拍商品信息已从Redis删除: ${productId}`)
+  } catch (error) {
+    console.error(`❌ 删除竞拍商品信息失败: ${productId}`, error)
+  }
+}
+
+async function updateAuctionBidInfo(
+  productId: string,
+  currentPrice: number,
+  bidCount: number
+): Promise<void> {
+  try {
+    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
+    const exists = await redisClient.exists(key)
+    if (exists) {
+      const infoStr = await redisClient.hget(key, 'info')
+      if (infoStr) {
+        const info = JSON.parse(infoStr)
+        info.currentPrice = currentPrice
+        info.bidCount = bidCount
+        info.lastBidAt = new Date().toISOString()
+        await redisClient.hset(key, 'info', JSON.stringify(info))
+      }
+    }
+  } catch (error) {
+    console.error(`❌ 更新竞拍出价信息失败: ${productId}`, error)
+  }
+}
+
+export { setAuctionProductInfo, removeAuctionProductInfo, updateAuctionBidInfo }
 
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
@@ -327,6 +391,20 @@ router.patch(
           currentBidPrice: existingProduct.startingPrice
         }
       })
+
+      await setAuctionProductInfo(
+        id,
+        {
+          name: existingProduct.name,
+          currentPrice: Number(existingProduct.startingPrice),
+          bidCount: 0,
+          startPrice: Number(existingProduct.startingPrice),
+          minIncrement: Number(existingProduct.fixedIncrement),
+          endTime,
+          sellerId: existingProduct.creatorId
+        },
+        existingProduct.durationMinutes * 60
+      )
 
       res.json(product)
     } catch (error) {
