@@ -211,19 +211,30 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           </Button>
         </>
       )}
-      {props.status === ProductStatus.Unpublished ? (
+      {props.status === ProductStatus.Unpublished && (
         <Button theme="outline" type="tertiary" onClick={handlePublish}>
           上架
         </Button>
-      ) : (
-        <Button theme="outline" type="tertiary" onClick={handleUnpublish}>
+      )}
+      {props.status === ProductStatus.Published && (
+        <Button
+          theme="outline"
+          type="tertiary"
+          onClick={handleUnpublish}
+          disabled={props.auctionStatus === ProductAuctionStatus.ENDED}
+        >
           下架
         </Button>
       )}
       {props.status === ProductStatus.Published && (
         <>
-          {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && (
-            <Button theme="outline" type="tertiary" onClick={handleStartAuction}>
+          {props.auctionStatus !== ProductAuctionStatus.IN_PROGRESS && (
+            <Button
+              theme="outline"
+              type="tertiary"
+              onClick={handleStartAuction}
+              disabled={props.auctionStatus === ProductAuctionStatus.ENDED}
+            >
               开始竞拍
             </Button>
           )}
@@ -255,20 +266,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
 type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps & ButtonGroupProps
 
-const getAuctionStatusText = (status?: ProductAuctionStatus): { text: string; color: string } => {
-  switch (status) {
-    case ProductAuctionStatus.IN_PROGRESS:
-      return { text: '竞拍中', color: 'orange' }
-    case ProductAuctionStatus.ENDED:
-      return { text: '已结束', color: 'grey' }
-    default:
-      return { text: '未开始', color: 'red' }
-  }
-}
-
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
-  const auctionStatusInfo = getAuctionStatusText(props.auctionStatus)
-
   return (
     <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
@@ -291,7 +289,13 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        <Tag color={auctionStatusInfo.color}>{auctionStatusInfo.text}</Tag>
+        {props.status === ProductStatus.Published && (
+          <>
+            {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
+            {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && <Tag color="red">进行中</Tag>}
+            {props.auctionStatus === ProductAuctionStatus.ENDED && <Tag color="green">已结束</Tag>}
+          </>
+        )}
         <ButtonGroup
           productId={props.productId}
           status={props.status}
