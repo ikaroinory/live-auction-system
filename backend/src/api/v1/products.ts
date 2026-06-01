@@ -115,7 +115,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         auction: auction || false,
         durationMinutes: durationMinutes || 60,
         extendSeconds: extendSeconds || 15,
-        status: ProductStatus.DRAFT
+        status: ProductStatus.PENDING
       }
     })
 
@@ -226,7 +226,7 @@ router.patch(
       const { id } = req.params
       const { status } = req.body
 
-      if (status === undefined || ![ProductStatus.DRAFT, ProductStatus.PUBLISHED].includes(status)) {
+      if (status === undefined || ![ProductStatus.PENDING, ProductStatus.PUBLISHED].includes(status)) {
         return res.status(400).json({ message: '无效的状态值' })
       }
 

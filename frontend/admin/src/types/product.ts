@@ -1,5 +1,5 @@
 export enum ProductStatus {
-  DRAFT = 'DRAFT',
+  PENDING = 'PENDING',
   PUBLISHED = 'PUBLISHED'
 }
 

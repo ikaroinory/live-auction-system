@@ -20,7 +20,7 @@ enum ProductAuctionStatus {
 }
 
 enum ProductStatus {
-  DRAFT
+  PENDING
   PUBLISHED
 }
 
@@ -172,7 +172,7 @@ model Product {
   auctionEndTime   DateTime?
   currentBidPrice  Decimal?             @db.Decimal(10, 2)
   bidCount         Int                  @default(0)
-  status           ProductStatus        @default(DRAFT) // DRAFT: 待上架 PUBLISHED: 已上架
+  status           ProductStatus        @default(PENDING) // PENDING: 待上架 PUBLISHED: 已上架
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
 

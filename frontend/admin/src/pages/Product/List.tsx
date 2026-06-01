@@ -21,7 +21,7 @@ const ProductList: React.FC = () => {
   })
 
   const { data: pendingProductsData, isLoading: pendingIsLoading, error: pendingError } = useProductList({
-    status: ProductStatus.DRAFT
+    status: ProductStatus.PENDING
   })
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {

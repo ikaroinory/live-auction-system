@@ -234,7 +234,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     if (!props.productId) return
 
     try {
-      await updateProductStatus(props.productId, ProductStatus.DRAFT)
+      await updateProductStatus(props.productId, ProductStatus.PENDING)
       Toast.success('商品下架成功')
       props.refresh?.()
     } catch {
@@ -261,7 +261,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
   return (
     <Space>
-      {props.status === ProductStatus.DRAFT && (
+      {props.status === ProductStatus.PENDING && (
         <>
           <Button theme="outline" type="danger" onClick={handleRemove}>
             删除
@@ -271,7 +271,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           </Button>
         </>
       )}
-      {props.status === ProductStatus.DRAFT && (
+      {props.status === ProductStatus.PENDING && (
         <Button theme="outline" type="tertiary" onClick={handlePublish}>
           上架
         </Button>
