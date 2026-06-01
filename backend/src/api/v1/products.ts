@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
-import { prisma, ProductStatus } from '../../lib/prisma'
+import { prisma } from '../../lib/prisma'
+import { ProductStatus } from '@prisma/client'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
 import {
   scheduleAuctionExpire,
