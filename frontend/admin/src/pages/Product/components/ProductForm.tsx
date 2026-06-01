@@ -155,16 +155,19 @@ export const ProductFormPage: React.FC = () => {
 
   const handleSubmit = async (values: FormValues) => {
     try {
+      const tags: string[] = []
+      if (values.tags?.includes('lateCompensation')) tags.push('LATE_COMPENSATION')
+      if (values.tags?.includes('freeShipping')) tags.push('FREE_SHIPPING')
+      if (values.tags?.includes('shippingInsurance')) tags.push('SHIPPING_INSURANCE')
+      if (values.tags?.includes('auction')) tags.push('AUCTION')
+
       const productData: ProductFormData = {
         name: values.title.trim(),
         image: values.images[0].response.url,
         startingPrice: values.startPrice,
         fixedIncrement: values.fixedIncrement,
         maxPrice: values.maxPrice,
-        lateCompensation: values.tags?.includes('lateCompensation') || false,
-        freeShipping: values.tags?.includes('freeShipping') || false,
-        shippingInsurance: values.tags?.includes('shippingInsurance') || false,
-        auction: values.tags?.includes('auction') || false,
+        tags,
         durationMinutes: values.durationMinutes,
         extendSeconds: values.extendSeconds
       }
@@ -242,16 +245,19 @@ export const ProductEditPage: React.FC = () => {
     if (!id) return
 
     try {
+      const tags: string[] = []
+      if (values.tags?.includes('lateCompensation')) tags.push('LATE_COMPENSATION')
+      if (values.tags?.includes('freeShipping')) tags.push('FREE_SHIPPING')
+      if (values.tags?.includes('shippingInsurance')) tags.push('SHIPPING_INSURANCE')
+      if (values.tags?.includes('auction')) tags.push('AUCTION')
+
       const productData: Partial<ProductFormData> = {
         name: values.title.trim(),
         image: values.images.length > 0 ? values.images[0].response.url : product?.image,
         startingPrice: values.startPrice,
         fixedIncrement: values.fixedIncrement,
         maxPrice: values.maxPrice,
-        lateCompensation: values.tags?.includes('lateCompensation') || false,
-        freeShipping: values.tags?.includes('freeShipping') || false,
-        shippingInsurance: values.tags?.includes('shippingInsurance') || false,
-        auction: values.tags?.includes('auction') || false,
+        tags,
         durationMinutes: values.durationMinutes,
         extendSeconds: values.extendSeconds
       }
@@ -271,10 +277,10 @@ export const ProductEditPage: React.FC = () => {
   }
 
   const tags: string[] = []
-  if (product?.lateCompensation) tags.push('lateCompensation')
-  if (product?.freeShipping) tags.push('freeShipping')
-  if (product?.shippingInsurance) tags.push('shippingInsurance')
-  if (product?.auction) tags.push('auction')
+  if (product?.tags?.includes('LATE_COMPENSATION')) tags.push('lateCompensation')
+  if (product?.tags?.includes('FREE_SHIPPING')) tags.push('freeShipping')
+  if (product?.tags?.includes('SHIPPING_INSURANCE')) tags.push('shippingInsurance')
+  if (product?.tags?.includes('AUCTION')) tags.push('auction')
 
   return (
     <Form
