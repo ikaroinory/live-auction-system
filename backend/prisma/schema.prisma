@@ -24,6 +24,13 @@ enum ProductStatus {
   PUBLISHED
 }
 
+enum ProductTag {
+  LATE_COMPENSATION
+  FREE_SHIPPING
+  SHIPPING_INSURANCE
+  AUCTION
+}
+
 model User {
   id        String   @id @default(uuid())
   phone     String   @unique
@@ -159,10 +166,7 @@ model Product {
   startingPrice    Decimal              @db.Decimal(10, 2)
   fixedIncrement   Decimal              @db.Decimal(10, 2)
   maxPrice         Decimal?             @db.Decimal(10, 2)
-  lateCompensation Boolean              @default(false)
-  freeShipping     Boolean              @default(false)
-  shippingInsurance Boolean             @default(false)
-  auction          Boolean              @default(false)
+  tags             Json                 @default("[]")
   isExplaining     Boolean              @default(false)
   // 竞拍相关字段
   durationMinutes  Int                  @default(60) // 默认竞拍时长：60分钟（1小时）

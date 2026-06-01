@@ -4,7 +4,7 @@ import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@d
 import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
-import { ProductStatus, ProductAuctionStatus } from '@/types'
+import { ProductStatus, ProductAuctionStatus, ProductTag } from '@/types'
 
 interface AuctionCountdownProps {
   endTime?: string
@@ -79,13 +79,12 @@ interface ItemInformationProps {
   width?: Property.Width<string | number>
   name?: string
   image?: string
-  lateCompensation?: boolean
-  freeShipping?: boolean
-  shippingInsurance?: boolean
-  auction?: boolean
+  tags?: ProductTag[]
 }
 
 const ItemInformation: React.FC<ItemInformationProps> = (props) => {
+  const hasTag = (tag: ProductTag) => props.tags?.includes(tag)
+
   return (
     <Space style={{ width: props.width }} align="center">
       <Image width={64} height={64} src={props.image} />
@@ -96,22 +95,22 @@ const ItemInformation: React.FC<ItemInformationProps> = (props) => {
         >
           <Typography.Text>{props.name}</Typography.Text>
           <Space style={{ height: 20 }}>
-            {props.lateCompensation && (
+            {hasTag(ProductTag.LATE_COMPENSATION) && (
               <Tag size="small" color="white">
                 晚发即赔
               </Tag>
             )}
-            {props.freeShipping && (
+            {hasTag(ProductTag.FREE_SHIPPING) && (
               <Tag size="small" color="white">
                 包邮
               </Tag>
             )}
-            {props.shippingInsurance && (
+            {hasTag(ProductTag.SHIPPING_INSURANCE) && (
               <Tag size="small" color="white">
                 运费险
               </Tag>
             )}
-            {props.auction && (
+            {hasTag(ProductTag.AUCTION) && (
               <Tag size="small" color="red" type="solid">
                 竞拍
               </Tag>
@@ -346,10 +345,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             width={460}
             name={props.name}
             image={props.image}
-            lateCompensation={props.lateCompensation}
-            freeShipping={props.freeShipping}
-            shippingInsurance={props.shippingInsurance}
-            auction={props.auction}
+            tags={props.tags}
           />
           <ItemData
             startingPrice={props.startingPrice}

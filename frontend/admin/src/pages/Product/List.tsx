@@ -6,7 +6,7 @@ import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
 import { useSearchParams } from 'react-router'
-import { ProductStatus } from '@/types'
+import { ProductStatus, ProductTag } from '@/types'
 
 const { Title } = Typography
 
@@ -36,10 +36,10 @@ const ProductList: React.FC = () => {
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []
-    if (product.lateCompensation) tags.push(ProductTagType.LateCompensation)
-    if (product.freeShipping) tags.push(ProductTagType.FreeShipping)
-    if (product.shippingInsurance) tags.push(ProductTagType.ShippingInsurance)
-    if (product.auction) tags.push(ProductTagType.Auction)
+    if (product.tags?.includes(ProductTag.LATE_COMPENSATION)) tags.push(ProductTagType.LateCompensation)
+    if (product.tags?.includes(ProductTag.FREE_SHIPPING)) tags.push(ProductTagType.FreeShipping)
+    if (product.tags?.includes(ProductTag.SHIPPING_INSURANCE)) tags.push(ProductTagType.ShippingInsurance)
+    if (product.tags?.includes(ProductTag.AUCTION)) tags.push(ProductTagType.Auction)
     return {
       id: index + 1,
       productId: product.id,
@@ -52,10 +52,7 @@ const ProductList: React.FC = () => {
       currentPrice: product.currentBidPrice,
       bidCount: product.bidCount,
       status: product.status,
-      lateCompensation: product.lateCompensation,
-      freeShipping: product.freeShipping,
-      shippingInsurance: product.shippingInsurance,
-      auction: product.auction,
+      tags: product.tags,
       isExplaining: product.isExplaining,
       auctionStatus: product.auctionStatus,
       auctionStartTime: product.auctionStartTime,

@@ -2,6 +2,13 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../../lib/prisma'
 import { ProductStatus } from '@prisma/client'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
+
+export enum ProductTag {
+  LATE_COMPENSATION = 'LATE_COMPENSATION',
+  FREE_SHIPPING = 'FREE_SHIPPING',
+  SHIPPING_INSURANCE = 'SHIPPING_INSURANCE',
+  AUCTION = 'AUCTION'
+}
 import {
   scheduleAuctionExpire,
   cancelAuctionExpire,
@@ -90,10 +97,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
       startingPrice,
       fixedIncrement,
       maxPrice,
-      lateCompensation,
-      freeShipping,
-      shippingInsurance,
-      auction,
+      tags,
       durationMinutes,
       extendSeconds
     } = req.body
@@ -101,6 +105,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
     if (!name || !image) {
       return res.status(400).json({ message: '商品名称和图片不能为空' })
     }
+
+    const parsedTags = Array.isArray(tags)
+      ? tags.filter((tag: string) => Object.values(ProductTag).includes(tag as ProductTag))
+      : []
 
     const product = await prisma.product.create({
       data: {
@@ -110,10 +118,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         startingPrice: startingPrice || 0,
         fixedIncrement: fixedIncrement || 10,
         maxPrice: maxPrice || null,
-        lateCompensation: lateCompensation || false,
-        freeShipping: freeShipping || false,
-        shippingInsurance: shippingInsurance || false,
-        auction: auction || false,
+        tags: parsedTags,
         durationMinutes: durationMinutes || 60,
         extendSeconds: extendSeconds || 15,
         status: ProductStatus.PENDING
@@ -139,10 +144,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
       startingPrice,
       fixedIncrement,
       maxPrice,
-      lateCompensation,
-      freeShipping,
-      shippingInsurance,
-      auction,
+      tags,
       durationMinutes,
       extendSeconds
     } = req.body
@@ -159,24 +161,26 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
       return res.status(403).json({ message: '没有权限修改此商品' })
     }
 
+    let updateData: any = {
+      name: name || existingProduct.name,
+      image: image || existingProduct.image,
+      startingPrice: startingPrice || existingProduct.startingPrice,
+      fixedIncrement: fixedIncrement || existingProduct.fixedIncrement,
+      maxPrice: maxPrice !== undefined ? maxPrice : existingProduct.maxPrice,
+      durationMinutes:
+        durationMinutes !== undefined ? durationMinutes : existingProduct.durationMinutes,
+      extendSeconds: extendSeconds !== undefined ? extendSeconds : existingProduct.extendSeconds
+    }
+
+    if (tags !== undefined) {
+      updateData.tags = Array.isArray(tags)
+        ? tags.filter((tag: string) => Object.values(ProductTag).includes(tag as ProductTag))
+        : existingProduct.tags
+    }
+
     const product = await prisma.product.update({
       where: { id },
-      data: {
-        name: name || existingProduct.name,
-        image: image || existingProduct.image,
-        startingPrice: startingPrice || existingProduct.startingPrice,
-        fixedIncrement: fixedIncrement || existingProduct.fixedIncrement,
-        maxPrice: maxPrice !== undefined ? maxPrice : existingProduct.maxPrice,
-        lateCompensation:
-          lateCompensation !== undefined ? lateCompensation : existingProduct.lateCompensation,
-        freeShipping: freeShipping !== undefined ? freeShipping : existingProduct.freeShipping,
-        shippingInsurance:
-          shippingInsurance !== undefined ? shippingInsurance : existingProduct.shippingInsurance,
-        auction: auction !== undefined ? auction : existingProduct.auction,
-        durationMinutes:
-          durationMinutes !== undefined ? durationMinutes : existingProduct.durationMinutes,
-        extendSeconds: extendSeconds !== undefined ? extendSeconds : existingProduct.extendSeconds
-      }
+      data: updateData
     })
 
     res.json(product)

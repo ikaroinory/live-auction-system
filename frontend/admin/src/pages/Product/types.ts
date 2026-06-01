@@ -1,4 +1,4 @@
-import { ProductAuctionStatus, ProductStatus } from '@/types'
+import { ProductAuctionStatus, ProductStatus, ProductTag } from '@/types'
 
 export enum ProductTagType {
   LateCompensation,
@@ -19,10 +19,7 @@ export type ProductItem = {
   currentPrice?: number
   bidCount?: number
   status?: ProductStatus
-  lateCompensation?: boolean
-  freeShipping?: boolean
-  shippingInsurance?: boolean
-  auction?: boolean
+  tags?: ProductTag[]
   isExplaining?: boolean
   auctionStatus?: ProductAuctionStatus
   auctionStartTime?: string

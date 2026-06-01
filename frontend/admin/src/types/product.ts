@@ -9,6 +9,13 @@ export enum ProductAuctionStatus {
   ENDED = 'ENDED'
 }
 
+export enum ProductTag {
+  LATE_COMPENSATION = 'LATE_COMPENSATION',
+  FREE_SHIPPING = 'FREE_SHIPPING',
+  SHIPPING_INSURANCE = 'SHIPPING_INSURANCE',
+  AUCTION = 'AUCTION'
+}
+
 export interface Product {
   id: string
   creatorId: string
@@ -17,10 +24,7 @@ export interface Product {
   startingPrice: number
   fixedIncrement: number
   maxPrice?: number
-  lateCompensation: boolean
-  freeShipping: boolean
-  shippingInsurance: boolean
-  auction: boolean
+  tags: ProductTag[]
   isExplaining: boolean
   durationMinutes: number
   extendSeconds: number
@@ -40,10 +44,7 @@ export interface ProductFormData {
   startingPrice: number
   fixedIncrement?: number
   maxPrice?: number
-  lateCompensation?: boolean
-  freeShipping?: boolean
-  shippingInsurance?: boolean
-  auction?: boolean
+  tags?: ProductTag[]
   durationMinutes?: number
   extendSeconds?: number
 }
