@@ -1,12 +1,12 @@
 import { useSWRConfig } from 'swr'
 import { useCustomSWR } from './useSWRConfig'
 import { productService } from '@/services'
-import type { Product, ProductFormData } from '@/types'
+import type { Product, ProductFormData, ProductStatus } from '@/types'
 
 interface ProductListParams {
   page?: number
   pageSize?: number
-  status?: number
+  status?: ProductStatus
 }
 
 interface ProductListResponse {
@@ -53,7 +53,7 @@ export function useProductMutations() {
     mutate((key) => typeof key === 'string' && key.startsWith('/products'))
   }
 
-  const updateProductStatus = async (id: string, status: number) => {
+  const updateProductStatus = async (id: string, status: ProductStatus) => {
     await productService.updateStatus(id, status)
     mutate(`/products/${id}`)
     mutate((key) => typeof key === 'string' && key.startsWith('/products'))

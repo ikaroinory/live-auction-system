@@ -1,11 +1,11 @@
 import api from './api'
-import type { Product, ProductFormData } from '@/types'
+import type { Product, ProductFormData, ProductStatus } from '@/types'
 
 export const productService = {
   getList: async (params?: {
     page?: number
     pageSize?: number
-    status?: number
+    status?: ProductStatus
   }): Promise<{ list: Product[]; total: number }> => {
     const response = await api.get('/products', { params })
     return response.data
@@ -30,7 +30,7 @@ export const productService = {
     await api.delete(`/products/${id}`)
   },
 
-  updateStatus: async (id: string, status: number): Promise<void> => {
+  updateStatus: async (id: string, status: ProductStatus): Promise<void> => {
     await api.patch(`/products/${id}/status`, { status })
   },
 

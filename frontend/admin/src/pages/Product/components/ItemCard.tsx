@@ -222,7 +222,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     if (!props.productId) return
 
     try {
-      await updateProductStatus(props.productId, ProductStatus.Published)
+      await updateProductStatus(props.productId, ProductStatus.PUBLISHED)
       Toast.success('商品上架成功')
       props.refresh?.()
     } catch {
@@ -234,7 +234,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     if (!props.productId) return
 
     try {
-      await updateProductStatus(props.productId, ProductStatus.Unpublished)
+      await updateProductStatus(props.productId, ProductStatus.DRAFT)
       Toast.success('商品下架成功')
       props.refresh?.()
     } catch {
@@ -261,7 +261,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
   return (
     <Space>
-      {props.status === ProductStatus.Unpublished && (
+      {props.status === ProductStatus.DRAFT && (
         <>
           <Button theme="outline" type="danger" onClick={handleRemove}>
             删除
@@ -271,12 +271,12 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           </Button>
         </>
       )}
-      {props.status === ProductStatus.Unpublished && (
+      {props.status === ProductStatus.DRAFT && (
         <Button theme="outline" type="tertiary" onClick={handlePublish}>
           上架
         </Button>
       )}
-      {props.status === ProductStatus.Published && (
+      {props.status === ProductStatus.PUBLISHED && (
         <Button
           theme="outline"
           type="tertiary"
@@ -286,7 +286,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
           下架
         </Button>
       )}
-      {props.status === ProductStatus.Published && (
+      {props.status === ProductStatus.PUBLISHED && (
         <>
           {props.auctionStatus !== ProductAuctionStatus.IN_PROGRESS && (
             <Button
@@ -349,7 +349,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
             bidCount={props.bidCount}
           />
         </div>
-        {props.status === ProductStatus.Published && (
+        {props.status === ProductStatus.PUBLISHED && (
           <Space>
             {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
             {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && (

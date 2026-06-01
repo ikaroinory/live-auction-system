@@ -19,6 +19,11 @@ enum ProductAuctionStatus {
   ENDED
 }
 
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+}
+
 model User {
   id        String   @id @default(uuid())
   phone     String   @unique
@@ -167,7 +172,7 @@ model Product {
   auctionEndTime   DateTime?
   currentBidPrice  Decimal?             @db.Decimal(10, 2)
   bidCount         Int                  @default(0)
-  status           Int                  @default(0) // 0: 待上架 1: 已上架 2: 已下架
+  status           ProductStatus        @default(DRAFT) // DRAFT: 待上架 PUBLISHED: 已上架
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
 

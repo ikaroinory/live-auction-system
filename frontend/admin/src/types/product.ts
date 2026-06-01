@@ -1,6 +1,6 @@
 export enum ProductStatus {
-  Unpublished = 0,
-  Published = 1
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED'
 }
 
 export enum ProductAuctionStatus {
@@ -22,7 +22,6 @@ export interface Product {
   shippingInsurance: boolean
   auction: boolean
   isExplaining: boolean
-  // 竞拍相关字段
   durationMinutes: number
   extendSeconds: number
   auctionStatus: ProductAuctionStatus

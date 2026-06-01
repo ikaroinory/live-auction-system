@@ -6,6 +6,7 @@ import { ProductItem, ProductTagType } from './types'
 import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
 import { useSearchParams } from 'react-router'
+import { ProductStatus } from '@/types'
 
 const { Title } = Typography
 
@@ -15,9 +16,13 @@ const ProductList: React.FC = () => {
 
   const activeTab = searchParams.get('tab') || 'live'
 
-  const { data: liveProductsData, isLoading: liveIsLoading, error: liveError } = useProductList({ status: 1 })
+  const { data: liveProductsData, isLoading: liveIsLoading, error: liveError } = useProductList({
+    status: ProductStatus.PUBLISHED
+  })
 
-  const { data: pendingProductsData, isLoading: pendingIsLoading, error: pendingError } = useProductList({ status: 0 })
+  const { data: pendingProductsData, isLoading: pendingIsLoading, error: pendingError } = useProductList({
+    status: ProductStatus.DRAFT
+  })
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []

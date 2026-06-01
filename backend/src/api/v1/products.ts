@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { prisma } from '../../lib/prisma'
+import { prisma, ProductStatus } from '../../lib/prisma'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
 import {
   scheduleAuctionExpire,
@@ -16,7 +16,7 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
     const pageSizeNum = parseInt(pageSize as string)
     const skip = (pageNum - 1) * pageSizeNum
 
-    const where = status !== undefined ? { status: parseInt(status as string) } : {}
+    const where = status !== undefined ? { status: status as ProductStatus } : {}
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -115,7 +115,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
         auction: auction || false,
         durationMinutes: durationMinutes || 60,
         extendSeconds: extendSeconds || 15,
-        status: 0
+        status: ProductStatus.DRAFT
       }
     })
 
@@ -226,7 +226,7 @@ router.patch(
       const { id } = req.params
       const { status } = req.body
 
-      if (status === undefined || ![0, 1].includes(status)) {
+      if (status === undefined || ![ProductStatus.DRAFT, ProductStatus.PUBLISHED].includes(status)) {
         return res.status(400).json({ message: '无效的状态值' })
       }
 
