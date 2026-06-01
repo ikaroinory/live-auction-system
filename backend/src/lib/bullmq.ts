@@ -121,7 +121,7 @@ export async function addAuctionExpireJob(
   data: AuctionExpireJobData,
   delay: number
 ): Promise<Job<AuctionExpireJobData>> {
-  const jobId = `auction:${data.productId}`
+  const jobId = `auction_${data.productId}`
   
   try {
     const existingJob = await auctionExpireQueue.getJob(jobId)
@@ -154,7 +154,7 @@ export async function addAuctionExpireJob(
 }
 
 export async function removeAuctionExpireJob(productId: string): Promise<void> {
-  const jobId = `auction:${productId}`
+  const jobId = `auction_${productId}`
   try {
     const job = await auctionExpireQueue.getJob(jobId)
     if (job) {
@@ -168,7 +168,7 @@ export async function removeAuctionExpireJob(productId: string): Promise<void> {
 }
 
 export async function getJobStatus(productId: string): Promise<string | null> {
-  const jobId = `auction:${productId}`
+  const jobId = `auction_${productId}`
   try {
     const job = await auctionExpireQueue.getJob(jobId)
     if (!job) {
