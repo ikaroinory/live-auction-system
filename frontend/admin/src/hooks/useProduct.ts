@@ -23,7 +23,12 @@ export function useProductList(params?: ProductListParams) {
       ).toString()}`
     : '/products'
 
-  return useCustomSWR<ProductListResponse>(key)
+  const swrResult = useCustomSWR<ProductListResponse>(key)
+  
+  return {
+    ...swrResult,
+    refresh: () => swrResult.mutate()
+  }
 }
 
 export function useProduct(id?: string) {

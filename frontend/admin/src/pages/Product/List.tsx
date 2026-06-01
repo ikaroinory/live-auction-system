@@ -16,11 +16,21 @@ const ProductList: React.FC = () => {
 
   const activeTab = searchParams.get('tab') || 'live'
 
-  const { data: liveProductsData, isLoading: liveIsLoading, error: liveError } = useProductList({
+  const { 
+    data: liveProductsData, 
+    isLoading: liveIsLoading, 
+    error: liveError,
+    refresh: refreshLiveProducts
+  } = useProductList({
     status: ProductStatus.PUBLISHED
   })
 
-  const { data: pendingProductsData, isLoading: pendingIsLoading, error: pendingError } = useProductList({
+  const { 
+    data: pendingProductsData, 
+    isLoading: pendingIsLoading, 
+    error: pendingError,
+    refresh: refreshPendingProducts
+  } = useProductList({
     status: ProductStatus.PENDING
   })
 
@@ -96,6 +106,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredLiveProducts}
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
+            onStatusChange={refreshLiveProducts}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -105,6 +116,7 @@ const ProductList: React.FC = () => {
             dataSource={filteredPendingProducts}
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
+            onStatusChange={refreshPendingProducts}
           />
         </Tabs.TabPane>
       </Tabs>

@@ -17,7 +17,7 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
     if (!endTime) return 0
     const end = new Date(endTime).getTime()
     const now = Date.now()
-    return Math.max(0, Math.floor((end - now) / 1000))
+    return Math.max(0, Math.floor((end - now) / 1000)
   })
 
   useEffect(() => {
@@ -25,16 +25,21 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
       return
     }
 
+    let refreshTimer: NodeJS.Timeout
     const interval = setInterval(() => {
       const end = new Date(endTime).getTime()
       const now = Date.now()
-      const remaining = Math.max(0, Math.floor((end - now) / 1000))
+      const remaining = Math.max(0, Math.floor((end - now) / 1000)
       setRemainingSeconds(remaining)
 
       if (remaining <= 0) {
         clearInterval(interval)
         if (refresh) {
+          // 倒计时结束后立即刷新，然后再延迟一次确保数据同步
           refresh()
+          refreshTimer = setTimeout(() => {
+            refresh()
+          }, 1000)
         }
         if (onComplete) {
           onComplete()
@@ -42,7 +47,12 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
       }
     }, 1000)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (refreshTimer) {
+        clearTimeout(refreshTimer)
+      }
+    }
   }, [endTime, onComplete, refresh])
 
   const formatTime = (seconds: number): string => {
