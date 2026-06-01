@@ -51,8 +51,7 @@ export async function settleProductAuction(productId: string): Promise<ProductSe
     where: { id: productId },
     data: {
       auctionStatus: 'ENDED',
-      auctionEndTime: now,
-      status: 2
+      auctionEndTime: now
     }
   })
 
