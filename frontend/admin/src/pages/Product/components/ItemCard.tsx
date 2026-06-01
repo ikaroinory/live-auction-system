@@ -17,7 +17,7 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
     if (!endTime) return 0
     const end = new Date(endTime).getTime()
     const now = Date.now()
-    return Math.max(0, Math.floor((end - now) / 1000)
+    return Math.max(0, Math.floor((end - now) / 1000))
   })
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete
     const interval = setInterval(() => {
       const end = new Date(endTime).getTime()
       const now = Date.now()
-      const remaining = Math.max(0, Math.floor((end - now) / 1000)
+      const remaining = Math.max(0, Math.floor((end - now) / 1000))
       setRemainingSeconds(remaining)
 
       if (remaining <= 0) {
