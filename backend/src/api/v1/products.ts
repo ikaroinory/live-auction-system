@@ -1,72 +1,13 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../../lib/prisma'
-import { redisClient, REDIS_KEYS } from '../../lib/redis'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
+import {
+  scheduleAuctionExpire,
+  cancelAuctionExpire,
+  settleProductAuction
+} from '../../services/auctionExpire.service'
 
 const router = Router()
-
-async function setAuctionProductInfo(
-  productId: string,
-  info: {
-    name: string
-    currentPrice: number
-    bidCount: number
-    startPrice: number
-    minIncrement: number
-    endTime: Date
-    sellerId: string
-  },
-  expireSeconds: number
-): Promise<void> {
-  try {
-    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
-    const productInfo = {
-      ...info,
-      productId,
-      createdAt: new Date().toISOString()
-    }
-    await redisClient.hset(key, 'info', JSON.stringify(productInfo))
-    await redisClient.expire(key, expireSeconds)
-    console.log(`✅ 竞拍商品信息已写入Redis: ${productId}`)
-  } catch (error) {
-    console.error(`❌ 写入竞拍商品信息失败: ${productId}`, error)
-  }
-}
-
-async function removeAuctionProductInfo(productId: string): Promise<void> {
-  try {
-    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
-    await redisClient.del(key)
-    console.log(`✅ 竞拍商品信息已从Redis删除: ${productId}`)
-  } catch (error) {
-    console.error(`❌ 删除竞拍商品信息失败: ${productId}`, error)
-  }
-}
-
-async function updateAuctionBidInfo(
-  productId: string,
-  currentPrice: number,
-  bidCount: number
-): Promise<void> {
-  try {
-    const key = REDIS_KEYS.AUCTION_EXPIRE(productId)
-    const exists = await redisClient.exists(key)
-    if (exists) {
-      const infoStr = await redisClient.hget(key, 'info')
-      if (infoStr) {
-        const info = JSON.parse(infoStr)
-        info.currentPrice = currentPrice
-        info.bidCount = bidCount
-        info.lastBidAt = new Date().toISOString()
-        await redisClient.hset(key, 'info', JSON.stringify(info))
-      }
-    }
-  } catch (error) {
-    console.error(`❌ 更新竞拍出价信息失败: ${productId}`, error)
-  }
-}
-
-export { setAuctionProductInfo, removeAuctionProductInfo, updateAuctionBidInfo }
 
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
@@ -382,6 +323,21 @@ router.patch(
       const now = new Date()
       const endTime = new Date(now.getTime() + existingProduct.durationMinutes * 60 * 1000)
 
+      const auction = await prisma.auction.create({
+        data: {
+          sellerId: req.user.id,
+          productId: id,
+          title: existingProduct.name,
+          startPrice: existingProduct.startingPrice,
+          minIncrement: existingProduct.fixedIncrement,
+          maxPrice: existingProduct.maxPrice || null,
+          durationSeconds: existingProduct.durationMinutes * 60,
+          autoExtendSeconds: existingProduct.extendSeconds,
+          status: 1,
+          startTime: now
+        }
+      })
+
       const product = await prisma.product.update({
         where: { id },
         data: {
@@ -392,21 +348,9 @@ router.patch(
         }
       })
 
-      await setAuctionProductInfo(
-        id,
-        {
-          name: existingProduct.name,
-          currentPrice: Number(existingProduct.startingPrice),
-          bidCount: 0,
-          startPrice: Number(existingProduct.startingPrice),
-          minIncrement: Number(existingProduct.fixedIncrement),
-          endTime,
-          sellerId: existingProduct.creatorId
-        },
-        existingProduct.durationMinutes * 60
-      )
+      await scheduleAuctionExpire(id, auction.id, endTime)
 
-      res.json(product)
+      res.json({ product, auction })
     } catch (error) {
       next(error)
     }
@@ -440,15 +384,20 @@ router.patch(
         return res.status(400).json({ message: '竞拍未在进行中' })
       }
 
-      const product = await prisma.product.update({
+      await cancelAuctionExpire(id)
+      const result = await settleProductAuction(id)
+
+      const product = await prisma.product.findUnique({
         where: { id },
-        data: {
-          auctionStatus: 'ENDED',
-          auctionEndTime: new Date()
+        include: {
+          auctions: {
+            orderBy: { createdAt: 'desc' },
+            take: 1
+          }
         }
       })
 
-      res.json(product)
+      res.json({ product, result })
     } catch (error) {
       next(error)
     }

@@ -1,7 +1,11 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../../lib/prisma'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
-import { setAuctionExpire, extendAuctionExpire } from '../../services/auctionExpire.service'
+import {
+  scheduleAuctionExpire,
+  cancelAuctionExpire,
+  settleProductAuction
+} from '../../services/auctionExpire.service'
 
 const router = Router()
 
@@ -125,33 +129,6 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
   }
 })
 
-/**
- * @swagger
- * /api/v1/auctions/{id}/start:
- *   post:
- *     tags: [竞拍]
- *     summary: 开始竞拍
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 竞拍ID
- *     responses:
- *       200:
- *         description: 开始成功
- *       401:
- *         description: 未认证
- *       403:
- *         description: 无权操作
- *       404:
- *         description: 竞拍不存在
- *       400:
- *         description: 竞拍状态不允许
- */
 router.post(
   '/:id/start',
   authMiddleware,
@@ -180,6 +157,7 @@ router.post(
       }
 
       const now = new Date()
+      const endTime = new Date(now.getTime() + auction.durationSeconds * 1000)
 
       const updatedAuction = await prisma.auction.update({
         where: { id },
@@ -189,7 +167,9 @@ router.post(
         }
       })
 
-      await setAuctionExpire(id, auction.durationSeconds)
+      if (auction.productId) {
+        await scheduleAuctionExpire(auction.productId, id, endTime)
+      }
 
       res.json({
         message: '竞拍已开始',
@@ -201,43 +181,6 @@ router.post(
   }
 )
 
-/**
- * @swagger
- * /api/v1/auctions/{id}/bid:
- *   post:
- *     tags: [竞拍]
- *     summary: 出价
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 竞拍ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - price
- *             properties:
- *               price:
- *                 type: number
- *                 description: 出价金额
- *     responses:
- *       200:
- *         description: 出价成功
- *       401:
- *         description: 未认证
- *       404:
- *         description: 竞拍不存在
- *       400:
- *         description: 出价无效
- */
 router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -296,7 +239,10 @@ router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, 
       }
     })
 
-    await extendAuctionExpire(id, auction.autoExtendSeconds)
+    if (auction.productId && auction.startTime) {
+      const newEndTime = new Date(auction.startTime.getTime() + auction.durationSeconds * 1000 + auction.autoExtendSeconds * 1000)
+      await scheduleAuctionExpire(auction.productId, id, newEndTime)
+    }
 
     res.json({
       message: '出价成功',
@@ -307,31 +253,6 @@ router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, 
   }
 })
 
-/**
- * @swagger
- * /api/v1/auctions/{id}/end:
- *   post:
- *     tags: [竞拍]
- *     summary: 手动结束竞拍
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 竞拍ID
- *     responses:
- *       200:
- *         description: 结束成功
- *       401:
- *         description: 未认证
- *       403:
- *         description: 无权操作
- *       404:
- *         description: 竞拍不存在
- */
 router.post('/:id/end', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -362,37 +283,46 @@ router.post('/:id/end', authMiddleware, async (req: AuthRequest, res: Response, 
       return res.status(400).json({ message: '竞拍已结束' })
     }
 
-    let finalPrice = auction.startPrice
-    let winnerId: string | null = null
+    if (auction.productId) {
+      await cancelAuctionExpire(auction.productId)
+      await settleProductAuction(auction.productId)
+    } else {
+      let finalPrice = auction.startPrice
+      let winnerId: string | null = null
 
-    if (auction.bids.length > 0) {
-      finalPrice = auction.bids[0].price
-      winnerId = auction.bids[0].userId
-    }
-
-    const now = new Date()
-
-    const updatedAuction = await prisma.auction.update({
-      where: { id },
-      data: {
-        status: 2,
-        endTime: now,
-        finalPrice,
-        winnerId
+      if (auction.bids.length > 0) {
+        finalPrice = auction.bids[0].price
+        winnerId = auction.bids[0].userId
       }
-    })
 
-    if (winnerId) {
-      await prisma.order.create({
+      const now = new Date()
+
+      const updatedAuction = await prisma.auction.update({
+        where: { id },
         data: {
-          auctionId: id,
-          userId: winnerId,
-          sellerId: auction.sellerId,
+          status: 2,
+          endTime: now,
           finalPrice,
-          status: 0
+          winnerId
         }
       })
+
+      if (winnerId) {
+        await prisma.order.create({
+          data: {
+            auctionId: id,
+            userId: winnerId,
+            sellerId: auction.sellerId,
+            finalPrice,
+            status: 0
+          }
+        })
+      }
     }
+
+    const updatedAuction = await prisma.auction.findUnique({
+      where: { id }
+    })
 
     res.json({
       message: '竞拍已结束',
