@@ -9,6 +9,22 @@ import {
 
 const router = Router()
 
+/**
+ * @swagger
+ * /api/v1/auctions:
+ *   get:
+ *     tags: [竞拍]
+ *     summary: 获取竞拍列表
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: number
+ *         description: 竞拍状态 (0:待开始 1:进行中 2:已结束)
+ *     responses:
+ *       200:
+ *         description: 成功获取竞拍列表
+ */
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
     const { status } = req.query
@@ -44,6 +60,25 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}:
+ *   get:
+ *     tags: [竞拍]
+ *     summary: 获取竞拍详情
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 竞拍ID
+ *     responses:
+ *       200:
+ *         description: 成功获取竞拍详情
+ *       404:
+ *         description: 竞拍不存在
+ */
 router.get('/:id', async (req: Request, res: Response, next: Function) => {
   try {
     const { id } = req.params
@@ -91,6 +126,58 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auctions:
+ *   post:
+ *     tags: [竞拍]
+ *     summary: 创建竞拍
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - startPrice
+ *               - minIncrement
+ *               - durationSeconds
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: 竞拍标题
+ *               description:
+ *                 type: string
+ *                 description: 竞拍描述
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 图片URL列表
+ *               startPrice:
+ *                 type: number
+ *                 description: 起拍价
+ *               minIncrement:
+ *                 type: number
+ *                 description: 最小加价幅度
+ *               maxPrice:
+ *                 type: number
+ *                 description: 最高限价
+ *               durationSeconds:
+ *                 type: number
+ *                 description: 竞拍时长（秒）
+ *               autoExtendSeconds:
+ *                 type: number
+ *                 description: 自动延长时间（秒）
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *       401:
+ *         description: 未认证
+ */
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -129,6 +216,33 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}/start:
+ *   post:
+ *     tags: [竞拍]
+ *     summary: 开始竞拍
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 竞拍ID
+ *     responses:
+ *       200:
+ *         description: 竞拍已开始
+ *       400:
+ *         description: 竞拍状态不允许
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权操作
+ *       404:
+ *         description: 竞拍不存在
+ */
 router.post(
   '/:id/start',
   authMiddleware,
@@ -181,6 +295,43 @@ router.post(
   }
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}/bid:
+ *   post:
+ *     tags: [竞拍]
+ *     summary: 竞拍出价
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 竞拍ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - price
+ *             properties:
+ *               price:
+ *                 type: number
+ *                 description: 出价金额
+ *     responses:
+ *       200:
+ *         description: 出价成功
+ *       400:
+ *         description: 出价低于最低加价或超过最高限价
+ *       401:
+ *         description: 未认证
+ *       404:
+ *         description: 竞拍不存在
+ */
 router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -253,6 +404,33 @@ router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, 
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}/end:
+ *   post:
+ *     tags: [竞拍]
+ *     summary: 结束竞拍
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 竞拍ID
+ *     responses:
+ *       200:
+ *         description: 竞拍已结束
+ *       400:
+ *         description: 竞拍已结束
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权操作
+ *       404:
+ *         description: 竞拍不存在
+ */
 router.post('/:id/end', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {

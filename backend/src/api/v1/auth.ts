@@ -209,6 +209,34 @@ router.post('/sms-login', async (req: Request, res: Response, next: Function) =>
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auth/avatar:
+ *   put:
+ *     tags: [认证]
+ *     summary: 更新用户头像
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 description: 头像URL
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -248,6 +276,45 @@ router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, ne
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/auth/profile:
+ *   put:
+ *     tags: [认证]
+ *     summary: 更新用户资料
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *                 description: 昵称
+ *               bio:
+ *                 type: string
+ *                 description: 个人简介
+ *               gender:
+ *                 type: number
+ *                 description: 性别 (0:未知 1:男 2:女)
+ *               birthday:
+ *                 type: string
+ *                 format: date
+ *                 description: 生日
+ *               location:
+ *                 type: string
+ *                 description: 所在地
+ *               douyinId:
+ *                 type: string
+ *                 description: 抖音ID
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       401:
+ *         description: 未认证
+ */
 router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {

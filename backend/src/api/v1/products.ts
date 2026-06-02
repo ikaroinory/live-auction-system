@@ -17,6 +17,32 @@ import {
 
 const router = Router()
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   get:
+ *     tags: [商品]
+ *     summary: 获取商品列表
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: 页码，默认1
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: string
+ *         description: 每页数量，默认10
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: 商品状态 (PENDING:待审核 PUBLISHED:已发布 SOLD:已售出)
+ *     responses:
+ *       200:
+ *         description: 成功获取商品列表
+ */
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
     const { page = '1', pageSize = '10', status } = req.query
@@ -54,6 +80,25 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   get:
+ *     tags: [商品]
+ *     summary: 获取商品详情
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 成功获取商品详情
+ *       404:
+ *         description: 商品不存在
+ */
 router.get('/:id', async (req: Request, res: Response, next: Function) => {
   try {
     const { id } = req.params
@@ -85,6 +130,58 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   post:
+ *     tags: [商品]
+ *     summary: 创建商品
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - image
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 商品名称
+ *               image:
+ *                 type: string
+ *                 description: 商品图片URL
+ *               startingPrice:
+ *                 type: number
+ *                 description: 起拍价
+ *               fixedIncrement:
+ *                 type: number
+ *                 description: 固定加价幅度
+ *               maxPrice:
+ *                 type: number
+ *                 description: 最高限价
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 标签列表 (LATE_COMPENSATION, FREE_SHIPPING, SHIPPING_INSURANCE, AUCTION)
+ *               durationMinutes:
+ *                 type: number
+ *                 description: 竞拍时长（分钟）
+ *               extendSeconds:
+ *                 type: number
+ *                 description: 自动延长时间（秒）
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -131,6 +228,63 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: F
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   put:
+ *     tags: [商品]
+ *     summary: 更新商品信息
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 商品名称
+ *               image:
+ *                 type: string
+ *                 description: 商品图片URL
+ *               startingPrice:
+ *                 type: number
+ *                 description: 起拍价
+ *               fixedIncrement:
+ *                 type: number
+ *                 description: 固定加价幅度
+ *               maxPrice:
+ *                 type: number
+ *                 description: 最高限价
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 标签列表
+ *               durationMinutes:
+ *                 type: number
+ *                 description: 竞拍时长（分钟）
+ *               extendSeconds:
+ *                 type: number
+ *                 description: 自动延长时间（秒）
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -189,6 +343,31 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   delete:
+ *     tags: [商品]
+ *     summary: 删除商品
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 删除成功
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
   try {
     if (!req.user) {
@@ -219,6 +398,45 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response, ne
   }
 })
 
+/**
+ * @swagger
+ * /api/v1/products/{id}/status:
+ *   patch:
+ *     tags: [商品]
+ *     summary: 更新商品状态
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 description: 商品状态 (PENDING, PUBLISHED)
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       400:
+ *         description: 无效的状态值
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.patch(
   '/:id/status',
   authMiddleware,
@@ -259,6 +477,31 @@ router.patch(
   }
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}/explaining:
+ *   patch:
+ *     tags: [商品]
+ *     summary: 切换商品讲解状态
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.patch(
   '/:id/explaining',
   authMiddleware,
@@ -294,6 +537,33 @@ router.patch(
   }
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}/start-auction:
+ *   patch:
+ *     tags: [商品]
+ *     summary: 开始商品竞拍
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 竞拍开始成功
+ *       400:
+ *         description: 竞拍已在进行中或已结束
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.patch(
   '/:id/start-auction',
   authMiddleware,
@@ -362,6 +632,33 @@ router.patch(
   }
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}/end-auction:
+ *   patch:
+ *     tags: [商品]
+ *     summary: 结束商品竞拍
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 竞拍结束成功
+ *       400:
+ *         description: 竞拍未在进行中
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.patch(
   '/:id/end-auction',
   authMiddleware,
