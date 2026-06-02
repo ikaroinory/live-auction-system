@@ -8,6 +8,11 @@ import './assets/styles/index.css'
 import { RouterProvider } from 'react-router'
 import { routers } from './router'
 
+import duration from 'dayjs/plugin/duration'
+import dayjs from 'dayjs'
+
+dayjs.extend(duration)
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider timeZone="GMT+08:00" locale={zhCN}>

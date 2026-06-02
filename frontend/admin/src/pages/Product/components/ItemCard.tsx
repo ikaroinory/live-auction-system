@@ -5,73 +5,63 @@ import { Property } from 'csstype'
 import { useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
 import { ProductStatus, ProductAuctionStatus, ProductTag } from '@/types'
+import dayjs from 'dayjs'
 
-interface AuctionCountdownProps {
-  endTime?: string
-  onComplete?: () => void
-  refresh?: () => void
+interface AuctionStatusTagProps {
+  status?: ProductAuctionStatus
+  auctionEndTime?: string
 }
 
-const AuctionCountdown: React.FC<AuctionCountdownProps> = ({ endTime, onComplete, refresh }) => {
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(() => {
-    if (!endTime) return 0
-    const end = new Date(endTime).getTime()
-    const now = Date.now()
-    return Math.max(0, Math.floor((end - now) / 1000))
-  })
+const AuctionStatusTag: React.FC<AuctionStatusTagProps> = ({ status, auctionEndTime }) => {
+  const getRemainingSeconds = () => Math.max(0, dayjs(auctionEndTime).diff(dayjs(), 'second'))
+
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(getRemainingSeconds)
 
   useEffect(() => {
-    if (!endTime) {
-      return
-    }
-
-    let refreshTimer: NodeJS.Timeout
     const interval = setInterval(() => {
-      const end = new Date(endTime).getTime()
-      const now = Date.now()
-      const remaining = Math.max(0, Math.floor((end - now) / 1000))
+      const remaining = getRemainingSeconds()
       setRemainingSeconds(remaining)
 
       if (remaining <= 0) {
         clearInterval(interval)
-        if (refresh) {
-          // 倒计时结束后立即刷新，然后再延迟一次确保数据同步
-          refresh()
-          refreshTimer = setTimeout(() => {
-            refresh()
-          }, 1000)
-        }
-        if (onComplete) {
-          onComplete()
-        }
       }
     }, 1000)
 
     return () => {
       clearInterval(interval)
-      if (refreshTimer) {
-        clearTimeout(refreshTimer)
-      }
     }
-  }, [endTime, onComplete, refresh])
-
-  const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-  }
-
-  if (!endTime || remainingSeconds <= 0) {
-    return null
-  }
+  }, [auctionEndTime])
 
   return (
-    <div style={{ width: 60, display: 'flex', justifyContent: 'center' }}>
-      <Typography.Text type="danger" size="small">
-        {formatTime(remainingSeconds)}
-      </Typography.Text>
-    </div>
+    <>
+      {status === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
+      {status === ProductAuctionStatus.IN_PROGRESS && remainingSeconds > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            border: '1px solid rgba(var(--semi-red-5), 0.15)',
+            borderRadius: 'var(--semi-border-radius-small)'
+          }}
+        >
+          <Tag
+            style={{ color: 'var(--semi-color-danger)', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+            color="red"
+          >
+            进行中
+          </Tag>
+          {auctionEndTime && (
+            <div style={{ width: 60, display: 'flex', justifyContent: 'center' }}>
+              <Typography.Text type="danger" size="small">
+                {dayjs.duration(remainingSeconds, 'seconds').format('HH:mm:ss')}
+              </Typography.Text>
+            </div>
+          )}
+        </div>
+      )}
+      {(status === ProductAuctionStatus.ENDED ||
+        (status === ProductAuctionStatus.IN_PROGRESS && remainingSeconds <= 0)) && <Tag color="green">已结束</Tag>}
+    </>
   )
 }
 
@@ -341,12 +331,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
       <Typography.Text type="quaternary">{props.id}</Typography.Text>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
         <div style={{ width: '100%', display: 'flex' }}>
-          <ItemInformation
-            width={460}
-            name={props.name}
-            image={props.image}
-            tags={props.tags}
-          />
+          <ItemInformation width={460} name={props.name} image={props.image} tags={props.tags} />
           <ItemData
             startingPrice={props.startingPrice}
             fixedIncrement={props.fixedIncrement}
@@ -356,28 +341,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           />
         </div>
         {props.status === ProductStatus.PUBLISHED && (
-          <Space>
-            {props.auctionStatus === ProductAuctionStatus.NOT_STARTED && <Tag color="yellow">未开始</Tag>}
-            {props.auctionStatus === ProductAuctionStatus.IN_PROGRESS && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: '1px solid rgba(var(--semi-red-5), 0.15)',
-                  borderRadius: 'var(--semi-border-radius-small)'
-                }}
-              >
-                <Tag
-                  style={{ color: 'var(--semi-color-danger)', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                  color="red"
-                >
-                  进行中
-                </Tag>
-                <AuctionCountdown endTime={props.auctionEndTime} refresh={props.refresh} />
-              </div>
-            )}
-            {props.auctionStatus === ProductAuctionStatus.ENDED && <Tag color="green">已结束</Tag>}
-          </Space>
+          <AuctionStatusTag status={props.auctionStatus} auctionEndTime={props.auctionEndTime} />
         )}
         <ButtonGroup
           productId={props.productId}
