@@ -6,6 +6,7 @@ export const productService = {
     page?: number
     pageSize?: number
     status?: ProductStatus
+    creatorId?: string
   }): Promise<{ list: Product[]; total: number }> => {
     const response = await api.get('/products', { params })
     return response.data

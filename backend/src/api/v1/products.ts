@@ -23,30 +23,57 @@ const router = Router()
  *   get:
  *     tags: [商品]
  *     summary: 获取商品列表
+ *     description: 支持分页和筛选查询，可以按商品状态和创建人ID筛选
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
- *           type: string
- *         description: 页码，默认1
+ *           type: integer
+ *           default: 1
+ *         description: 页码，从1开始
  *       - in: query
  *         name: pageSize
  *         schema:
- *           type: string
- *         description: 每页数量，默认10
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
  *       - in: query
  *         name: status
  *         schema:
  *           type: string
- *         description: 商品状态 (PENDING:待审核 PUBLISHED:已发布 SOLD:已售出)
+ *           enum: [PENDING, PUBLISHED]
+ *         description: 商品状态 (PENDING:待审核 PUBLISHED:已发布)
  *       - in: query
  *         name: creatorId
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: 创建人ID，用于查询某个直播间的商品
  *     responses:
  *       200:
  *         description: 成功获取商品列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 total:
+ *                   type: integer
+ *                   description: 总记录数
+ *                 page:
+ *                   type: integer
+ *                   description: 当前页码
+ *                 pageSize:
+ *                   type: integer
+ *                   description: 每页数量
+ *       400:
+ *         description: 参数错误
+ *       500:
+ *         description: 服务器内部错误
  */
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {

@@ -7,6 +7,7 @@ interface ProductListParams {
   page?: number
   pageSize?: number
   status?: ProductStatus
+  creatorId?: string
 }
 
 interface ProductListResponse {

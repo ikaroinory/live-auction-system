@@ -103,4 +103,27 @@ export const liveRoomAPI = {
   },
 }
 
+export interface ProductParams {
+  page?: number
+  pageSize?: number
+  status?: string
+  creatorId?: string
+}
+
+export interface ProductResponse {
+  list: any[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export const productAPI = {
+  getProducts: (params?: ProductParams): Promise<ProductResponse> => {
+    return apiClient.get('/v1/products', { params })
+  },
+  getProductDetail: (id: string): Promise<any> => {
+    return apiClient.get(`/v1/products/${id}`)
+  },
+}
+
 export default apiClient
