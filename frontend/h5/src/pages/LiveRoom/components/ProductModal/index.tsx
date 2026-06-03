@@ -1,18 +1,25 @@
 import { CloseIcon } from '../../../../components/ui/icons'
 import { formatPrice } from '../../../../utils/format'
 import { Toast } from 'antd-mobile'
-import type { AuctionWithSeller } from '@live-auction/shared'
 import './ProductModal.scss'
+
+interface Product {
+  id: string
+  name: string
+  image: string
+  startingPrice: number
+  fixedIncrement: number
+}
 
 interface ProductModalProps {
   visible: boolean
   onClose: () => void
-  products: AuctionWithSeller[]
+  products: Product[]
 }
 
 export const ProductModal = ({ visible, onClose, products }: ProductModalProps) => {
-  const handleBuy = (product: AuctionWithSeller) => {
-    Toast.show(`正在前往购买 ${product.title}`)
+  const handleBuy = (product: Product) => {
+    Toast.show(`正在前往购买 ${product.name}`)
   }
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -35,15 +42,15 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
           </button>
         </div>
         <div className="product-modal-content">
-          {products.length > 0 ? (
+          {products && products.length > 0 ? (
             <div className="product-list">
               {products.map((product) => (
                 <div key={product.id} className="product-card">
                   <div className="product-image-wrapper">
-                    {product.images.length > 0 ? (
+                    {product.image ? (
                       <img
-                        src={product.images[0]}
-                        alt={product.title}
+                        src={product.image}
+                        alt={product.name}
                         className="product-image"
                       />
                     ) : (
@@ -53,9 +60,9 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
                     )}
                   </div>
                   <div className="product-info">
-                    <div className="product-title">{product.title}</div>
+                    <div className="product-title">{product.name}</div>
                     <div className="product-price">
-                      <span className="product-price-label">起拍价</span> ¥{formatPrice(product.startPrice)}
+                      <span className="product-price-label">起拍价</span> ¥{formatPrice(product.startingPrice)}
                     </div>
                     <button
                       className="product-buy-btn"
