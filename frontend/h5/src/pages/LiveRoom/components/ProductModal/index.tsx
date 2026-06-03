@@ -11,6 +11,7 @@ interface Product {
   fixedIncrement: number
   auctionStatus?: string
   status?: string
+  isExplaining?: boolean
 }
 
 interface ProductModalProps {
@@ -18,9 +19,6 @@ interface ProductModalProps {
   onClose: () => void
   products: Product[]
 }
-
-// 模拟当前讲解的商品 - 实际应该从直播状态获取
-const CURRENT_EXPLAINING_PRODUCT_ID = ''
 
 export const ProductModal = ({ visible, onClose, products }: ProductModalProps) => {
   const handleBuy = (product: Product) => {
@@ -41,7 +39,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
   }
 
   const isExplaining = (product: Product) => {
-    return product.id === CURRENT_EXPLAINING_PRODUCT_ID
+    return !!product.isExplaining
   }
 
   return (
