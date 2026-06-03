@@ -1,46 +1,20 @@
 # 模拟数据脚本
 
-本目录包含直播竞拍系统的模拟数据生成脚本。
-
-## 脚本说明
-
-- `seed-data.ts`: 生成模拟数据的主脚本，包括用户、直播间和商品数据
+**注意**：模拟数据脚本已移至 `backend/src/seed.ts`，请在 backend 目录下运行。
 
 ## 使用方法
 
-### 从 backend 目录运行（推荐）
-
-直接在 `backend/` 目录下运行脚本，这样可以复用已有的环境配置和依赖：
+在 `backend/` 目录下运行脚本：
 
 ```bash
-cd ../backend
+cd backend
+
+# 确保 Prisma Client 已生成（如果没生成过）
+npm run prisma:generate
+
+# 运行模拟数据脚本
 npm run db:seed
 ```
-
-### 在 scripts 目录独立运行（备选）
-
-如需在 `scripts/` 目录下独立运行：
-
-1. 配置环境变量
-   ```bash
-   cp ../backend/.env.example .env
-   # 编辑 .env 文件，填入数据库连接信息
-   ```
-
-2. 创建 Prisma schema 链接
-   ```bash
-   ln -sf ../backend/prisma .
-   ```
-
-3. 安装依赖
-   ```bash
-   npm install
-   ```
-
-4. 运行脚本
-   ```bash
-   npm run seed
-   ```
 
 ## 生成的数据
 
@@ -58,4 +32,4 @@ npm run db:seed
 
 - 脚本在运行前会清空现有数据，请谨慎使用
 - 确保数据库连接正常
-- 如需要调整数据量，可以修改脚本中的对应参数
+- 如需要调整数据量，可以修改 `backend/src/seed.ts` 中的对应参数

@@ -1,4 +1,4 @@
-import { PrismaClient, Gender, ProductAuctionStatus, ProductStatus, ProductTag } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
 
@@ -30,7 +30,7 @@ const USER_NAMES = [
   { phone: '13800138020', nickname: '诗意人生' },
 ];
 
-const GENDERS = [Gender.MALE, Gender.FEMALE, Gender.UNKNOWN];
+const GENDERS = ['MALE', 'FEMALE', 'UNKNOWN'] as const;
 
 const LOCATIONS = ['北京', '上海', '广州', '深圳', '杭州', '成都', '武汉', '南京', '西安', '重庆'];
 
@@ -54,6 +54,8 @@ const ROOM_TITLES = [
   '每日精选好物直播',
   '收藏家的聚集地',
 ];
+
+const PRODUCT_TAGS = ['LATE_COMPENSATION', 'FREE_SHIPPING', 'SHIPPING_INSURANCE', 'AUCTION'] as const;
 
 function generateDouyinId(): string {
   return `dy_${Math.random().toString(36).substring(2, 15)}`;
@@ -117,6 +119,11 @@ async function seedData() {
         const templateIndex = (i * 5 + j) % PRODUCT_TEMPLATES.length;
         const template = PRODUCT_TEMPLATES[templateIndex];
 
+        const randomTags: string[] = [];
+        if (Math.random() > 0.5) randomTags.push('FREE_SHIPPING');
+        if (Math.random() > 0.6) randomTags.push('AUCTION');
+        if (Math.random() > 0.7) randomTags.push('SHIPPING_INSURANCE');
+
         const product = await prisma.product.create({
           data: {
             creatorId: user.id,
@@ -125,15 +132,11 @@ async function seedData() {
             startingPrice: template.startingPrice + Math.floor(Math.random() * 100),
             fixedIncrement: Math.floor(template.startingPrice * 0.1),
             maxPrice: template.startingPrice * 3 + Math.floor(Math.random() * 500),
-            tags: [
-              Math.random() > 0.5 ? ProductTag.FREE_SHIPPING : null,
-              Math.random() > 0.6 ? ProductTag.AUCTION : null,
-              Math.random() > 0.7 ? ProductTag.SHIPPING_INSURANCE : null,
-            ].filter(Boolean) as ProductTag[],
+            tags: randomTags,
             durationMinutes: 30 + Math.floor(Math.random() * 90),
             extendSeconds: 10 + Math.floor(Math.random() * 20),
-            auctionStatus: ProductAuctionStatus.NOT_STARTED,
-            status: ProductStatus.PUBLISHED,
+            auctionStatus: 'NOT_STARTED',
+            status: 'PUBLISHED',
           },
         });
 
