@@ -22,6 +22,7 @@ import {
 import { VideoPlayer } from './components/VideoPlayer'
 import { CurrentPrice } from './components/CurrentPrice'
 import { BidHistory } from './components/BidHistory'
+import { ProductModal } from './components/ProductModal'
 import { formatPrice } from '../../utils/format'
 import { liveRoomAPI, auctionAPI } from '../../services/api'
 import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared'
@@ -53,6 +54,7 @@ export const LiveRoom = () => {
   const [loading, setLoading] = useState(true)
   const [showBidHistory, setShowBidHistory] = useState(false)
   const [isFollowed, setIsFollowed] = useState(false)
+  const [showProductModal, setShowProductModal] = useState(false)
   const [chatInput, setChatInput] = useState('')
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [animations, setAnimations] = useState<AnimationItem[]>([])
@@ -364,7 +366,7 @@ export const LiveRoom = () => {
             </BubbleButton>
             <BubbleButton
               className={clsx(styles.actionButton, styles.gift)}
-              onClick={() => showEffects('gift')}
+              onClick={() => setShowProductModal(true)}
             >
               <GiftIcon size={20} />
             </BubbleButton>
@@ -403,6 +405,12 @@ export const LiveRoom = () => {
           </div>
         </div>
       )}
+
+      <ProductModal
+        visible={showProductModal}
+        onClose={() => setShowProductModal(false)}
+        products={liveRoom?.auctions || []}
+      />
 
       <ToastNotification />
     </div>
