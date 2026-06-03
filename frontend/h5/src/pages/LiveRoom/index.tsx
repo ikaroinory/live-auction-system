@@ -55,6 +55,7 @@ export const LiveRoom = () => {
   const [showBidHistory, setShowBidHistory] = useState(false)
   const [isFollowed, setIsFollowed] = useState(false)
   const [showProductModal, setShowProductModal] = useState(false)
+  const [products, setProducts] = useState<any[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [animations, setAnimations] = useState<AnimationItem[]>([])
