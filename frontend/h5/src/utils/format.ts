@@ -1,5 +1,6 @@
-export const formatPrice = (price: number): string => {
-  return `¥${price.toFixed(2)}`
+export const formatPrice = (price: number | string): string => {
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price
+  return `¥${numPrice.toFixed(2)}`
 }
 
 export const formatNumber = (num: number): string => {
