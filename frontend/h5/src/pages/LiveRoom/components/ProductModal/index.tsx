@@ -41,9 +41,9 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
 
   const getStatusClass = (product: Product) => {
     if (product.auctionStatus === 'IN_PROGRESS') {
-      return styles['status-in-progress']
+      return styles.statusInProgress
     }
-    return styles['status-upcoming']
+    return styles.statusUpcoming
   }
 
   const isExplaining = (product: Product) => {
@@ -53,49 +53,49 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
   return (
     <>
       <div
-        className={clsx(styles['product-modal-backdrop'], { [styles.visible]: visible })}
+        className={clsx(styles.productModalBackdrop, { [styles.visible]: visible })}
         onClick={handleBackdropClick}
       />
-      <div className={clsx(styles['product-modal-container'], { [styles.visible]: visible })}>
-        <div className={styles['product-modal-header']}>
-          <div className={styles['product-modal-title']}>商品列表</div>
-          <button className={styles['product-modal-close']} onClick={onClose}>
+      <div className={clsx(styles.productModalContainer, { [styles.visible]: visible })}>
+        <div className={styles.productModalHeader}>
+          <div className={styles.productModalTitle}>商品列表</div>
+          <button className={styles.productModalClose} onClick={onClose}>
             <CloseIcon size={16} />
           </button>
         </div>
-        <div className={styles['product-modal-content']}>
+        <div className={styles.productModalContent}>
           {products && products.length > 0 ? (
-            <div className={styles['product-list']}>
+            <div className={styles.productList}>
               {products.map((product) => (
-                <div key={product.id} className={styles['product-card']}>
-                  <div className={styles['product-content']}>
-                    <div className={styles['product-image-wrapper']}>
+                <div key={product.id} className={styles.productCard}>
+                  <div className={styles.productContent}>
+                    <div className={styles.productImageWrapper}>
                       {product.image ? (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className={styles['product-image']}
+                          className={styles.productImage}
                         />
                       ) : (
-                        <div className={styles['no-image-placeholder']}>
+                        <div className={styles.noImagePlaceholder}>
                           暂无图片
                         </div>
                       )}
                       {isExplaining(product) && (
-                        <div className={styles['explaining-label']}>讲解中</div>
+                        <div className={styles.explainingLabel}>讲解中</div>
                       )}
                     </div>
-                    <div className={styles['product-info']}>
-                      <div className={styles['product-title']}>{product.name}</div>
-                      <div className={clsx(styles['product-status-label'], getStatusClass(product))}>
+                    <div className={styles.productInfo}>
+                      <div className={styles.productTitle}>{product.name}</div>
+                      <div className={clsx(styles.productStatusLabel, getStatusClass(product))}>
                         {getStatusLabel(product)}
                       </div>
-                      <div className={styles['product-price-wrapper']}>
-                        <span className={styles['product-price-label']}>起拍价</span>
-                        <span className={styles['product-price']}>{formatPrice(product.startingPrice)}</span>
+                      <div className={styles.productPriceWrapper}>
+                        <span className={styles.productPriceLabel}>起拍价</span>
+                        <span className={styles.productPrice}>{formatPrice(product.startingPrice)}</span>
                       </div>
                       <button
-                        className={styles['product-buy-btn']}
+                        className={styles.productBuyBtn}
                         onClick={() => handleBuy(product)}
                       >
                         去出价
@@ -106,7 +106,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
               ))}
             </div>
           ) : (
-            <div className={styles['empty-state']}>
+            <div className={styles.emptyState}>
               暂无上架商品
             </div>
           )}
