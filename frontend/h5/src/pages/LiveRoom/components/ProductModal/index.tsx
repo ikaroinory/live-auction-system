@@ -9,6 +9,8 @@ interface Product {
   image: string
   startingPrice: number
   fixedIncrement: number
+  auctionStatus?: string
+  status?: string
 }
 
 interface ProductModalProps {
@@ -16,6 +18,9 @@ interface ProductModalProps {
   onClose: () => void
   products: Product[]
 }
+
+// 模拟当前讲解的商品 - 实际应该从直播状态获取
+const CURRENT_EXPLAINING_PRODUCT_ID = ''
 
 export const ProductModal = ({ visible, onClose, products }: ProductModalProps) => {
   const handleBuy = (product: Product) => {
@@ -26,6 +31,17 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
     if (e.target === e.currentTarget) {
       onClose()
     }
+  }
+
+  const getStatusLabel = (product: Product) => {
+    if (product.auctionStatus === 'IN_PROGRESS') {
+      return '竞拍中'
+    }
+    return '即将开拍'
+  }
+
+  const isExplaining = (product: Product) => {
+    return product.id === CURRENT_EXPLAINING_PRODUCT_ID
   }
 
   return (
@@ -46,30 +62,39 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
             <div className="product-list">
               {products.map((product) => (
                 <div key={product.id} className="product-card">
-                  <div className="product-image-wrapper">
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="product-image"
-                      />
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#999' }}>
-                        暂无图片
-                      </div>
-                    )}
-                  </div>
-                  <div className="product-info">
-                    <div className="product-title">{product.name}</div>
-                    <div className="product-price">
-                      <span className="product-price-label">起拍价</span> ¥{formatPrice(product.startingPrice)}
+                  <div className="product-content">
+                    <div className="product-image-wrapper">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="product-image"
+                        />
+                      ) : (
+                        <div className="no-image-placeholder">
+                          暂无图片
+                        </div>
+                      )}
+                      {isExplaining(product) && (
+                        <div className="explaining-label">讲解中</div>
+                      )}
                     </div>
-                    <button
-                      className="product-buy-btn"
-                      onClick={() => handleBuy(product)}
-                    >
-                      立即购买
-                    </button>
+                    <div className="product-info">
+                      <div className="product-title">{product.name}</div>
+                      <div className="product-status-label">
+                        {getStatusLabel(product)}
+                      </div>
+                      <div className="product-price-wrapper">
+                        <span className="product-price-label">起拍价</span>
+                        <span className="product-price">{formatPrice(product.startingPrice)}</span>
+                      </div>
+                      <button
+                        className="product-buy-btn"
+                        onClick={() => handleBuy(product)}
+                      >
+                        去出价
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
