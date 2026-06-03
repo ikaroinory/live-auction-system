@@ -1,7 +1,8 @@
 import { CloseIcon } from '../../../../components/ui/icons'
 import { formatPrice } from '../../../../utils/format'
 import { Toast } from 'antd-mobile'
-import './ProductModal.scss'
+import styles from './ProductModal.module.scss'
+import { clsx } from 'clsx'
 
 interface Product {
   id: string
@@ -40,9 +41,9 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
 
   const getStatusClass = (product: Product) => {
     if (product.auctionStatus === 'IN_PROGRESS') {
-      return 'status-in-progress'
+      return styles['status-in-progress']
     }
-    return 'status-upcoming'
+    return styles['status-upcoming']
   }
 
   const isExplaining = (product: Product) => {
@@ -52,49 +53,49 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
   return (
     <>
       <div
-        className={`product-modal-backdrop ${visible ? 'visible' : ''}`}
+        className={clsx(styles['product-modal-backdrop'], { [styles.visible]: visible })}
         onClick={handleBackdropClick}
       />
-      <div className={`product-modal-container ${visible ? 'visible' : ''}`}>
-        <div className="product-modal-header">
-          <div className="product-modal-title">商品列表</div>
-          <button className="product-modal-close" onClick={onClose}>
+      <div className={clsx(styles['product-modal-container'], { [styles.visible]: visible })}>
+        <div className={styles['product-modal-header']}>
+          <div className={styles['product-modal-title']}>商品列表</div>
+          <button className={styles['product-modal-close']} onClick={onClose}>
             <CloseIcon size={16} />
           </button>
         </div>
-        <div className="product-modal-content">
+        <div className={styles['product-modal-content']}>
           {products && products.length > 0 ? (
-            <div className="product-list">
+            <div className={styles['product-list']}>
               {products.map((product) => (
-                <div key={product.id} className="product-card">
-                  <div className="product-content">
-                    <div className="product-image-wrapper">
+                <div key={product.id} className={styles['product-card']}>
+                  <div className={styles['product-content']}>
+                    <div className={styles['product-image-wrapper']}>
                       {product.image ? (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="product-image"
+                          className={styles['product-image']}
                         />
                       ) : (
-                        <div className="no-image-placeholder">
+                        <div className={styles['no-image-placeholder']}>
                           暂无图片
                         </div>
                       )}
                       {isExplaining(product) && (
-                        <div className="explaining-label">讲解中</div>
+                        <div className={styles['explaining-label']}>讲解中</div>
                       )}
                     </div>
-                    <div className="product-info">
-                      <div className="product-title">{product.name}</div>
-                      <div className={`product-status-label ${getStatusClass(product)}`}>
+                    <div className={styles['product-info']}>
+                      <div className={styles['product-title']}>{product.name}</div>
+                      <div className={clsx(styles['product-status-label'], getStatusClass(product))}>
                         {getStatusLabel(product)}
                       </div>
-                      <div className="product-price-wrapper">
-                        <span className="product-price-label">起拍价</span>
-                        <span className="product-price">{formatPrice(product.startingPrice)}</span>
+                      <div className={styles['product-price-wrapper']}>
+                        <span className={styles['product-price-label']}>起拍价</span>
+                        <span className={styles['product-price']}>{formatPrice(product.startingPrice)}</span>
                       </div>
                       <button
-                        className="product-buy-btn"
+                        className={styles['product-buy-btn']}
                         onClick={() => handleBuy(product)}
                       >
                         去出价
@@ -105,7 +106,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
               ))}
             </div>
           ) : (
-            <div className="empty-state">
+            <div className={styles['empty-state']}>
               暂无上架商品
             </div>
           )}
