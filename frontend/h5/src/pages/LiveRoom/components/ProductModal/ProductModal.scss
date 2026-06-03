@@ -114,9 +114,9 @@
 
 .explaining-label {
   position: absolute;
-  top: 50%;
-  left: 8px;
-  transform: translateY(-50%);
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
   color: #fff;
   padding: 4px 10px;
