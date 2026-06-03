@@ -39,18 +39,29 @@ const router = Router()
  *         schema:
  *           type: string
  *         description: 商品状态 (PENDING:待审核 PUBLISHED:已发布 SOLD:已售出)
+ *       - in: query
+ *         name: creatorId
+ *         schema:
+ *           type: string
+ *         description: 创建人ID，用于查询某个直播间的商品
  *     responses:
  *       200:
  *         description: 成功获取商品列表
  */
 router.get('/', async (req: Request, res: Response, next: Function) => {
   try {
-    const { page = '1', pageSize = '10', status } = req.query
+    const { page = '1', pageSize = '10', status, creatorId } = req.query
     const pageNum = parseInt(page as string)
     const pageSizeNum = parseInt(pageSize as string)
     const skip = (pageNum - 1) * pageSizeNum
 
-    const where = status !== undefined ? { status: status as ProductStatus } : {}
+    const where: any = {}
+    if (status !== undefined) {
+      where.status = status
+    }
+    if (creatorId !== undefined) {
+      where.creatorId = creatorId as string
+    }
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
