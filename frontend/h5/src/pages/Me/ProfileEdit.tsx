@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Toast, Input } from 'antd-mobile'
 import { useUserStore } from '../../store/useUserStore'
 import { authAPI } from '../../services/api'
-import { Gender } from '../../../../../shared/src/user'
+import { Gender } from '../../../../../shared/src/user.ts'
 import {
   CameraIcon,
   ChevronLeftIcon,
