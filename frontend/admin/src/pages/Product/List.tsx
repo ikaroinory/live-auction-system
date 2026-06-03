@@ -7,12 +7,14 @@ import { useProductList } from '@/hooks'
 import type { Product } from '@/types'
 import { useSearchParams } from 'react-router'
 import { ProductStatus, ProductTag } from '@/types'
+import { useUserStore } from '@/store'
 
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchValue, setSearchValue] = useState('')
+  const { user } = useUserStore()
 
   const activeTab = searchParams.get('tab') || 'live'
 
@@ -22,7 +24,8 @@ const ProductList: React.FC = () => {
     error: liveError,
     refresh: refreshLiveProducts
   } = useProductList({
-    status: ProductStatus.PUBLISHED
+    status: ProductStatus.PUBLISHED,
+    creatorId: user?.id?.toString()
   })
 
   const { 
@@ -31,7 +34,8 @@ const ProductList: React.FC = () => {
     error: pendingError,
     refresh: refreshPendingProducts
   } = useProductList({
-    status: ProductStatus.PENDING
+    status: ProductStatus.PENDING,
+    creatorId: user?.id?.toString()
   })
 
   const convertProductToItem = (product: Product, index: number): ProductItem => {
