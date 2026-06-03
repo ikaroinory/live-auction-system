@@ -24,7 +24,7 @@ import { CurrentPrice } from './components/CurrentPrice'
 import { BidHistory } from './components/BidHistory'
 import { ProductModal } from './components/ProductModal'
 import { formatPrice } from '../../utils/format'
-import { liveRoomAPI, auctionAPI } from '../../services/api'
+import { liveRoomAPI, auctionAPI, productAPI, ProductParams } from '../../services/api'
 import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared'
 import './LiveRoom.scss'
 import styles from './styles.module.scss'
@@ -95,6 +95,15 @@ export const LiveRoom = () => {
         const data = await liveRoomAPI.getLiveRoomDetail(id)
         setLiveRoom(data)
         setIsFollowed(!!data.isFollowed)
+
+        // 获取直播间创建人的商品列表
+        if (data.streamerId) {
+          const productsData = await productAPI.getProducts({
+            creatorId: data.streamerId,
+            status: 'PUBLISHED'
+          })
+          setProducts(productsData.list || [])
+        }
 
         if (data.auctions && data.auctions.length > 0) {
           const auction = data.auctions[0]
@@ -409,7 +418,7 @@ export const LiveRoom = () => {
       <ProductModal
         visible={showProductModal}
         onClose={() => setShowProductModal(false)}
-        products={liveRoom?.auctions || []}
+        products={products}
       />
 
       <ToastNotification />
