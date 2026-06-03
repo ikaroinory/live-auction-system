@@ -38,6 +38,13 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
     return '即将开拍'
   }
 
+  const getStatusClass = (product: Product) => {
+    if (product.auctionStatus === 'IN_PROGRESS') {
+      return 'status-in-progress'
+    }
+    return 'status-upcoming'
+  }
+
   const isExplaining = (product: Product) => {
     return !!product.isExplaining
   }
@@ -79,7 +86,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
                     </div>
                     <div className="product-info">
                       <div className="product-title">{product.name}</div>
-                      <div className="product-status-label">
+                      <div className={`product-status-label ${getStatusClass(product)}`}>
                         {getStatusLabel(product)}
                       </div>
                       <div className="product-price-wrapper">
