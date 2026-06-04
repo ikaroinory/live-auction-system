@@ -152,6 +152,62 @@ router.get(
 
 /**
  * @swagger
+ * /api/v1/products/explaining:
+ *   get:
+ *     summary: 获取当前正在讲解的商品
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 查询成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 productId:
+ *                   type: string
+ *                   nullable: true
+ *                 roomId:
+ *                   type: string
+ *                   nullable: true
+ *       400:
+ *         description: 用户未创建直播间
+ *       401:
+ *         description: 未认证
+ */
+router.get(
+  '/explaining',
+  authMiddleware,
+  wrapAuthHandler(
+    async (_req: Request, res: Response) => {
+      const user = requireAuth(_req)
+
+      const liveRoom = await prisma.liveRoom.findFirst({
+        where: { streamerId: user.id },
+        select: { id: true }
+      })
+
+      if (!liveRoom) {
+        return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
+      }
+
+      const productId = await getRoomExplainingProduct(liveRoom.id)
+
+      res.json({
+        success: true,
+        productId,
+        roomId: liveRoom.id
+      })
+    }
+  )
+)
+
+/**
+ * @swagger
  * /api/v1/products/{id}:
  *   get:
  *     summary: 获取商品详情
@@ -756,62 +812,6 @@ router.patch(
       }
 
       res.json(response)
-    }
-  )
-)
-
-/**
- * @swagger
- * /api/v1/products/explaining:
- *   get:
- *     summary: 获取当前正在讲解的商品
- *     tags: [商品]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: 查询成功
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 productId:
- *                   type: string
- *                   nullable: true
- *                 roomId:
- *                   type: string
- *                   nullable: true
- *       400:
- *         description: 用户未创建直播间
- *       401:
- *         description: 未认证
- */
-router.get(
-  '/explaining',
-  authMiddleware,
-  wrapAuthHandler(
-    async (_req: Request, res: Response) => {
-      const user = requireAuth(_req)
-
-      const liveRoom = await prisma.liveRoom.findFirst({
-        where: { streamerId: user.id },
-        select: { id: true }
-      })
-
-      if (!liveRoom) {
-        return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
-      }
-
-      const productId = await getRoomExplainingProduct(liveRoom.id)
-
-      res.json({
-        success: true,
-        productId,
-        roomId: liveRoom.id
-      })
     }
   )
 )
