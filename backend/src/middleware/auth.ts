@@ -27,7 +27,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
 
     req.user = decoded
     next()
-  } catch (error) {
+  } catch {
     return res.status(401).json({ message: '无效的认证令牌' })
   }
 }
@@ -43,14 +43,14 @@ export const optionalAuthMiddleware = (req: AuthRequest, res: Response, next: Ne
         try {
           const decoded = jwt.verify(token, config.jwt.secret) as { id: string; phone: string }
           req.user = decoded
-        } catch (error) {
+        } catch {
           // token 无效但不阻止访问
         }
       }
     }
 
     next()
-  } catch (error) {
+  } catch {
     // 任何错误都不阻止访问
     next()
   }

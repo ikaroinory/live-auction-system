@@ -95,13 +95,6 @@ const ROOM_TITLES = [
   '收藏家的聚集地'
 ]
 
-const PRODUCT_TAGS = [
-  'LATE_COMPENSATION',
-  'FREE_SHIPPING',
-  'SHIPPING_INSURANCE',
-  'AUCTION'
-] as const
-
 function generateDouyinId(): string {
   return `dy_${Math.random().toString(36).substring(2, 15)}`
 }

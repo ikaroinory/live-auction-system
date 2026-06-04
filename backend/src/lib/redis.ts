@@ -1,15 +1,7 @@
 import Redis from 'ioredis'
 import config from '../config'
 
-const {
-  host,
-  port,
-  password,
-  db,
-  timeout,
-  maxConnections: _maxConnections,
-  keyPrefix
-} = config.redis
+const { host, port, password, db, timeout, keyPrefix } = config.redis
 
 const redisClient = new Redis({
   host,

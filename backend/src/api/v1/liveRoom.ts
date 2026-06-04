@@ -1,474 +1,421 @@
 import { Router, Request, Response } from 'express'
+import type { ParamsDictionary } from 'express-serve-static-core'
 import { prisma } from '../../lib/prisma'
-import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../../middleware/auth'
+import { authMiddleware } from '../../middleware/auth'
+import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
+import type { LiveRoomResponse, PagedResponse } from '../response'
+
+interface DeleteResponse {
+  message: string
+}
 
 const router = Router()
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     LiveRoom:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         roomNumber:
- *           type: number
- *         streamerId:
- *           type: string
- *         title:
- *           type: string
- *         description:
- *           type: string
- *         coverImage:
- *           type: string
- *         status:
- *           type: number
- *         viewerCount:
- *           type: number
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- */
+interface CreateLiveRoomRequest {
+  title: string
+  description?: string
+  coverImage?: string
+}
 
-/**
- * @swagger
- * /api/v1/live-rooms:
- *   get:
- *     tags: [直播间]
- *     summary: 获取直播间列表
- *     description: 获取所有直播间列表
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: number
- *         description: 直播间状态 (0:未开始 1:直播中 2:已结束)
- *     responses:
- *       200:
- *         description: 成功获取直播间列表
- */
-router.get('/', optionalAuthMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    const { status } = req.query
-    const where = status ? { status: parseInt(status as string) } : {}
+interface UpdateLiveRoomRequest {
+  title?: string
+  description?: string
+  coverImage?: string
+}
 
-    let liveRooms = await prisma.liveRoom.findMany({
-      where,
-      include: {
-        streamer: {
-          select: {
-            id: true,
-            phone: true,
-            nickname: true,
-            avatar: true
-          }
-        },
-        _count: {
-          select: { followers: true, auctions: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
-
-    // 添加关注状态
-    if (req.user?.id) {
-      const userId = req.user.id
-      const userFollowedRooms = await prisma.liveRoomFollow.findMany({
-        where: { userId },
-        select: { liveRoomId: true }
-      })
-
-      const followedIds = new Set(userFollowedRooms.map((f) => f.liveRoomId))
-
-      liveRooms = liveRooms.map((room) => ({
-        ...room,
-        isFollowed: followedIds.has(room.id)
-      }))
-    } else {
-      // 未登录时，设置 isFollowed 为 false
-      liveRooms = liveRooms.map((room) => ({
-        ...room,
-        isFollowed: false
-      }))
-    }
-
-    res.json(liveRooms)
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/live-rooms/{id}:
- *   get:
- *     tags: [直播间]
- *     summary: 获取直播间详情
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 直播间ID
- *     responses:
- *       200:
- *         description: 成功获取直播间详情
- *       404:
- *         description: 直播间不存在
- */
 router.get(
-  '/:id',
-  optionalAuthMiddleware,
-  async (req: AuthRequest, res: Response, next: Function) => {
-    try {
-      const { id } = req.params
+  '/',
+  wrapHandler(
+    async (
+      req: Request<
+        ParamsDictionary,
+        PagedResponse<LiveRoomResponse>,
+        unknown,
+        { status?: string; page?: string; pageSize?: string }
+      >,
+      res: Response<PagedResponse<LiveRoomResponse>>
+    ) => {
+      const { status } = req.query
+      const page = parseInt(req.query.page || '1')
+      const pageSize = parseInt(req.query.pageSize || '10')
+      const skip = (page - 1) * pageSize
 
-      const liveRoom = await prisma.liveRoom.findUnique({
-        where: { id },
-        include: {
-          streamer: {
-            select: {
-              id: true,
-              phone: true,
-              nickname: true,
-              avatar: true
-            }
-          },
-          _count: {
-            select: { followers: true, auctions: true }
-          },
-          auctions: true
-        }
-      })
-
-      if (!liveRoom) {
-        return res.status(404).json({ message: '直播间不存在' })
+      const where: Partial<{ status: string }> = {}
+      if (status !== undefined) {
+        where.status = status
       }
 
-      // 添加关注状态
-      let isFollowed = false
-      if (req.user?.id) {
-        const followRecord = await prisma.liveRoomFollow.findFirst({
-          where: { userId: req.user.id, liveRoomId: id }
-        })
-        isFollowed = !!followRecord
-      }
-
-      res.json({ ...liveRoom, isFollowed })
-    } catch (error) {
-      next(error)
-    }
-  }
-)
-
-/**
- * @swagger
- * /api/v1/live-rooms:
- *   post:
- *     tags: [直播间]
- *     summary: 创建直播间
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - title
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               coverImage:
- *                 type: string
- *     responses:
- *       201:
- *         description: 创建成功
- *       401:
- *         description: 未认证
- */
-router.post('/', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' })
-    }
-
-    const { title, description, coverImage } = req.body
-
-    const liveRoom = await prisma.liveRoom.create({
-      data: {
-        streamerId: req.user.id,
-        title,
-        description: description || null,
-        coverImage: coverImage || null,
-        status: 0
-      }
-    })
-
-    res.status(201).json(liveRoom)
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/live-rooms/{id}:
- *   put:
- *     tags: [直播间]
- *     summary: 更新直播间信息
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 直播间ID
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               coverImage:
- *                 type: string
- *               status:
- *                 type: number
- *     responses:
- *       200:
- *         description: 更新成功
- *       401:
- *         description: 未认证
- *       403:
- *         description: 无权限
- *       404:
- *         description: 直播间不存在
- */
-router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' })
-    }
-
-    const { id } = req.params
-    const { title, description, coverImage, status } = req.body
-
-    // 检查直播间是否存在且当前用户是否是主播
-    const existingRoom = await prisma.liveRoom.findUnique({
-      where: { id }
-    })
-
-    if (!existingRoom) {
-      return res.status(404).json({ message: '直播间不存在' })
-    }
-
-    if (existingRoom.streamerId !== req.user.id) {
-      return res.status(403).json({ message: '无权限' })
-    }
-
-    const data: any = {}
-    if (title !== undefined) data.title = title
-    if (description !== undefined) data.description = description
-    if (coverImage !== undefined) data.coverImage = coverImage
-    if (status !== undefined) {
-      data.status = status
-      if (status === 1 && existingRoom.status !== 1) {
-        data.startedAt = new Date()
-      } else if (status === 2 && existingRoom.status !== 2) {
-        data.endedAt = new Date()
-      }
-    }
-
-    const liveRoom = await prisma.liveRoom.update({
-      where: { id },
-      data
-    })
-
-    res.json(liveRoom)
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/live-rooms/{id}/follow:
- *   post:
- *     tags: [直播间]
- *     summary: 关注直播间
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 直播间ID
- *     responses:
- *       200:
- *         description: 关注成功
- *       401:
- *         description: 未认证
- *       404:
- *         description: 直播间不存在
- */
-router.post(
-  '/:id/follow',
-  authMiddleware,
-  async (req: AuthRequest, res: Response, next: Function) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ message: '未认证' })
-      }
-
-      const { id } = req.params
-
-      // 检查直播间是否存在
-      const liveRoom = await prisma.liveRoom.findUnique({
-        where: { id }
-      })
-
-      if (!liveRoom) {
-        return res.status(404).json({ message: '直播间不存在' })
-      }
-
-      // 创建关注关系
-      const follow = await prisma.liveRoomFollow.upsert({
-        where: {
-          userId_liveRoomId: {
-            userId: req.user.id,
-            liveRoomId: id
-          }
-        },
-        create: {
-          userId: req.user.id,
-          liveRoomId: id
-        },
-        update: {}
-      })
-
-      res.json({ message: '关注成功', follow })
-    } catch (error) {
-      next(error)
-    }
-  }
-)
-
-/**
- * @swagger
- * /api/v1/live-rooms/{id}/unfollow:
- *   post:
- *     tags: [直播间]
- *     summary: 取消关注直播间
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: 直播间ID
- *     responses:
- *       200:
- *         description: 取消关注成功
- *       401:
- *         description: 未认证
- *       404:
- *         description: 关注关系不存在
- */
-router.post(
-  '/:id/unfollow',
-  authMiddleware,
-  async (req: AuthRequest, res: Response, next: Function) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ message: '未认证' })
-      }
-
-      const { id } = req.params
-
-      // 删除关注关系
-      await prisma.liveRoomFollow.deleteMany({
-        where: {
-          userId: req.user.id,
-          liveRoomId: id
-        }
-      })
-
-      res.json({ message: '取消关注成功' })
-    } catch (error) {
-      next(error)
-    }
-  }
-)
-
-/**
- * @swagger
- * /api/v1/live-rooms/my/followed:
- *   get:
- *     tags: [直播间]
- *     summary: 获取我关注的直播间
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: 成功获取关注列表
- *       401:
- *         description: 未认证
- */
-router.get(
-  '/my/followed',
-  authMiddleware,
-  async (req: AuthRequest, res: Response, next: Function) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ message: '未认证' })
-      }
-
-      const follows = await prisma.liveRoomFollow.findMany({
-        where: { userId: req.user.id },
-        include: {
-          liveRoom: {
-            include: {
-              streamer: {
-                select: {
-                  id: true,
-                  phone: true,
-                  nickname: true,
-                  avatar: true
-                }
-              },
-              _count: {
-                select: { followers: true, auctions: true }
+      const [rooms, total] = await Promise.all([
+        prisma.liveRoom.findMany({
+          where,
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            host: {
+              select: {
+                id: true,
+                nickname: true,
+                avatar: true
               }
             }
           }
-        },
-        orderBy: { createdAt: 'desc' }
+        }),
+        prisma.liveRoom.count({ where })
+      ])
+
+      const response: PagedResponse<LiveRoomResponse> = {
+        list: rooms.map(
+          (room): LiveRoomResponse => ({
+            ...room,
+            startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+            endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+            createdAt: room.createdAt.toISOString()
+          })
+        ),
+        total,
+        page,
+        pageSize
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+router.get(
+  '/:id',
+  wrapHandler(
+    async (req: Request<{ id: string }, LiveRoomResponse>, res: Response<LiveRoomResponse>) => {
+      const room = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id },
+        include: {
+          host: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
       })
 
-      res.json(follows)
-    } catch (error) {
-      next(error)
+      if (!room) {
+        return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
+      }
+
+      const response: LiveRoomResponse = {
+        ...room,
+        startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+        endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+        createdAt: room.createdAt.toISOString()
+      }
+
+      res.json(response)
     }
-  }
+  )
+)
+
+router.post(
+  '/',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<ParamsDictionary, LiveRoomResponse, CreateLiveRoomRequest>,
+      res: Response<LiveRoomResponse>
+    ) => {
+      const user = requireAuth(req)
+      const { title, description, coverImage } = req.body
+
+      if (!title) {
+        return res.status(400).json({ message: '标题不能为空' } as unknown as LiveRoomResponse)
+      }
+
+      const room = await prisma.liveRoom.create({
+        data: {
+          title,
+          description: description || null,
+          coverImage: coverImage || null,
+          hostId: user.id
+        },
+        include: {
+          host: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: LiveRoomResponse = {
+        ...room,
+        startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+        endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+        createdAt: room.createdAt.toISOString()
+      }
+
+      res.status(201).json(response)
+    }
+  )
+)
+
+router.put(
+  '/:id',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<{ id: string }, LiveRoomResponse, UpdateLiveRoomRequest>,
+      res: Response<LiveRoomResponse>
+    ) => {
+      const user = requireAuth(req)
+      const { title, description, coverImage } = req.body
+
+      const existing = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
+      }
+
+      if (existing.hostId !== user.id) {
+        return res
+          .status(403)
+          .json({ message: '无权限修改此直播间' } as unknown as LiveRoomResponse)
+      }
+
+      const data: Partial<{
+        title: string
+        description: string | null
+        coverImage: string | null
+      }> = {}
+
+      if (title !== undefined) {
+        data.title = title
+      }
+      if (description !== undefined) {
+        data.description = description || null
+      }
+      if (coverImage !== undefined) {
+        data.coverImage = coverImage || null
+      }
+
+      const room = await prisma.liveRoom.update({
+        where: { id: req.params.id },
+        data,
+        include: {
+          host: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: LiveRoomResponse = {
+        ...room,
+        startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+        endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+        createdAt: room.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+router.delete(
+  '/:id',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }, DeleteResponse>, res: Response<DeleteResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '直播间不存在' })
+      }
+
+      if (existing.hostId !== user.id) {
+        return res.status(403).json({ message: '无权限删除此直播间' })
+      }
+
+      await prisma.liveRoom.delete({
+        where: { id: req.params.id }
+      })
+
+      res.json({ message: '删除成功' })
+    }
+  )
+)
+
+router.post(
+  '/:id/start',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }, LiveRoomResponse>, res: Response<LiveRoomResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
+      }
+
+      if (existing.hostId !== user.id) {
+        return res
+          .status(403)
+          .json({ message: '无权限操作此直播间' } as unknown as LiveRoomResponse)
+      }
+
+      if (existing.status === 'LIVE') {
+        return res.status(400).json({ message: '直播已在进行中' } as unknown as LiveRoomResponse)
+      }
+
+      const room = await prisma.liveRoom.update({
+        where: { id: req.params.id },
+        data: {
+          status: 'LIVE',
+          startedAt: new Date()
+        },
+        include: {
+          host: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: LiveRoomResponse = {
+        ...room,
+        startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+        endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+        createdAt: room.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+router.post(
+  '/:id/end',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }, LiveRoomResponse>, res: Response<LiveRoomResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
+      }
+
+      if (existing.hostId !== user.id) {
+        return res
+          .status(403)
+          .json({ message: '无权限操作此直播间' } as unknown as LiveRoomResponse)
+      }
+
+      if (existing.status !== 'LIVE') {
+        return res.status(400).json({ message: '直播未在进行中' } as unknown as LiveRoomResponse)
+      }
+
+      const room = await prisma.liveRoom.update({
+        where: { id: req.params.id },
+        data: {
+          status: 'ENDED',
+          endedAt: new Date()
+        },
+        include: {
+          host: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: LiveRoomResponse = {
+        ...room,
+        startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+        endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+        createdAt: room.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+router.get(
+  '/host/:hostId',
+  wrapHandler(
+    async (
+      req: Request<
+        { hostId: string },
+        PagedResponse<LiveRoomResponse>,
+        unknown,
+        { page?: string; pageSize?: string }
+      >,
+      res: Response<PagedResponse<LiveRoomResponse>>
+    ) => {
+      const page = parseInt(req.query.page || '1')
+      const pageSize = parseInt(req.query.pageSize || '10')
+      const skip = (page - 1) * pageSize
+
+      const [rooms, total] = await Promise.all([
+        prisma.liveRoom.findMany({
+          where: { hostId: req.params.hostId },
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            host: {
+              select: {
+                id: true,
+                nickname: true,
+                avatar: true
+              }
+            }
+          }
+        }),
+        prisma.liveRoom.count({ where: { hostId: req.params.hostId } })
+      ])
+
+      const response: PagedResponse<LiveRoomResponse> = {
+        list: rooms.map(
+          (room): LiveRoomResponse => ({
+            ...room,
+            startedAt: room.startedAt ? room.startedAt.toISOString() : null,
+            endedAt: room.endedAt ? room.endedAt.toISOString() : null,
+            createdAt: room.createdAt.toISOString()
+          })
+        ),
+        total,
+        page,
+        pageSize
+      }
+
+      res.json(response)
+    }
+  )
 )
 
 export default router

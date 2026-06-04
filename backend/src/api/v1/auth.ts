@@ -1,132 +1,98 @@
 import { Router, Request, Response } from 'express'
+import type { ParamsDictionary } from 'express-serve-static-core'
 import { prisma } from '../../lib/prisma'
 import { AuthService } from '../../services/auth.service'
-import { authMiddleware, AuthRequest } from '../../middleware/auth'
+import { authMiddleware } from '../../middleware/auth'
 import { getLocationFromRequest } from '../../utils/ipLocation'
+import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
+import type { UserResponse } from '../response'
+
+interface LoginResponse {
+  user: UserResponse
+  token: string
+}
 
 const router = Router()
 const authService = new AuthService()
 
-/**
- * @swagger
- * /api/v1/auth/register:
- *   post:
- *     tags: [认证]
- *     summary: 用户注册
- *     description: 创建新用户账号
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phone
- *               - password
- *             properties:
- *               phone:
- *                 type: string
- *                 description: 手机号
- *               password:
- *                 type: string
- *                 description: 密码
- *               nickname:
- *                 type: string
- *                 description: 昵称
- *     responses:
- *       201:
- *         description: 注册成功
- *       400:
- *         description: 参数错误
- *       409:
- *         description: 手机号已存在
- */
-router.post('/register', async (req: Request, res: Response, next: Function) => {
-  try {
-    const { phone, password, nickname } = req.body
+interface RegisterRequest {
+  phone: string
+  password: string
+  nickname?: string
+}
 
-    if (!phone || !password) {
-      return res.status(400).json({ message: '手机号和密码不能为空' })
+interface LoginRequest {
+  phone: string
+  password: string
+}
+
+interface SmsLoginRequest {
+  phone: string
+  code: string
+}
+
+interface UpdateAvatarRequest {
+  avatar: string
+}
+
+interface UpdateProfileRequest {
+  nickname?: string
+  bio?: string
+  gender?: number
+  birthday?: string
+  location?: string
+  douyinId?: string
+}
+
+router.post(
+  '/register',
+  wrapHandler(
+    async (
+      req: Request<ParamsDictionary, LoginResponse, RegisterRequest>,
+      res: Response<LoginResponse>
+    ) => {
+      const { phone, password, nickname } = req.body
+
+      if (!phone || !password) {
+        return res.status(400).json({ message: '手机号和密码不能为空' } as unknown as LoginResponse)
+      }
+
+      const location = getLocationFromRequest(req)
+      const result = await authService.register(phone, password, nickname, location)
+
+      res.status(201).json(result)
     }
+  )
+)
 
-    const location = getLocationFromRequest(req)
-    const result = await authService.register(phone, password, nickname, location)
+router.post(
+  '/login',
+  wrapHandler(
+    async (
+      req: Request<ParamsDictionary, LoginResponse, LoginRequest>,
+      res: Response<LoginResponse>
+    ) => {
+      const { phone, password } = req.body
 
-    res.status(201).json(result)
-  } catch (error) {
-    next(error)
-  }
-})
+      if (!phone || !password) {
+        return res.status(400).json({ message: '手机号和密码不能为空' } as unknown as LoginResponse)
+      }
 
-/**
- * @swagger
- * /api/v1/auth/login:
- *   post:
- *     tags: [认证]
- *     summary: 用户登录
- *     description: 用户登录获取认证令牌
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phone
- *               - password
- *             properties:
- *               phone:
- *                 type: string
- *                 description: 手机号
- *               password:
- *                 type: string
- *                 description: 密码
- *     responses:
- *       200:
- *         description: 登录成功
- *       400:
- *         description: 参数错误
- *       401:
- *         description: 认证失败
- */
-router.post('/login', async (req: Request, res: Response, next: Function) => {
-  try {
-    const { phone, password } = req.body
+      const result = await authService.login(phone, password)
 
-    if (!phone || !password) {
-      return res.status(400).json({ message: '手机号和密码不能为空' })
+      res.json(result)
     }
+  )
+)
 
-    const result = await authService.login(phone, password)
+router.get(
+  '/me',
+  authMiddleware,
+  wrapAuthHandler(async (req: Request, res: Response<UserResponse>) => {
+    const user = requireAuth(req)
 
-    res.json(result)
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/auth/me:
- *   get:
- *     tags: [认证]
- *     summary: 获取当前用户信息
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: 成功获取用户信息
- *       401:
- *         description: 未认证
- */
-router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' })
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
+    const userData = await prisma.user.findUnique({
+      where: { id: user.id },
       select: {
         id: true,
         phone: true,
@@ -141,234 +107,163 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next: 
       }
     })
 
-    if (!user) {
-      return res.status(404).json({ message: '用户不存在' })
+    if (!userData) {
+      return res.status(404).json({ message: '用户不存在' } as unknown as UserResponse)
     }
 
-    res.json({
-      ...user,
-      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
-    })
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/auth/sms-login:
- *   post:
- *     tags: [认证]
- *     summary: 短信验证码登录
- *     description: 使用手机号和短信验证码登录，如用户不存在则自动注册
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phone
- *               - code
- *             properties:
- *               phone:
- *                 type: string
- *                 description: 手机号
- *               code:
- *                 type: string
- *                 description: 短信验证码
- *     responses:
- *       200:
- *         description: 登录成功
- *       400:
- *         description: 参数错误
- */
-router.post('/sms-login', async (req: Request, res: Response, next: Function) => {
-  try {
-    const { phone, code } = req.body
-
-    if (!phone || !code) {
-      return res.status(400).json({ message: '手机号和验证码不能为空' })
+    const response: UserResponse = {
+      ...userData,
+      birthday: userData.birthday ? userData.birthday.toISOString().split('T')[0] : undefined,
+      createdAt: userData.createdAt.toISOString()
     }
 
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-      return res.status(400).json({ message: '手机号格式不正确' })
-    }
+    res.json(response)
+  })
+)
 
-    if (code !== '123456' && code !== '666666') {
-      return res.status(400).json({ message: '验证码错误' })
-    }
+router.post(
+  '/sms-login',
+  wrapHandler(
+    async (
+      req: Request<ParamsDictionary, LoginResponse, SmsLoginRequest>,
+      res: Response<LoginResponse>
+    ) => {
+      const { phone, code } = req.body
 
-    const location = getLocationFromRequest(req)
-    const result = await authService.loginOrRegisterByPhone(phone, code, location)
-
-    res.json(result)
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/auth/avatar:
- *   put:
- *     tags: [认证]
- *     summary: 更新用户头像
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - avatar
- *             properties:
- *               avatar:
- *                 type: string
- *                 description: 头像URL
- *     responses:
- *       200:
- *         description: 更新成功
- *       400:
- *         description: 参数错误
- *       401:
- *         description: 未认证
- */
-router.put('/avatar', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' })
-    }
-
-    const { avatar } = req.body
-
-    if (!avatar) {
-      return res.status(400).json({ message: '头像 URL 不能为空' })
-    }
-
-    const user = await prisma.user.update({
-      where: { id: req.user.id },
-      data: { avatar },
-      select: {
-        id: true,
-        phone: true,
-        nickname: true,
-        avatar: true,
-        bio: true,
-        gender: true,
-        birthday: true,
-        location: true,
-        douyinId: true,
-        createdAt: true
+      if (!phone || !code) {
+        return res
+          .status(400)
+          .json({ message: '手机号和验证码不能为空' } as unknown as LoginResponse)
       }
-    })
 
-    res.json({
-      ...user,
-      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
-    })
-  } catch (error) {
-    next(error)
-  }
-})
-
-/**
- * @swagger
- * /api/v1/auth/profile:
- *   put:
- *     tags: [认证]
- *     summary: 更新用户资料
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nickname:
- *                 type: string
- *                 description: 昵称
- *               bio:
- *                 type: string
- *                 description: 个人简介
- *               gender:
- *                 type: number
- *                 description: 性别 (0:未知 1:男 2:女)
- *               birthday:
- *                 type: string
- *                 format: date
- *                 description: 生日
- *               location:
- *                 type: string
- *                 description: 所在地
- *               douyinId:
- *                 type: string
- *                 description: 抖音ID
- *     responses:
- *       200:
- *         description: 更新成功
- *       401:
- *         description: 未认证
- */
-router.put('/profile', authMiddleware, async (req: AuthRequest, res: Response, next: Function) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: '未认证' })
-    }
-
-    const { nickname, bio, gender, birthday, location, douyinId } = req.body
-
-    const updateData: any = {}
-
-    if (nickname !== undefined) {
-      updateData.nickname = nickname === '' ? null : nickname
-    }
-    if (bio !== undefined) {
-      updateData.bio = bio === '' ? null : bio
-    }
-    if (gender !== undefined) {
-      updateData.gender = gender
-    }
-    if (birthday !== undefined) {
-      updateData.birthday = birthday ? new Date(birthday) : null
-    }
-    if (location !== undefined) {
-      updateData.location = location || '未知'
-    }
-    if (douyinId !== undefined) {
-      updateData.douyinId = douyinId
-    }
-
-    const user = await prisma.user.update({
-      where: { id: req.user.id },
-      data: updateData,
-      select: {
-        id: true,
-        phone: true,
-        nickname: true,
-        avatar: true,
-        bio: true,
-        gender: true,
-        birthday: true,
-        location: true,
-        douyinId: true,
-        createdAt: true
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        return res.status(400).json({ message: '手机号格式不正确' } as unknown as LoginResponse)
       }
-    })
 
-    res.json({
-      ...user,
-      birthday: user.birthday ? user.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: user.createdAt.toISOString()
-    })
-  } catch (error) {
-    next(error)
-  }
-})
+      if (code !== '123456' && code !== '666666') {
+        return res.status(400).json({ message: '验证码错误' } as unknown as LoginResponse)
+      }
+
+      const location = getLocationFromRequest(req)
+      const result = await authService.loginOrRegisterByPhone(phone, code, location)
+
+      res.json(result)
+    }
+  )
+)
+
+router.put(
+  '/avatar',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<ParamsDictionary, UserResponse, UpdateAvatarRequest>,
+      res: Response<UserResponse>
+    ) => {
+      const user = requireAuth(req)
+      const { avatar } = req.body
+
+      if (!avatar) {
+        return res.status(400).json({ message: '头像 URL 不能为空' } as unknown as UserResponse)
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar },
+        select: {
+          id: true,
+          phone: true,
+          nickname: true,
+          avatar: true,
+          bio: true,
+          gender: true,
+          birthday: true,
+          location: true,
+          douyinId: true,
+          createdAt: true
+        }
+      })
+
+      const response: UserResponse = {
+        ...updatedUser,
+        birthday: updatedUser.birthday
+          ? updatedUser.birthday.toISOString().split('T')[0]
+          : undefined,
+        createdAt: updatedUser.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+router.put(
+  '/profile',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<ParamsDictionary, UserResponse, UpdateProfileRequest>,
+      res: Response<UserResponse>
+    ) => {
+      const user = requireAuth(req)
+      const { nickname, bio, gender, birthday, location, douyinId } = req.body
+
+      const updateData: Partial<{
+        nickname: string | null
+        bio: string | null
+        gender: number | undefined
+        birthday: Date | null
+        location: string
+        douyinId: string | undefined
+      }> = {}
+
+      if (nickname !== undefined) {
+        updateData.nickname = nickname === '' ? null : nickname
+      }
+      if (bio !== undefined) {
+        updateData.bio = bio === '' ? null : bio
+      }
+      if (gender !== undefined) {
+        updateData.gender = gender
+      }
+      if (birthday !== undefined) {
+        updateData.birthday = birthday ? new Date(birthday) : null
+      }
+      if (location !== undefined) {
+        updateData.location = location || '未知'
+      }
+      if (douyinId !== undefined) {
+        updateData.douyinId = douyinId
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: updateData,
+        select: {
+          id: true,
+          phone: true,
+          nickname: true,
+          avatar: true,
+          bio: true,
+          gender: true,
+          birthday: true,
+          location: true,
+          douyinId: true,
+          createdAt: true
+        }
+      })
+
+      const response: UserResponse = {
+        ...updatedUser,
+        birthday: updatedUser.birthday
+          ? updatedUser.birthday.toISOString().split('T')[0]
+          : undefined,
+        createdAt: updatedUser.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
 
 export default router

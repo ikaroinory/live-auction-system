@@ -21,7 +21,7 @@ export interface AuctionExpireJobData {
   auctionId: string
 }
 
-export interface AuctionExpireJob extends Job<AuctionExpireJobData> {}
+export type AuctionExpireJob = Job<AuctionExpireJobData>
 
 const queueOptions: QueueOptions = {
   connection: redisConnection,
