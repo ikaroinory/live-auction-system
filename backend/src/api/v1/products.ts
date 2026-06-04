@@ -5,6 +5,11 @@ import { authMiddleware } from '../../middleware/auth'
 import { ProductTag } from '@prisma/client'
 import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
 import type { ProductResponse, PagedResponse } from '../response'
+import {
+  setRoomExplainingProduct,
+  getRoomExplainingProduct,
+  clearRoomExplainingProduct
+} from '../../lib/redis'
 
 interface DeleteResponse {
   message: string
@@ -773,13 +778,40 @@ router.patch(
  *         schema:
  *           type: string
  *         description: 商品ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - roomId
+ *             properties:
+ *               roomId:
+ *                 type: string
+ *                 description: 直播间ID
+ *                 example: "abc123"
+ *               start:
+ *                 type: boolean
+ *                 description: 是否开始讲解（默认true）
+ *                 example: true
  *     responses:
  *       200:
  *         description: 切换成功
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 prevExplainingProductId:
+ *                   type: string
+ *                   nullable: true
+ *                 currentProduct:
+ *                   $ref: '#/components/schemas/Product'
  *       401:
  *         description: 未认证
  *       403:
@@ -791,23 +823,43 @@ router.patch(
   '/:id/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+    async (req: Request<{ id: string }, unknown, { roomId: string; start?: boolean }>, res: Response) => {
       const user = requireAuth(req)
+      const { roomId, start = true } = req.body
+      const productId = req.params.id
+
+      if (!roomId) {
+        return res.status(400).json({ success: false, message: 'roomId 不能为空' })
+      }
 
       const existing = await prisma.product.findUnique({
-        where: { id: req.params.id }
+        where: { id: productId }
       })
 
       if (!existing) {
-        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+        return res.status(404).json({ success: false, message: '商品不存在' })
       }
 
       if (existing.creatorId !== user.id) {
-        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+        return res.status(403).json({ success: false, message: '无权限操作此商品' })
       }
 
-      // 如果当前不是讲解状态，需要先清除其他商品的讲解状态
-      if (!existing.isExplaining) {
+      let prevExplainingProductId: string | null = null
+
+      if (start) {
+        prevExplainingProductId = await getRoomExplainingProduct(roomId)
+
+        if (prevExplainingProductId && prevExplainingProductId !== productId) {
+          await clearRoomExplainingProduct(roomId)
+
+          await prisma.product.update({
+            where: { id: prevExplainingProductId },
+            data: { isExplaining: false }
+          })
+        }
+
+        await setRoomExplainingProduct(roomId, productId)
+
         await prisma.product.updateMany({
           where: {
             creatorId: user.id,
@@ -817,12 +869,17 @@ router.patch(
             isExplaining: false
           }
         })
+      } else {
+        const currentExplaining = await getRoomExplainingProduct(roomId)
+        if (currentExplaining === productId) {
+          await clearRoomExplainingProduct(roomId)
+        }
       }
 
       const updated = await prisma.product.update({
-        where: { id: req.params.id },
+        where: { id: productId },
         data: {
-          isExplaining: !existing.isExplaining
+          isExplaining: start
         },
         include: {
           creator: {
@@ -840,7 +897,12 @@ router.patch(
         createdAt: updated.createdAt.toISOString()
       }
 
-      res.json(response)
+      res.json({
+        success: true,
+        message: start ? '开始讲解成功' : '结束讲解成功',
+        prevExplainingProductId,
+        currentProduct: response
+      })
     }
   )
 )
