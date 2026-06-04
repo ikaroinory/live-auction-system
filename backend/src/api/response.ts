@@ -51,45 +51,6 @@ export interface ProductResponse {
   createdAt: string
 }
 
-export interface AuctionResponse {
-  id: string
-  productId: string
-  reservePrice: number
-  currentPrice: number
-  status: string
-  startTime: string
-  endTime: string
-  fixedIncrement: number
-  currentWinnerId: string | null
-  product?: {
-    id: string
-    name: string
-    image: string
-    startingPrice: number
-    description?: string
-    tags?: string[]
-  }
-  currentWinner?: {
-    id: string
-    nickname: string | null
-    avatar: string | null
-  }
-  createdAt: string
-}
-
-export interface BidResponse {
-  id: string
-  auctionId: string
-  userId: string
-  amount: number
-  user?: {
-    id: string
-    nickname: string | null
-    avatar: string | null
-  }
-  createdAt: string
-}
-
 export interface LiveRoomResponse {
   id: string
   title: string

@@ -46,81 +46,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   // 关联关系
-  auctions      Auction[]        @relation("sellerAuctions")
-  bids          Bid[]
-  orders        Order[]          @relation("userOrders")
-  soldOrders    Order[]          @relation("sellerOrders")
-  wonAuctions   Auction[]        @relation("winnerAuctions")
   liveRooms     LiveRoom[]       @relation("UserToLiveRoom")
   followedRooms LiveRoomFollow[] @relation("UserToLiveRoomFollow")
   products      Product[]        @relation("UserToProduct")
-}
-
-model Auction {
-  id                String    @id @default(uuid())
-  sellerId          String
-  liveRoomId        String?
-  productId         String?
-  title             String
-  description       String?
-  images            Json?
-  startPrice        Decimal   @db.Decimal(10, 2)
-  minIncrement      Decimal   @db.Decimal(10, 2)
-  maxPrice          Decimal?  @db.Decimal(10, 2)
-  durationSeconds   Int
-  autoExtendSeconds Int       @default(15)
-  status            Int       @default(0) // 0:未开始 1:进行中 2:已结束 3:已取消
-  startTime         DateTime?
-  endTime           DateTime?
-  finalPrice        Decimal?  @db.Decimal(10, 2)
-  winnerId          String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // 关联关系
-  seller   User      @relation("sellerAuctions", fields: [sellerId], references: [id])
-  winner   User?     @relation("winnerAuctions", fields: [winnerId], references: [id])
-  liveRoom LiveRoom? @relation(fields: [liveRoomId], references: [id])
-  product  Product?  @relation("ProductToAuction", fields: [productId], references: [id])
-  bids     Bid[]
-  order    Order?
-
-  @@index([status])
-  @@index([startTime])
-  @@index([liveRoomId])
-  @@index([productId])
-}
-
-model Bid {
-  id        String   @id @default(uuid())
-  auctionId String
-  userId    String
-  price     Decimal  @db.Decimal(10, 2)
-  createdAt DateTime @default(now()) @db.DateTime(3)
-
-  // 关联关系
-  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([auctionId, userId, price])
-  @@index([auctionId, createdAt])
-}
-
-model Order {
-  id         String    @id @default(uuid())
-  auctionId  String    @unique
-  userId     String
-  sellerId   String
-  finalPrice Decimal   @db.Decimal(10, 2)
-  status     Int       @default(0) // 0:待支付 1:已支付 2:已取消
-  paidAt     DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  // 关联关系
-  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
-  user    User    @relation("userOrders", fields: [userId], references: [id])
-  seller  User    @relation("sellerOrders", fields: [sellerId], references: [id])
 }
 
 model LiveRoom {
@@ -137,7 +65,6 @@ model LiveRoom {
   // 关联关系
   streamer  User           @relation("UserToLiveRoom", fields: [streamerId], references: [id])
   followers LiveRoomFollow[] @relation("LiveRoomToLiveRoomFollow")
-  auctions  Auction[]
 
   @@index([status])
   @@index([streamerId])
@@ -182,7 +109,6 @@ model Product {
 
   // 关联关系
   creator  User     @relation("UserToProduct", fields: [creatorId], references: [id])
-  auctions Auction[] @relation("ProductToAuction")
 
   @@index([creatorId])
   @@index([createdAt])

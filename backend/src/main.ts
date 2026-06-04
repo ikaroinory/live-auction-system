@@ -7,7 +7,6 @@ import { swaggerSpec } from './config/swagger'
 import apiRouter from './api'
 import { errorHandler } from './middleware/errorHandler'
 import { connectRedis, disconnectRedis } from './lib/redis'
-import { startAuctionExpireWorker, stopAuctionExpireWorker } from './services/auctionExpire.service'
 
 dotenv.config()
 
@@ -30,7 +29,6 @@ app.use(errorHandler)
 async function startServer(): Promise<void> {
   try {
     await connectRedis()
-    await startAuctionExpireWorker()
 
     app.listen(config.port, () => {
       console.log(`🚀 服务器运行在 http://localhost:${config.port}`)
@@ -44,14 +42,12 @@ async function startServer(): Promise<void> {
 
 process.on('SIGTERM', async () => {
   console.log('📢 收到 SIGTERM 信号，正在关闭服务器...')
-  await stopAuctionExpireWorker()
   await disconnectRedis()
   process.exit(0)
 })
 
 process.on('SIGINT', async () => {
   console.log('📢 收到 SIGINT 信号，正在关闭服务器...')
-  await stopAuctionExpireWorker()
   await disconnectRedis()
   process.exit(0)
 })
