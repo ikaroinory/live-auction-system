@@ -245,8 +245,8 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     if (!props.productId) return
 
     try {
-      await toggleExplaining(props.productId)
-      Toast.success('讲解状态已更新')
+      await toggleExplaining(props.productId, !props.isExplaining)
+      Toast.success(props.isExplaining ? '结束讲解成功' : '开始讲解成功')
       props.refresh?.()
     } catch {
       Toast.error('操作失败，请稍后重试')

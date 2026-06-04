@@ -88,12 +88,12 @@ const ProductList: React.FC = () => {
   const liveProducts = useMemo(() => {
     if (!liveProductsData?.list) return []
     return liveProductsData.list.map((product, index) => convertProductToItem(product, index))
-  }, [liveProductsData])
+  }, [liveProductsData, explainingProductId])
 
   const pendingProducts = useMemo(() => {
     if (!pendingProductsData?.list) return []
     return pendingProductsData.list.map((product, index) => convertProductToItem(product, index))
-  }, [pendingProductsData])
+  }, [pendingProductsData, explainingProductId])
 
   const liveLoadingStatus: LoadingStatus = liveIsLoading ? 'loading' : liveError ? 'error' : 'success'
   const pendingLoadingStatus: LoadingStatus = pendingIsLoading ? 'loading' : pendingError ? 'error' : 'success'
