@@ -12,15 +12,17 @@ interface Product {
   fixedIncrement: number
   auctionStatus?: string
   status?: string
+  isExplaining?: boolean
 }
 
 interface ProductModalProps {
   visible: boolean
   onClose: () => void
   products: Product[]
+  explainingProductId?: string | null
 }
 
-export const ProductModal = ({ visible, onClose, products }: ProductModalProps) => {
+export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
   const handleBuy = (product: Product) => {
     Toast.show(`正在前往购买 ${product.name}`)
   }
@@ -64,7 +66,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
           {products && products.length > 0 ? (
             <div className={styles.productList}>
               {products.map((product) => (
-                <div key={product.id} className={styles.productCard}>
+                <div key={product.id} className={clsx(styles.productCard, { [styles.explaining]: explainingProductId === product.id })}>
                   <div className={styles.productContent}>
                     <div className={styles.productImageWrapper}>
                       {product.image ? (
@@ -78,13 +80,18 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
                           暂无图片
                         </div>
                       )}
-                      
+                      {explainingProductId === product.id && (
+                        <div className={styles.explainingBadge}>正在讲解</div>
+                      )}
                     </div>
                     <div className={styles.productInfo}>
                       <div className={styles.productTitle}>{product.name}</div>
                       <div className={clsx(styles.productStatusLabel, getStatusClass(product))}>
                         {getStatusLabel(product)}
                       </div>
+                      {explainingProductId === product.id && (
+                        <div className={styles.explainingLabel}>主播正在讲解此商品</div>
+                      )}
                       <div className={styles.productPriceWrapper}>
                         <span className={styles.productPriceLabel}>起拍价</span>
                         <span className={styles.productPrice}>{formatPrice(product.startingPrice)}</span>

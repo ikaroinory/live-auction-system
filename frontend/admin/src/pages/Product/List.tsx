@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Tabs, Space } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
@@ -8,15 +8,36 @@ import type { Product } from '@/types'
 import { useSearchParams } from 'react-router'
 import { ProductStatus, ProductTag } from '@/types'
 import { useUserStore } from '@/store'
+import { productService } from '@/services'
 
 const { Title } = Typography
 
 const ProductList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchValue, setSearchValue] = useState('')
+  const [explainingProductId, setExplainingProductId] = useState<string | null>(null)
   const { user } = useUserStore()
 
   const activeTab = searchParams.get('tab') || 'live'
+
+  useEffect(() => {
+    const fetchExplainingProduct = async () => {
+      try {
+        const result = await productService.getCurrentExplaining()
+        if (result.success) {
+          setExplainingProductId(result.productId)
+        }
+      } catch {
+        setExplainingProductId(null)
+      }
+    }
+
+    fetchExplainingProduct()
+
+    const interval = setInterval(fetchExplainingProduct, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const { 
     data: liveProductsData, 
@@ -57,7 +78,7 @@ const ProductList: React.FC = () => {
       bidCount: product.bidCount,
       status: product.status,
       tags: product.tags,
-      isExplaining: product.isExplaining,
+      isExplaining: explainingProductId === product.id,
       auctionStatus: product.auctionStatus,
       auctionStartTime: product.auctionStartTime,
       auctionEndTime: product.auctionEndTime

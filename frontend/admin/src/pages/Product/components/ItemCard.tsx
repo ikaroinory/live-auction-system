@@ -175,6 +175,7 @@ interface ButtonGroupProps {
   status?: ProductStatus
   auctionStatus?: ProductAuctionStatus
   refresh?: () => void
+  isExplaining?: boolean
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
@@ -301,8 +302,13 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
               结束竞拍
             </Button>
           )}
-          <Button theme="outline" type="tertiary" icon={<IconMicrophone />} onClick={handleToggleExplaining}>
-              讲解
+          <Button
+              theme="outline"
+              type={props.isExplaining ? 'danger' : 'tertiary'}
+              icon={<IconMicrophone />}
+              onClick={handleToggleExplaining}
+            >
+              {props.isExplaining ? '结束讲解' : '开始讲解'}
             </Button>
         </>
       )}
@@ -335,6 +341,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           status={props.status}
           auctionStatus={props.auctionStatus}
           refresh={props.refresh}
+          isExplaining={props.isExplaining}
         />
       </div>
     </Card>

@@ -762,6 +762,62 @@ router.patch(
 
 /**
  * @swagger
+ * /api/v1/products/explaining:
+ *   get:
+ *     summary: 获取当前正在讲解的商品
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 查询成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 productId:
+ *                   type: string
+ *                   nullable: true
+ *                 roomId:
+ *                   type: string
+ *                   nullable: true
+ *       400:
+ *         description: 用户未创建直播间
+ *       401:
+ *         description: 未认证
+ */
+router.get(
+  '/explaining',
+  authMiddleware,
+  wrapAuthHandler(
+    async (_req: Request, res: Response) => {
+      const user = requireAuth(_req)
+
+      const liveRoom = await prisma.liveRoom.findFirst({
+        where: { streamerId: user.id },
+        select: { id: true }
+      })
+
+      if (!liveRoom) {
+        return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
+      }
+
+      const productId = await getRoomExplainingProduct(liveRoom.id)
+
+      res.json({
+        success: true,
+        productId,
+        roomId: liveRoom.id
+      })
+    }
+  )
+)
+
+/**
+ * @swagger
  * /api/v1/products/{id}/explaining:
  *   patch:
  *     summary: 切换商品讲解状态（使用Redis存储）
@@ -782,10 +838,6 @@ router.patch(
  *           schema:
  *             type: object
  *             properties:
- *               roomId:
- *                 type: string
- *                 description: 直播间ID（提供时会更新Redis中的讲解状态）
- *                 example: "abc123"
  *               start:
  *                 type: boolean
  *                 description: 是否开始讲解（默认true）
@@ -805,6 +857,11 @@ router.patch(
  *                 prevExplainingProductId:
  *                   type: string
  *                   nullable: true
+ *                 roomId:
+ *                   type: string
+ *                   nullable: true
+ *       400:
+ *         description: 用户未创建直播间
  *       401:
  *         description: 未认证
  *       403:
@@ -816,10 +873,9 @@ router.patch(
   '/:id/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }, unknown, { roomId?: string; start?: boolean }>, res: Response) => {
+    async (req: Request<{ id: string }, unknown, { start?: boolean }>, res: Response) => {
       const user = requireAuth(req)
       const { start = true } = req.body
-      let roomId = req.body.roomId
       const productId = req.params.id
 
       const existing = await prisma.product.findUnique({
@@ -834,20 +890,19 @@ router.patch(
         return res.status(403).json({ success: false, message: '无权限操作此商品' })
       }
 
-      if (!roomId || roomId.trim() === '') {
-        const liveRoom = await prisma.liveRoom.findFirst({
-          where: { streamerId: user.id },
-          select: { id: true }
-        })
+      const liveRoom = await prisma.liveRoom.findFirst({
+        where: { streamerId: user.id },
+        select: { id: true }
+      })
 
-        if (liveRoom) {
-          roomId = liveRoom.id
-        }
+      if (!liveRoom) {
+        return res.status(400).json({ success: false, message: '用户未创建直播间' })
       }
 
+      const roomId = liveRoom.id
       let prevExplainingProductId: string | null = null
 
-      if (start && roomId) {
+      if (start) {
         prevExplainingProductId = await getRoomExplainingProduct(roomId)
 
         if (prevExplainingProductId && prevExplainingProductId !== productId) {
@@ -855,7 +910,7 @@ router.patch(
         }
 
         await setRoomExplainingProduct(roomId, productId)
-      } else if (!start && roomId) {
+      } else {
         const currentExplaining = await getRoomExplainingProduct(roomId)
         if (currentExplaining === productId) {
           await clearRoomExplainingProduct(roomId)

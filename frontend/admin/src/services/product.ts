@@ -35,13 +35,22 @@ export const productService = {
     await api.patch(`/products/${id}/status`, { status })
   },
 
-  toggleExplaining: async (id: string, roomId: string, start: boolean = true): Promise<{
+  toggleExplaining: async (id: string, start: boolean = true): Promise<{
     success: boolean
     message: string
     prevExplainingProductId: string | null
-    currentProduct: Product
+    roomId: string | null
   }> => {
-    const response = await api.patch(`/products/${id}/explaining`, { roomId, start })
+    const response = await api.patch(`/products/${id}/explaining`, { start })
+    return response.data
+  },
+
+  getCurrentExplaining: async (): Promise<{
+    success: boolean
+    productId: string | null
+    roomId: string | null
+  }> => {
+    const response = await api.get('/products/explaining')
     return response.data
   },
 
