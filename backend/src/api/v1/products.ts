@@ -668,4 +668,346 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}/status:
+ *   patch:
+ *     summary: 更新商品状态
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, PUBLISHED]
+ *                 description: 商品状态
+ *                 example: "PUBLISHED"
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ *       404:
+ *         description: 商品不存在
+ */
+router.patch(
+  '/:id/status',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<{ id: string }, ProductResponse, { status: string }>,
+      res: Response<ProductResponse>
+    ) => {
+      const user = requireAuth(req)
+      const { status } = req.body
+
+      if (!status || !['PENDING', 'PUBLISHED'].includes(status)) {
+        return res.status(400).json({ message: '无效的状态值' } as unknown as ProductResponse)
+      }
+
+      const existing = await prisma.product.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+      }
+
+      if (existing.creatorId !== user.id) {
+        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+      }
+
+      const updated = await prisma.product.update({
+        where: { id: req.params.id },
+        data: { status: status as 'PENDING' | 'PUBLISHED' },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: ProductResponse = {
+        ...updated,
+        createdAt: updated.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+/**
+ * @swagger
+ * /api/v1/products/{id}/explaining:
+ *   patch:
+ *     summary: 切换商品讲解状态
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 切换成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
+router.patch(
+  '/:id/explaining',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.product.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+      }
+
+      if (existing.creatorId !== user.id) {
+        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+      }
+
+      // 如果当前不是讲解状态，需要先清除其他商品的讲解状态
+      if (!existing.isExplaining) {
+        await prisma.product.updateMany({
+          where: {
+            creatorId: user.id,
+            isExplaining: true
+          },
+          data: {
+            isExplaining: false
+          }
+        })
+      }
+
+      const updated = await prisma.product.update({
+        where: { id: req.params.id },
+        data: {
+          isExplaining: !existing.isExplaining
+        },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: ProductResponse = {
+        ...updated,
+        createdAt: updated.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+/**
+ * @swagger
+ * /api/v1/products/{id}/start-auction:
+ *   patch:
+ *     summary: 开始竞拍
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 开始成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: 商品状态不允许开始竞拍
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
+router.patch(
+  '/:id/start-auction',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.product.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+      }
+
+      if (existing.creatorId !== user.id) {
+        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+      }
+
+      if (existing.auctionStatus !== 'NOT_STARTED') {
+        return res.status(400).json({ message: '商品竞拍已开始或已结束' } as unknown as ProductResponse)
+      }
+
+      const auctionEndTime = new Date(Date.now() + existing.durationMinutes * 60 * 1000)
+
+      const updated = await prisma.product.update({
+        where: { id: req.params.id },
+        data: {
+          auctionStatus: 'IN_PROGRESS',
+          auctionStartTime: new Date(),
+          auctionEndTime
+        },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: ProductResponse = {
+        ...updated,
+        createdAt: updated.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+/**
+ * @swagger
+ * /api/v1/products/{id}/end-auction:
+ *   patch:
+ *     summary: 结束竞拍
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 结束成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: 商品竞拍未在进行中
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
+router.patch(
+  '/:id/end-auction',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.product.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+      }
+
+      if (existing.creatorId !== user.id) {
+        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+      }
+
+      if (existing.auctionStatus !== 'IN_PROGRESS') {
+        return res.status(400).json({ message: '商品竞拍未在进行中' } as unknown as ProductResponse)
+      }
+
+      const updated = await prisma.product.update({
+        where: { id: req.params.id },
+        data: {
+          auctionStatus: 'ENDED',
+          auctionEndTime: new Date()
+        },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              nickname: true,
+              avatar: true
+            }
+          }
+        }
+      })
+
+      const response: ProductResponse = {
+        ...updated,
+        createdAt: updated.createdAt.toISOString()
+      }
+
+      res.json(response)
+    }
+  )
+)
+
 export default router

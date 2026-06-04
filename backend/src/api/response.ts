@@ -36,6 +36,12 @@ export interface ProductResponse {
   extendSeconds: number
   tags: string[]
   status: string
+  isExplaining: boolean
+  auctionStatus: string
+  auctionStartTime: string | null
+  auctionEndTime: string | null
+  currentBidPrice: number | null
+  bidCount: number
   creatorId: string
   creator?: {
     id: string
