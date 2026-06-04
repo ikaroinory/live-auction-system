@@ -25,7 +25,6 @@ export interface Product {
   fixedIncrement: number
   maxPrice?: number
   tags: ProductTag[]
-  isExplaining: boolean
   durationMinutes: number
   extendSeconds: number
   auctionStatus: ProductAuctionStatus

@@ -94,7 +94,6 @@ model Product {
   fixedIncrement   Decimal              @db.Decimal(10, 2)
   maxPrice         Decimal?             @db.Decimal(10, 2)
   tags             Json                 @default("[]")
-  isExplaining     Boolean              @default(false)
   // 竞拍相关字段
   durationMinutes  Int                  @default(60) // 默认竞拍时长：60分钟（1小时）
   extendSeconds    Int                  @default(15)  // 出价延时：默认15秒

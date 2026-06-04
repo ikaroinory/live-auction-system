@@ -173,7 +173,6 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, maxP
 interface ButtonGroupProps {
   productId?: string
   status?: ProductStatus
-  isExplaining?: boolean
   auctionStatus?: ProductAuctionStatus
   refresh?: () => void
 }
@@ -246,7 +245,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
 
     try {
       await toggleExplaining(props.productId)
-      Toast.success(props.isExplaining ? '已取消讲解' : '开始讲解')
+      Toast.success('讲解状态已更新')
       props.refresh?.()
     } catch {
       Toast.error('操作失败，请稍后重试')
@@ -302,21 +301,9 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
               结束竞拍
             </Button>
           )}
-          {props.isExplaining ? (
-            <Button
-              style={{ borderColor: 'var(--semi-color-primary)' }}
-              theme="outline"
-              type="primary"
-              icon={<IconMicrophone />}
-              onClick={handleToggleExplaining}
-            >
-              取消讲解
-            </Button>
-          ) : (
-            <Button theme="outline" type="tertiary" icon={<IconMicrophone />} onClick={handleToggleExplaining}>
+          <Button theme="outline" type="tertiary" icon={<IconMicrophone />} onClick={handleToggleExplaining}>
               讲解
             </Button>
-          )}
         </>
       )}
     </Space>
@@ -346,7 +333,6 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
         <ButtonGroup
           productId={props.productId}
           status={props.status}
-          isExplaining={props.isExplaining}
           auctionStatus={props.auctionStatus}
           refresh={props.refresh}
         />

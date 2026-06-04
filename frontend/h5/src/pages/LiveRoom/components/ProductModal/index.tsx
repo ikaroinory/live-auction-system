@@ -12,7 +12,6 @@ interface Product {
   fixedIncrement: number
   auctionStatus?: string
   status?: string
-  isExplaining?: boolean
 }
 
 interface ProductModalProps {
@@ -46,9 +45,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
     return styles.statusUpcoming
   }
 
-  const isExplaining = (product: Product) => {
-    return !!product.isExplaining
-  }
+  
 
   return (
     <>
@@ -81,9 +78,7 @@ export const ProductModal = ({ visible, onClose, products }: ProductModalProps) 
                           暂无图片
                         </div>
                       )}
-                      {isExplaining(product) && (
-                        <div className={styles.explainingLabel}>讲解中</div>
-                      )}
+                      
                     </div>
                     <div className={styles.productInfo}>
                       <div className={styles.productTitle}>{product.name}</div>
