@@ -776,17 +776,15 @@ router.patch(
  *           type: string
  *         description: 商品ID
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - roomId
  *             properties:
  *               roomId:
  *                 type: string
- *                 description: 直播间ID（必须提供，讲解状态存储在Redis中）
+ *                 description: 直播间ID（提供时会更新Redis中的讲解状态）
  *                 example: "abc123"
  *               start:
  *                 type: boolean
@@ -807,8 +805,6 @@ router.patch(
  *                 prevExplainingProductId:
  *                   type: string
  *                   nullable: true
- *       400:
- *         description: 参数错误
  *       401:
  *         description: 未认证
  *       403:
@@ -820,14 +816,10 @@ router.patch(
   '/:id/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }, unknown, { roomId: string; start?: boolean }>, res: Response) => {
+    async (req: Request<{ id: string }, unknown, { roomId?: string; start?: boolean }>, res: Response) => {
       const user = requireAuth(req)
       const { roomId, start = true } = req.body
       const productId = req.params.id
-
-      if (!roomId) {
-        return res.status(400).json({ success: false, message: 'roomId 不能为空' })
-      }
 
       const existing = await prisma.product.findUnique({
         where: { id: productId }
@@ -843,7 +835,7 @@ router.patch(
 
       let prevExplainingProductId: string | null = null
 
-      if (start) {
+      if (start && roomId) {
         prevExplainingProductId = await getRoomExplainingProduct(roomId)
 
         if (prevExplainingProductId && prevExplainingProductId !== productId) {
@@ -851,7 +843,7 @@ router.patch(
         }
 
         await setRoomExplainingProduct(roomId, productId)
-      } else {
+      } else if (!start && roomId) {
         const currentExplaining = await getRoomExplainingProduct(roomId)
         if (currentExplaining === productId) {
           await clearRoomExplainingProduct(roomId)
