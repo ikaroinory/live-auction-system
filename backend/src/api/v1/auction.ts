@@ -19,6 +19,49 @@ interface BidRequest {
   amount: number
 }
 
+/**
+ * @swagger
+ * /api/v1/auctions:
+ *   get:
+ *     summary: 获取拍卖列表
+ *     tags: [拍卖]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: 拍卖状态过滤（PENDING/LIVE/ENDED）
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Auction'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/',
   wrapHandler(
@@ -87,6 +130,29 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}:
+ *   get:
+ *     summary: 获取拍卖详情
+ *     tags: [拍卖]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 拍卖ID
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Auction'
+ *       404:
+ *         description: 拍卖不存在
+ */
 router.get(
   '/:id',
   wrapHandler(
@@ -130,6 +196,65 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions:
+ *   post:
+ *     summary: 创建拍卖
+ *     tags: [拍卖]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - reservePrice
+ *               - startTime
+ *               - endTime
+ *               - fixedIncrement
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: 商品ID
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
+ *               reservePrice:
+ *                 type: number
+ *                 description: 保留价
+ *                 example: 100
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *                 description: 开始时间
+ *                 example: "2024-12-01T10:00:00Z"
+ *               endTime:
+ *                 type: string
+ *                 format: date-time
+ *                 description: 结束时间
+ *                 example: "2024-12-01T12:00:00Z"
+ *               fixedIncrement:
+ *                 type: number
+ *                 description: 固定加价
+ *                 example: 10
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Auction'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权创建拍卖
+ *       404:
+ *         description: 商品不存在
+ */
 router.post(
   '/',
   authMiddleware,
@@ -209,6 +334,48 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}/bid:
+ *   post:
+ *     summary: 参与拍卖出价
+ *     tags: [拍卖]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 拍卖ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 description: 出价金额
+ *                 example: 150
+ *     responses:
+ *       200:
+ *         description: 出价成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Auction'
+ *       400:
+ *         description: 参数错误或拍卖不可出价
+ *       401:
+ *         description: 未认证
+ *       404:
+ *         description: 拍卖不存在
+ */
 router.post(
   '/:id/bid',
   authMiddleware,
@@ -305,6 +472,50 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions/{id}/bids:
+ *   get:
+ *     summary: 获取拍卖出价记录
+ *     tags: [拍卖]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 拍卖ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Bid'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/:id/bids',
   wrapHandler(
@@ -357,6 +568,50 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auctions/user/{userId}:
+ *   get:
+ *     summary: 获取用户的拍卖列表
+ *     tags: [拍卖]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 用户ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Auction'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/user/:userId',
   wrapHandler(

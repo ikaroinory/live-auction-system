@@ -44,6 +44,49 @@ interface UpdateProfileRequest {
   douyinId?: string
 }
 
+/**
+ * @swagger
+ * /api/v1/auth/register:
+ *   post:
+ *     summary: 用户注册
+ *     tags: [认证]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phone
+ *               - password
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 description: 手机号
+ *                 example: "13800138000"
+ *               password:
+ *                 type: string
+ *                 description: 密码
+ *                 example: "password123"
+ *               nickname:
+ *                 type: string
+ *                 description: 昵称（可选）
+ *                 example: "张三"
+ *     responses:
+ *       201:
+ *         description: 注册成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: 参数错误
+ */
 router.post(
   '/register',
   wrapHandler(
@@ -65,6 +108,47 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: 用户登录
+ *     tags: [认证]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phone
+ *               - password
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 description: 手机号
+ *                 example: "13800138000"
+ *               password:
+ *                 type: string
+ *                 description: 密码
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: 登录成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 认证失败
+ */
 router.post(
   '/login',
   wrapHandler(
@@ -85,6 +169,26 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auth/me:
+ *   get:
+ *     summary: 获取当前用户信息
+ *     tags: [认证]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: 未认证
+ *       404:
+ *         description: 用户不存在
+ */
 router.get(
   '/me',
   authMiddleware,
@@ -121,6 +225,45 @@ router.get(
   })
 )
 
+/**
+ * @swagger
+ * /api/v1/auth/sms-login:
+ *   post:
+ *     summary: 短信验证码登录
+ *     tags: [认证]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phone
+ *               - code
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 description: 手机号
+ *                 example: "13800138000"
+ *               code:
+ *                 type: string
+ *                 description: 验证码（测试环境：123456 或 666666）
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: 登录成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: 参数错误或验证码错误
+ */
 router.post(
   '/sms-login',
   wrapHandler(
@@ -152,6 +295,39 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auth/avatar:
+ *   put:
+ *     summary: 更新用户头像
+ *     tags: [认证]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 description: 头像 URL
+ *                 example: "https://example.com/avatar.jpg"
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.put(
   '/avatar',
   authMiddleware,
@@ -197,6 +373,58 @@ router.put(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/auth/profile:
+ *   put:
+ *     summary: 更新用户资料
+ *     tags: [认证]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *                 description: 昵称
+ *                 example: "张三"
+ *               bio:
+ *                 type: string
+ *                 description: 个人简介
+ *                 example: "喜欢收藏"
+ *               gender:
+ *                 type: number
+ *                 description: 性别（0: 未知, 1: 男, 2: 女）
+ *                 example: 1
+ *               birthday:
+ *                 type: string
+ *                 format: date
+ *                 description: 生日
+ *                 example: "1990-01-01"
+ *               location:
+ *                 type: string
+ *                 description: 所在地
+ *                 example: "北京"
+ *               douyinId:
+ *                 type: string
+ *                 description: 抖音号
+ *                 example: "douyin123"
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.put(
   '/profile',
   authMiddleware,

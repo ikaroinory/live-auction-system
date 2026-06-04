@@ -23,6 +23,49 @@ interface UpdateLiveRoomRequest {
   coverImage?: string
 }
 
+/**
+ * @swagger
+ * /api/v1/live-rooms:
+ *   get:
+ *     summary: 获取直播间列表
+ *     tags: [直播间]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: 直播间状态过滤（PENDING/LIVE/ENDED）
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/LiveRoom'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/',
   wrapHandler(
@@ -83,6 +126,29 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}:
+ *   get:
+ *     summary: 获取直播间详情
+ *     tags: [直播间]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LiveRoom'
+ *       404:
+ *         description: 直播间不存在
+ */
 router.get(
   '/:id',
   wrapHandler(
@@ -116,6 +182,47 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms:
+ *   post:
+ *     summary: 创建直播间
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: 直播间标题
+ *                 example: "收藏品拍卖专场"
+ *               description:
+ *                 type: string
+ *                 description: 直播间描述
+ *                 example: "欢迎来到收藏品拍卖专场"
+ *               coverImage:
+ *                 type: string
+ *                 description: 封面图片URL
+ *                 example: "https://example.com/cover.jpg"
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LiveRoom'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.post(
   '/',
   authMiddleware,
@@ -161,6 +268,56 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}:
+ *   put:
+ *     summary: 更新直播间信息
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: 直播间标题
+ *                 example: "收藏品拍卖专场"
+ *               description:
+ *                 type: string
+ *                 description: 直播间描述
+ *                 example: "欢迎来到收藏品拍卖专场"
+ *               coverImage:
+ *                 type: string
+ *                 description: 封面图片URL
+ *                 example: "https://example.com/cover.jpg"
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LiveRoom'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 直播间不存在
+ */
 router.put(
   '/:id',
   authMiddleware,
@@ -228,6 +385,39 @@ router.put(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}:
+ *   delete:
+ *     summary: 删除直播间
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 删除成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "删除成功"
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 直播间不存在
+ */
 router.delete(
   '/:id',
   authMiddleware,
@@ -256,6 +446,37 @@ router.delete(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}/start:
+ *   post:
+ *     summary: 开始直播
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 开始成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LiveRoom'
+ *       400:
+ *         description: 直播已开始
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 直播间不存在
+ */
 router.post(
   '/:id/start',
   authMiddleware,
@@ -310,6 +531,37 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}/end:
+ *   post:
+ *     summary: 结束直播
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 结束成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LiveRoom'
+ *       400:
+ *         description: 直播未开始
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 直播间不存在
+ */
 router.post(
   '/:id/end',
   authMiddleware,
@@ -364,6 +616,50 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/host/{hostId}:
+ *   get:
+ *     summary: 获取主播的直播间列表
+ *     tags: [直播间]
+ *     parameters:
+ *       - in: path
+ *         name: hostId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 主播用户ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/LiveRoom'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/host/:hostId',
   wrapHandler(

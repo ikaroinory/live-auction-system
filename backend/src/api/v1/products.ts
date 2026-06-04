@@ -36,6 +36,54 @@ interface UpdateProductRequest {
   tags?: string[]
 }
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   get:
+ *     summary: 获取商品列表
+ *     tags: [商品]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: 商品状态过滤
+ *       - in: query
+ *         name: creatorId
+ *         schema:
+ *           type: string
+ *         description: 创建者ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/',
   wrapHandler(
@@ -100,6 +148,29 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   get:
+ *     summary: 获取商品详情
+ *     tags: [商品]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: 商品不存在
+ */
 router.get(
   '/:id',
   wrapHandler(
@@ -131,6 +202,77 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   post:
+ *     summary: 创建商品
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - image
+ *               - startingPrice
+ *               - fixedIncrement
+ *               - durationMinutes
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 商品名称
+ *                 example: "限量版球鞋"
+ *               description:
+ *                 type: string
+ *                 description: 商品描述
+ *                 example: "全新未拆封的限量版球鞋"
+ *               image:
+ *                 type: string
+ *                 description: 商品图片URL
+ *                 example: "https://example.com/shoe.jpg"
+ *               startingPrice:
+ *                 type: number
+ *                 description: 起拍价
+ *                 example: 100
+ *               fixedIncrement:
+ *                 type: number
+ *                 description: 固定加价
+ *                 example: 10
+ *               maxPrice:
+ *                 type: number
+ *                 description: 最高价（可选）
+ *                 example: 1000
+ *               durationMinutes:
+ *                 type: number
+ *                 description: 拍卖时长（分钟）
+ *                 example: 60
+ *               extendSeconds:
+ *                 type: number
+ *                 description: 延时秒数
+ *                 example: 120
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 标签
+ *                 example: ["AUCTION", "FREE_SHIPPING"]
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ */
 router.post(
   '/',
   authMiddleware,
@@ -194,6 +336,82 @@ router.post(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   put:
+ *     summary: 更新商品信息
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 商品名称
+ *                 example: "限量版球鞋"
+ *               description:
+ *                 type: string
+ *                 description: 商品描述
+ *                 example: "全新未拆封的限量版球鞋"
+ *               image:
+ *                 type: string
+ *                 description: 商品图片URL
+ *                 example: "https://example.com/shoe.jpg"
+ *               startingPrice:
+ *                 type: number
+ *                 description: 起拍价
+ *                 example: 100
+ *               fixedIncrement:
+ *                 type: number
+ *                 description: 固定加价
+ *                 example: 10
+ *               maxPrice:
+ *                 type: number
+ *                 description: 最高价
+ *                 example: 1000
+ *               durationMinutes:
+ *                 type: number
+ *                 description: 拍卖时长（分钟）
+ *                 example: 60
+ *               extendSeconds:
+ *                 type: number
+ *                 description: 延时秒数
+ *                 example: 120
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 标签
+ *                 example: ["AUCTION", "FREE_SHIPPING"]
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: 参数错误
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.put(
   '/:id',
   authMiddleware,
@@ -293,6 +511,39 @@ router.put(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products/{id}:
+ *   delete:
+ *     summary: 删除商品
+ *     tags: [商品]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 商品ID
+ *     responses:
+ *       200:
+ *         description: 删除成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "删除成功"
+ *       401:
+ *         description: 未认证
+ *       403:
+ *         description: 无权限
+ *       404:
+ *         description: 商品不存在
+ */
 router.delete(
   '/:id',
   authMiddleware,
@@ -321,6 +572,50 @@ router.delete(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/products/creator/{creatorId}:
+ *   get:
+ *     summary: 获取创建者的商品列表
+ *     tags: [商品]
+ *     parameters:
+ *       - in: path
+ *         name: creatorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 创建者用户ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ */
 router.get(
   '/creator/:creatorId',
   wrapHandler(
