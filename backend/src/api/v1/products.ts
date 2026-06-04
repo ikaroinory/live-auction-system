@@ -818,7 +818,8 @@ router.patch(
   wrapAuthHandler(
     async (req: Request<{ id: string }, unknown, { roomId?: string; start?: boolean }>, res: Response) => {
       const user = requireAuth(req)
-      const { roomId, start = true } = req.body
+      const { start = true } = req.body
+      let roomId = req.body.roomId
       const productId = req.params.id
 
       const existing = await prisma.product.findUnique({
@@ -831,6 +832,17 @@ router.patch(
 
       if (existing.creatorId !== user.id) {
         return res.status(403).json({ success: false, message: '无权限操作此商品' })
+      }
+
+      if (!roomId || roomId.trim() === '') {
+        const liveRoom = await prisma.liveRoom.findFirst({
+          where: { streamerId: user.id },
+          select: { id: true }
+        })
+
+        if (liveRoom) {
+          roomId = liveRoom.id
+        }
       }
 
       let prevExplainingProductId: string | null = null
@@ -853,7 +865,8 @@ router.patch(
       res.json({
         success: true,
         message: start ? '开始讲解成功' : '结束讲解成功',
-        prevExplainingProductId
+        prevExplainingProductId,
+        roomId
       })
     }
   )
