@@ -779,17 +779,15 @@ router.patch(
  *           type: string
  *         description: 商品ID
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - roomId
  *             properties:
  *               roomId:
  *                 type: string
- *                 description: 直播间ID
+ *                 description: 直播间ID（可选，提供时会同步更新Redis）
  *                 example: "abc123"
  *               start:
  *                 type: boolean
@@ -823,14 +821,10 @@ router.patch(
   '/:id/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }, unknown, { roomId: string; start?: boolean }>, res: Response) => {
+    async (req: Request<{ id: string }, unknown, { roomId?: string; start?: boolean }>, res: Response) => {
       const user = requireAuth(req)
       const { roomId, start = true } = req.body
       const productId = req.params.id
-
-      if (!roomId) {
-        return res.status(400).json({ success: false, message: 'roomId 不能为空' })
-      }
 
       const existing = await prisma.product.findUnique({
         where: { id: productId }
@@ -847,18 +841,20 @@ router.patch(
       let prevExplainingProductId: string | null = null
 
       if (start) {
-        prevExplainingProductId = await getRoomExplainingProduct(roomId)
+        if (roomId) {
+          prevExplainingProductId = await getRoomExplainingProduct(roomId)
 
-        if (prevExplainingProductId && prevExplainingProductId !== productId) {
-          await clearRoomExplainingProduct(roomId)
+          if (prevExplainingProductId && prevExplainingProductId !== productId) {
+            await clearRoomExplainingProduct(roomId)
 
-          await prisma.product.update({
-            where: { id: prevExplainingProductId },
-            data: { isExplaining: false }
-          })
+            await prisma.product.update({
+              where: { id: prevExplainingProductId },
+              data: { isExplaining: false }
+            })
+          }
+
+          await setRoomExplainingProduct(roomId, productId)
         }
-
-        await setRoomExplainingProduct(roomId, productId)
 
         await prisma.product.updateMany({
           where: {
@@ -869,7 +865,7 @@ router.patch(
             isExplaining: false
           }
         })
-      } else {
+      } else if (roomId) {
         const currentExplaining = await getRoomExplainingProduct(roomId)
         if (currentExplaining === productId) {
           await clearRoomExplainingProduct(roomId)
