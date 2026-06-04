@@ -106,12 +106,9 @@ router.get(
       const pageSize = parseInt(req.query.pageSize || '10')
       const skip = (page - 1) * pageSize
 
-      const where: Partial<{
-        status: string
-        creatorId: string
-      }> = {}
-      if (status !== undefined) {
-        where.status = status
+      const where: Record<string, unknown> = {}
+      if (status !== undefined && ['PENDING', 'PUBLISHED'].includes(status)) {
+        where.status = status as 'PENDING' | 'PUBLISHED'
       }
       if (creatorId !== undefined) {
         where.creatorId = creatorId as string
