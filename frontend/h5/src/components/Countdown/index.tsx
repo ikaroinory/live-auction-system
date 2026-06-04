@@ -7,11 +7,11 @@ interface CountdownProps {
 }
 
 export const Countdown = ({ remainingMs, onComplete }: CountdownProps) => {
-  const [displayMs, setDisplayMs] = useState(remainingMs)
+  const [displayMs, setDisplayMs] = useState(() => remainingMs)
 
-  useEffect(() => {
+  if (remainingMs !== displayMs) {
     setDisplayMs(remainingMs)
-  }, [remainingMs])
+  }
 
   useEffect(() => {
     if (remainingMs <= 0 && onComplete) {

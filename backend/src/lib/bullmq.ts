@@ -74,16 +74,11 @@ export function createAuctionExpireWorker(
   })
 
   worker.on('failed', (job, err) => {
-    console.error(
-      `❌ 任务执行失败: jobId=${job?.id}, productId=${job?.data.productId}, 错误:`,
-      err
-    )
+    console.error(`❌ 任务执行失败: jobId=${job?.id}, productId=${job?.data.productId}, 错误:`, err)
   })
 
   worker.on('completed', (job) => {
-    console.log(
-      `✅ 任务执行完成: jobId=${job.id}, productId=${job.data.productId}`
-    )
+    console.log(`✅ 任务执行完成: jobId=${job.id}, productId=${job.data.productId}`)
   })
 
   worker.on('drained', () => {
@@ -122,7 +117,7 @@ export async function addAuctionExpireJob(
   delay: number
 ): Promise<Job<AuctionExpireJobData>> {
   const jobId = `auction_${data.productId}`
-  
+
   try {
     const existingJob = await auctionExpireQueue.getJob(jobId)
     if (existingJob) {
@@ -130,19 +125,15 @@ export async function addAuctionExpireJob(
       console.log(`🔄 已移除旧的竞拍到期任务: jobId=${jobId}`)
     }
 
-    const job = await auctionExpireQueue.add(
-      'expire',
-      data,
-      {
-        jobId,
-        delay,
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 1000
-        }
+    const job = await auctionExpireQueue.add('expire', data, {
+      jobId,
+      delay,
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 1000
       }
-    )
+    })
     console.log(
       `📅 已创建竞拍到期任务: jobId=${job.id}, productId=${data.productId}, 延迟: ${delay}ms`
     )

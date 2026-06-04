@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Toast, Input } from 'antd-mobile'
 import { useUserStore } from '../../store/useUserStore'
@@ -39,24 +39,6 @@ export const ProfileEdit = () => {
   const [birthdayModalVisible, setBirthdayModalVisible] = useState(false)
   const [tempGender, setTempGender] = useState<Gender>(profileData.gender)
   const [tempBirthday, setTempBirthday] = useState(profileData.birthday || '')
-
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        nickname: user.nickname || '',
-        bio: user.bio || '',
-        gender: user.gender || Gender.MALE,
-        birthday: user.birthday || '',
-        location: user.location || '',
-        douyinId: user.douyinId || '',
-      })
-      setTempGender(user.gender || Gender.MALE)
-      setTempBirthday(user.birthday || '')
-      if (user.avatar) {
-        setPreviewUrl(user.avatar)
-      }
-    }
-  }, [user])
 
   const getGenderDisplay = (g?: Gender) => {
     switch (g) {
@@ -107,8 +89,9 @@ export const ProfileEdit = () => {
       const updatedUser = await authAPI.updateProfile(newData)
       setUser(updatedUser)
       Toast.show('已保存')
-    } catch (error: any) {
-      Toast.show(error.message || '保存失败')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '保存失败'
+      Toast.show(message)
     }
   }
 
@@ -125,8 +108,9 @@ export const ProfileEdit = () => {
       const updatedUser = await authAPI.updateProfile(newData)
       setUser(updatedUser)
       Toast.show('已保存')
-    } catch (error: any) {
-      Toast.show(error.message || '保存失败')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '保存失败'
+      Toast.show(message)
     }
   }
 
@@ -146,8 +130,9 @@ export const ProfileEdit = () => {
       const updatedUser = await authAPI.updateProfile(newData)
       setUser(updatedUser)
       Toast.show('已保存')
-    } catch (error: any) {
-      Toast.show(error.message || '保存失败')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '保存失败'
+      Toast.show(message)
     }
   }
 
@@ -173,8 +158,9 @@ export const ProfileEdit = () => {
       setUser(updatedUser)
       setPreviewUrl(updatedUser.avatar)
       Toast.show('头像已更新')
-    } catch (error: any) {
-      Toast.show(error.message || '头像上传失败')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '头像上传失败'
+      Toast.show(message)
     } finally {
       setIsUploading(false)
     }

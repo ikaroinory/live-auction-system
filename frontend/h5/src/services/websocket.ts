@@ -41,7 +41,7 @@ class WebSocketService {
       store.setConnectionStatus('connected')
 
       if (this.currentAuctionId) {
-        this.reconnectAttempts
+        // Rejoin the room if we were connected
       }
     })
 

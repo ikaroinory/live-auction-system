@@ -391,7 +391,11 @@ router.post('/:id/bid', authMiddleware, async (req: AuthRequest, res: Response, 
     })
 
     if (auction.productId && auction.startTime) {
-      const newEndTime = new Date(auction.startTime.getTime() + auction.durationSeconds * 1000 + auction.autoExtendSeconds * 1000)
+      const newEndTime = new Date(
+        auction.startTime.getTime() +
+          auction.durationSeconds * 1000 +
+          auction.autoExtendSeconds * 1000
+      )
       await scheduleAuctionExpire(auction.productId, id, newEndTime)
     }
 

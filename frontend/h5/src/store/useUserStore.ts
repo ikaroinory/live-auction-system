@@ -38,7 +38,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
       const userData = await authAPI.getCurrentUser()
       set({ user: userData, isLoggedIn: true, isLoading: false })
-    } catch (error) {
+    } catch {
       localStorage.removeItem('token')
       set({ user: null, isLoggedIn: false, isLoading: false })
     }

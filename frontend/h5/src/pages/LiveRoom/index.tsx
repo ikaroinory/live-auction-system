@@ -1,18 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Toast } from 'antd-mobile'
 import { useAuctionRoomStore } from '../../store/useAuctionRoomStore'
 import { useUserStore } from '../../store/useUserStore'
 import { useWebSocket } from '../../hooks/useWebSocket'
 import { useCountdown } from '../../hooks/useCountdown'
 import { useBidAnimation } from '../../hooks/useBidAnimation'
-import { Countdown } from '../../components/Countdown'
 import { RankingList } from '../../components/RankingList'
-import { BidButton } from '../../components/BidButton'
 import { ToastNotification } from '../../components/ToastNotification'
 import { Avatar, BubbleButton } from '../../components/ui'
 import {
-  ChevronLeftIcon,
   HistoryIcon,
   ShareIcon,
   LikeIcon,
@@ -20,12 +17,11 @@ import {
   CloseIcon,
 } from '../../components/ui/icons'
 import { VideoPlayer } from './components/VideoPlayer'
-import { CurrentPrice } from './components/CurrentPrice'
 import { BidHistory } from './components/BidHistory'
 import { ProductModal } from './components/ProductModal'
-import { formatPrice } from '../../utils/format'
-import { liveRoomAPI, auctionAPI, productAPI, ProductParams } from '../../services/api'
-import type { LiveRoomWithStreamer, AuctionWithSeller } from '@live-auction/shared'
+
+import { liveRoomAPI, productAPI } from '../../services/api'
+import type { LiveRoomWithStreamer, AuctionWithSeller, Product as ProductType } from '@live-auction/shared'
 import './LiveRoom.scss'
 import styles from './styles.module.scss'
 import clsx from 'clsx'
@@ -55,37 +51,46 @@ export const LiveRoom = () => {
   const [showBidHistory, setShowBidHistory] = useState(false)
   const [isFollowed, setIsFollowed] = useState(false)
   const [showProductModal, setShowProductModal] = useState(false)
-  const [products, setProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<ProductType[]>([])
   const [chatInput, setChatInput] = useState('')
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [animations, setAnimations] = useState<AnimationItem[]>([])
-  const [onlineCount] = useState(40000)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const { user } = useUserStore()
   const {
     currentAuction,
-    currentPrice,
     rankings,
     remainingMs,
-    connectionStatus,
-    isLeading,
     updatePrice,
     bidHistory,
-    addBidToHistory,
     setCurrentAuction,
     setBidHistory,
   } = useAuctionRoomStore()
 
-  const { submitBid } = useWebSocket({
+  useWebSocket({
     auctionId: currentAuction?.id,
     userId: user?.id,
     autoConnect: true,
   })
 
-  const { remainingMs: displayMs } = useCountdown(remainingMs)
+  useCountdown(remainingMs)
 
-  const { isAnimating, animationType, playSuccess, playFail } = useBidAnimation()
+  useBidAnimation()
+
+  // 初始化聊天消息 - 使用 useState 默认值来避免在 effect 中同步 setState
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    { id: '1', userId: '1', userName: '梦尘', content: '这个直播间好棒', type: 'message' },
+    {
+      id: '2',
+      userId: '2',
+      userName: '幸福是什么',
+      content: '希望能拍到好东西',
+      type: 'message',
+    },
+    { id: '3', userId: '3', userName: '朱Z', content: '主播加油', type: 'message' },
+    { id: '4', userId: '4', userName: 'Sum_41', content: '关注了主播', type: 'join' },
+    { id: '5', userId: '5', userName: '菠萝睡不醒', content: '666', type: 'message' },
+  ])
 
   useEffect(() => {
     const loadLiveRoom = async () => {
@@ -138,8 +143,7 @@ export const LiveRoom = () => {
           updatePrice(auction.startPrice + auction.minIncrement * 3)
           useAuctionRoomStore.setState({ remainingMs: 300000 })
         }
-      } catch (error) {
-        console.error('Failed to load live room:', error)
+      } catch {
         Toast.show('加载直播间失败')
       } finally {
         setLoading(false)
@@ -148,41 +152,6 @@ export const LiveRoom = () => {
 
     loadLiveRoom()
   }, [id, setCurrentAuction, setBidHistory, updatePrice])
-
-  const handleBid = () => {
-    if (!user) {
-      Toast.show('请先登录')
-      navigate('/login')
-      return
-    }
-
-    if (!currentAuction) {
-      Toast.show('竞拍信息加载中')
-      return
-    }
-
-    const nextPrice = currentPrice + currentAuction.minIncrement
-    const success = submitBid(nextPrice)
-
-    if (success) {
-      playSuccess()
-      updatePrice(nextPrice)
-
-      const newBid = {
-        id: Date.now().toString(),
-        auctionId: currentAuction.id,
-        userId: user.id,
-        price: nextPrice,
-        createdAt: new Date().toISOString(),
-      }
-      addBidToHistory(newBid)
-
-      Toast.show(`出价 ${formatPrice(nextPrice)} 成功！`)
-    } else {
-      playFail()
-      Toast.show('出价失败，请稍后重试')
-    }
-  }
 
   const handleGoBack = () => {
     navigate(-1)
@@ -206,16 +175,18 @@ export const LiveRoom = () => {
         Toast.show('关注成功')
       }
       setIsFollowed(!isFollowed)
-    } catch (error) {
+    } catch {
       Toast.show('操作失败，请稍后重试')
     }
   }
 
-  const handleSendChat = () => {
+  const generateId = useCallback(() => Math.random().toString(36).substring(2, 9), [])
+
+  const handleSendChat = useCallback(() => {
     if (!chatInput.trim() || !user) return
 
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: generateId(),
       userId: user.id,
       userName: user.nickname || user.phone || '我',
       content: chatInput,
@@ -223,11 +194,11 @@ export const LiveRoom = () => {
     }
     setChatMessages((prev) => [...prev, newMessage])
     setChatInput('')
-  }
+  }, [chatInput, user, generateId])
 
-  const showEffects = (type: 'like' | 'gift') => {
+  const showEffects = useCallback((type: 'like' | 'gift') => {
     const newAnimation: AnimationItem = {
-      id: Date.now().toString(),
+      id: generateId(),
       type: type,
       content: type === 'like' ? '❤️' : '🎉',
       left: Math.random() * 60 + 20,
@@ -236,33 +207,18 @@ export const LiveRoom = () => {
     setTimeout(() => {
       setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
     }, 1000)
-  }
+  }, [generateId])
 
   const handleShare = () => {
     Toast.show('分享链接已复制')
   }
 
   useEffect(() => {
-    const mockMessages: ChatMessage[] = [
-      { id: '1', userId: '1', userName: '梦尘', content: '这个直播间好棒', type: 'message' },
-      {
-        id: '2',
-        userId: '2',
-        userName: '幸福是什么',
-        content: '希望能拍到好东西',
-        type: 'message',
-      },
-      { id: '3', userId: '3', userName: '朱Z', content: '主播加油', type: 'message' },
-      { id: '4', userId: '4', userName: 'Sum_41', content: '关注了主播', type: 'join' },
-      { id: '5', userId: '5', userName: '菠萝睡不醒', content: '666', type: 'message' },
-    ]
-    setChatMessages(mockMessages)
-
     const interval = setInterval(() => {
       const randomUsers = ['我勒个恋狗啊', '恨', 'Ninety__n', '我。。']
       const randomContents = ['这个多少钱', '主播好厉害', '冲冲冲', '666', '太牛了', '想要这个']
       const newMessage: ChatMessage = {
-        id: Date.now().toString(),
+        id: generateId(),
         userId: Math.random().toString(),
         userName: randomUsers[Math.floor(Math.random() * randomUsers.length)],
         content: randomContents[Math.floor(Math.random() * randomContents.length)],
@@ -272,7 +228,7 @@ export const LiveRoom = () => {
     }, 3000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [generateId])
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })

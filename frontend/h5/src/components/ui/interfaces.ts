@@ -3,12 +3,12 @@ export interface ChildrenProps {
 }
 
 export type BaseComponent<
-  B extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any> = 'div',
-  P = {},
+  B extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<unknown> = 'div',
+  P = Record<string, never>,
 > = React.FC<P & React.ComponentProps<B>>
 
 export type ComponentWithMembers<
-  B extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any> = 'div',
-  P = {},
-  M extends object = {},
+  B extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<unknown> = 'div',
+  P = Record<string, never>,
+  M extends object = Record<string, never>,
 > = BaseComponent<B, P> & M

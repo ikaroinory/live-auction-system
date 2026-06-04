@@ -1,7 +1,5 @@
 import styles from './styles.module.scss'
 
-interface FloatTagProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export const FloatTag: React.FC<FloatTagProps> = (props: FloatTagProps) => {
+export const FloatTag: React.FC<React.HTMLAttributes<HTMLDivElement>> = (props) => {
   return <div className={styles.floatTag}>{props.children}</div>
 }

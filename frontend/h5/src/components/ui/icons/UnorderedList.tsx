@@ -1,4 +1,4 @@
-export const UnorderedListOutline = (props: any) => {
+export const UnorderedListOutline = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width="24"

@@ -41,8 +41,15 @@ export const Login = () => {
 
       Toast.show('登录成功')
       navigate('/')
-    } catch (error: any) {
-      Toast.show(error.response?.data?.message || '登录失败，请稍后重试')
+    } catch (error) {
+      let message = '登录失败，请稍后重试'
+      if (error instanceof Error) {
+        const err = error as { response?: { data?: { message?: string } } }
+        if (err.response?.data?.message) {
+          message = err.response.data.message
+        }
+      }
+      Toast.show(message)
     } finally {
       setLoading(false)
     }

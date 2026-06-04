@@ -91,5 +91,30 @@ export { redisClient, subscriberClient }
 export const REDIS_KEYS = {
   AUCTION_EXPIRE: (productId: string) => `expire:product:${productId}`,
   AUCTION_CURRENT_PRICE: (productId: string) => `price:product:${productId}`,
-  AUCTION_BID_COUNT: (productId: string) => `bids:product:${productId}`
+  AUCTION_BID_COUNT: (productId: string) => `bids:product:${productId}`,
+  ROOM_EXPLAINING: (roomId: string) => `room:explaining:${roomId}`
+}
+
+export async function setRoomExplainingProduct(
+  roomId: string,
+  productId: string
+): Promise<boolean> {
+  const key = REDIS_KEYS.ROOM_EXPLAINING(roomId)
+  const result = await redisClient.set(key, productId, 'NX', 'EX', 300)
+  return result === 'OK'
+}
+
+export async function getRoomExplainingProduct(roomId: string): Promise<string | null> {
+  const key = REDIS_KEYS.ROOM_EXPLAINING(roomId)
+  return await redisClient.get(key)
+}
+
+export async function clearRoomExplainingProduct(roomId: string): Promise<number> {
+  const key = REDIS_KEYS.ROOM_EXPLAINING(roomId)
+  return await redisClient.del(key)
+}
+
+export async function isProductExplaining(roomId: string, productId: string): Promise<boolean> {
+  const explainingProductId = await getRoomExplainingProduct(roomId)
+  return explainingProductId === productId
 }

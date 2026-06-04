@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import './VideoPlayer.scss'
 
 export const VideoPlayer = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [isStreaming, setIsStreaming] = useState(true)
 
   useEffect(() => {
     const canvas = canvasRef.current

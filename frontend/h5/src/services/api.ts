@@ -12,7 +12,6 @@ import type {
   LiveRoomWithStreamer,
   CreateLiveRoomParams,
   UpdateLiveRoomParams,
-  FollowLiveRoomParams,
   LiveRoomFollowWithDetails,
 } from '@live-auction/shared'
 
@@ -83,7 +82,7 @@ export const liveRoomAPI = {
   },
   getLiveRoomDetail: (
     id: string
-  ): Promise<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: any[] }> => {
+  ): Promise<LiveRoomWithStreamer & { isFollowed?: boolean; auctions?: unknown[] }> => {
     return apiClient.get(`/v1/live-rooms/${id}`)
   },
   createLiveRoom: (params: CreateLiveRoomParams): Promise<LiveRoom> => {
@@ -111,7 +110,7 @@ export interface ProductParams {
 }
 
 export interface ProductResponse {
-  list: any[]
+  list: unknown[]
   total: number
   page: number
   pageSize: number
@@ -121,7 +120,7 @@ export const productAPI = {
   getProducts: (params?: ProductParams): Promise<ProductResponse> => {
     return apiClient.get('/v1/products', { params })
   },
-  getProductDetail: (id: string): Promise<any> => {
+  getProductDetail: (id: string): Promise<unknown> => {
     return apiClient.get(`/v1/products/${id}`)
   },
 }

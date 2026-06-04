@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NavBar, Toast } from 'antd-mobile'
 import { useUserStore } from '../../store/useUserStore'
@@ -11,18 +11,10 @@ export const AvatarEdit = () => {
   const { user, setUser } = useUserStore()
   const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || '/default-avatar.svg')
   const [isUploading, setIsUploading] = useState(false)
-  const [isSaved, setIsSaved] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (user?.avatar) {
-      setPreviewUrl(user.avatar)
-    }
-  }, [user])
 
   const handleUploadAndSave = async (file: File) => {
     setIsUploading(true)
-    setIsSaved(false)
 
     const reader = new FileReader()
 
@@ -42,11 +34,10 @@ export const AvatarEdit = () => {
       const updatedUser = await authAPI.updateAvatar(dataUrl)
       setUser(updatedUser)
       setPreviewUrl(updatedUser.avatar)
-      setIsSaved(true)
       Toast.show('头像已更新')
-    } catch (error: any) {
-      Toast.show(error.message || '头像上传失败')
-      setIsSaved(false)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '头像上传失败'
+      Toast.show(message)
     } finally {
       setIsUploading(false)
     }

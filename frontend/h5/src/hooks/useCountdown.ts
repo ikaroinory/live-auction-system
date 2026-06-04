@@ -12,7 +12,7 @@ export const useCountdown = (initialMs: number, options: CountdownOptions = {}) 
   const [remainingMs, setRemainingMs] = useState(initialMs)
   const [isRunning, setIsRunning] = useState(autoStart)
   const rafIdRef = useRef<number | null>(null)
-  const lastTickRef = useRef<number>(Date.now())
+  const lastTickRef = useRef<number | undefined>(undefined)
 
   const start = useCallback(() => {
     setIsRunning(true)
@@ -25,7 +25,6 @@ export const useCountdown = (initialMs: number, options: CountdownOptions = {}) 
   const reset = useCallback(
     (newMs?: number) => {
       setRemainingMs(newMs ?? initialMs)
-      lastTickRef.current = Date.now()
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current)
       }
@@ -43,6 +42,9 @@ export const useCountdown = (initialMs: number, options: CountdownOptions = {}) 
 
     const tick = () => {
       const now = Date.now()
+      if (lastTickRef.current === undefined) {
+        lastTickRef.current = now
+      }
       const delta = now - lastTickRef.current
       lastTickRef.current = now
 
@@ -76,7 +78,7 @@ export const useCountdown = (initialMs: number, options: CountdownOptions = {}) 
         cancelAnimationFrame(rafIdRef.current)
       }
     }
-  }, [isRunning, onTick, onComplete])
+  }, [isRunning, onTick, onComplete, remainingMs])
 
   return {
     remainingMs,

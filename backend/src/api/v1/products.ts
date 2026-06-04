@@ -2,6 +2,11 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../../lib/prisma'
 import { ProductStatus } from '@prisma/client'
 import { authMiddleware, AuthRequest } from '../../middleware/auth'
+import {
+  setRoomExplainingProduct,
+  getRoomExplainingProduct,
+  clearRoomExplainingProduct
+} from '../../lib/redis'
 
 export enum ProductTag {
   LATE_COMPENSATION = 'LATE_COMPENSATION',
@@ -112,7 +117,18 @@ router.get('/', async (req: Request, res: Response, next: Function) => {
       prisma.product.count({ where })
     ])
 
-    res.json({ list: products, total, page: pageNum, pageSize: pageSizeNum })
+    const roomId = creatorId as string | undefined
+    let explainingProductId: string | null = null
+    if (roomId) {
+      explainingProductId = await getRoomExplainingProduct(roomId)
+    }
+
+    const productsWithExplainingStatus = products.map((product) => ({
+      ...product,
+      isExplaining: explainingProductId === product.id
+    }))
+
+    res.json({ list: productsWithExplainingStatus, total, page: pageNum, pageSize: pageSizeNum })
   } catch (error) {
     next(error)
   }
@@ -162,7 +178,10 @@ router.get('/:id', async (req: Request, res: Response, next: Function) => {
       return res.status(404).json({ message: '商品不存在' })
     }
 
-    res.json(product)
+    const roomId = product.creatorId
+    const explainingProductId = await getRoomExplainingProduct(roomId)
+
+    res.json({ ...product, isExplaining: explainingProductId === id })
   } catch (error) {
     next(error)
   }
@@ -353,7 +372,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response, next:
       return res.status(403).json({ message: '没有权限修改此商品' })
     }
 
-    let updateData: any = {
+    const updateData: any = {
       name: name || existingProduct.name,
       image: image || existingProduct.image,
       startingPrice: startingPrice || existingProduct.startingPrice,
@@ -487,7 +506,10 @@ router.patch(
       const { id } = req.params
       const { status } = req.body
 
-      if (status === undefined || ![ProductStatus.PENDING, ProductStatus.PUBLISHED].includes(status)) {
+      if (
+        status === undefined ||
+        ![ProductStatus.PENDING, ProductStatus.PUBLISHED].includes(status)
+      ) {
         return res.status(400).json({ message: '无效的状态值' })
       }
 
@@ -563,12 +585,35 @@ router.patch(
         return res.status(403).json({ message: '没有权限修改此商品' })
       }
 
+      const roomId = existingProduct.creatorId
+
+      const currentExplainingProductId = await getRoomExplainingProduct(roomId)
+
+      if (currentExplainingProductId === id) {
+        await clearRoomExplainingProduct(roomId)
+        const product = await prisma.product.update({
+          where: { id },
+          data: { isExplaining: false }
+        })
+        return res.json({ ...product, isExplaining: false })
+      }
+
+      if (currentExplainingProductId !== null) {
+        return res.status(400).json({ message: '当前直播间已有商品在讲解中' })
+      }
+
+      const success = await setRoomExplainingProduct(roomId, id)
+
+      if (!success) {
+        return res.status(400).json({ message: '设置讲解状态失败，请重试' })
+      }
+
       const product = await prisma.product.update({
         where: { id },
-        data: { isExplaining: !existingProduct.isExplaining }
+        data: { isExplaining: true }
       })
 
-      res.json(product)
+      res.json({ ...product, isExplaining: true })
     } catch (error) {
       next(error)
     }

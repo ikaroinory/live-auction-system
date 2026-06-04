@@ -2,17 +2,15 @@ import { createContext, ReactNode } from 'react'
 import { isElementOfType } from '../utils'
 import styles from './styles.module.scss'
 
-interface ListProps extends React.HTMLAttributes<HTMLDivElement> {}
-
 interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: ReactNode
   value?: ReactNode
   extra?: ReactNode
 }
 
-const ListContext = createContext({})
+const ListContext = createContext<Record<string, never>>({})
 
-export function List(props: ListProps) {
+export function List(props: React.HTMLAttributes<HTMLDivElement>) {
   const { children, className = '', style } = props
 
   return (

@@ -24,7 +24,7 @@ export const MenuItem: BaseComponent<'div', MenuItemProps> = ({
   ...props
 }) => {
   const navigate = useNavigate()
-  const location = navigation !== undefined ? useLocation() : undefined
+  const location = useLocation()
 
   const navigateTo = isNavigationProps(navigation) ? navigation.to : navigation
   const navigateOptions = isNavigationProps(navigation) ? navigation.options : undefined
@@ -37,15 +37,13 @@ export const MenuItem: BaseComponent<'div', MenuItemProps> = ({
     navigate(navigateTo, navigateOptions)
   }
 
+  const isActive = navigateTo !== undefined && location.pathname === navigateTo
+
   return (
     <div className={styles.menuItem} onClick={onClick} {...props}>
       {icon && <div>{icon}</div>}
       <div
-        className={
-          location !== undefined && location.pathname === navigateTo
-            ? styles.menuItemNameActivate
-            : styles.menuItemName
-        }
+        className={isActive ? styles.menuItemNameActivate : styles.menuItemName}
       >
         {name}
       </div>

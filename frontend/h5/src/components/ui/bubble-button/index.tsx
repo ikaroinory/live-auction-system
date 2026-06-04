@@ -2,9 +2,7 @@ import styles from './styles.module.scss'
 import { BaseComponent } from '../interfaces'
 import clsx from 'clsx'
 
-interface BubbleButtonProps {}
-
-export const BubbleButton: BaseComponent<'button', BubbleButtonProps> = ({
+export const BubbleButton: BaseComponent<'button'> = ({
   children,
   className,
   ...props

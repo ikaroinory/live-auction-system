@@ -1,4 +1,4 @@
-export const ShopbagOutline = (props: any) => {
+export const ShopbagOutline = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width="24"
