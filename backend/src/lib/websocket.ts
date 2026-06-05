@@ -288,10 +288,16 @@ export function setupWebSocket(httpServer: HttpServer): Server {
       }
     })
 
+    socket.on('PING', () => {
+      socket.emit('PONG')
+    })
+
     socket.on('disconnect', () => {
       console.log(`WebSocket client disconnected: ${socket.id}`)
     })
   })
+
+  io.setMaxListeners(20)
 
   return io
 }

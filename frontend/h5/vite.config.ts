@@ -14,14 +14,14 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: Number(env.VITE_PORT) || 3000,
+      port: Number(env.VITE_PORT),
       proxy: {
         '/api': {
-          target: env.VITE_API_TARGET || 'http://localhost:8080',
+          target: env.VITE_API_TARGET,
           changeOrigin: true,
         },
         '/ws': {
-          target: env.VITE_WS_TARGET || 'ws://localhost:8080',
+          target: env.VITE_WS_TARGET,
           ws: true,
         },
       },
