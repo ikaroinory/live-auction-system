@@ -9,6 +9,7 @@ import { useSearchParams } from 'react-router'
 import { ProductStatus, ProductTag } from '@/types'
 import { useUserStore } from '@/store'
 import { productService } from '@/services'
+import { websocketService } from '@/services/websocket'
 
 const { Title } = Typography
 
@@ -31,20 +32,6 @@ const ProductList: React.FC = () => {
     }
   }, [])
 
-  useEffect(() => {
-    let isMounted = true
-    const fetch = async () => {
-      const result = await productService.getCurrentExplaining()
-      if (isMounted) {
-        setExplainingProductId(result.success ? result.productId : null)
-      }
-    }
-    fetch()
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
   const { 
     data: liveProductsData, 
     isLoading: liveIsLoading, 
@@ -64,6 +51,29 @@ const ProductList: React.FC = () => {
     status: ProductStatus.PENDING,
     creatorId: user?.id?.toString()
   })
+
+  useEffect(() => {
+    let isMounted = true
+    const fetch = async () => {
+      const result = await productService.getCurrentExplaining()
+      if (isMounted) {
+        setExplainingProductId(result.success ? result.productId : null)
+      }
+    }
+    fetch()
+
+    websocketService.connect()
+    
+    const handleAuctionEnd = () => {
+      refreshLiveProducts()
+    }
+    websocketService.setOnAuctionEnd(handleAuctionEnd)
+
+    return () => {
+      isMounted = false
+      websocketService.disconnect()
+    }
+  }, [refreshLiveProducts])
 
   const convertProductToItem = useCallback((product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []
