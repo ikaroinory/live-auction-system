@@ -95,7 +95,7 @@ router.get(
           take: pageSize,
           orderBy: { createdAt: 'desc' },
           include: {
-            host: {
+            streamer: {
               select: {
                 id: true,
                 nickname: true,
@@ -156,7 +156,7 @@ router.get(
       const room = await prisma.liveRoom.findUnique({
         where: { id: req.params.id },
         include: {
-          host: {
+          streamer: {
             select: {
               id: true,
               nickname: true,
@@ -243,10 +243,10 @@ router.post(
           title,
           description: description || null,
           coverImage: coverImage || null,
-          hostId: user.id
+          streamerId: user.id
         },
         include: {
-          host: {
+          streamer: {
             select: {
               id: true,
               nickname: true,
@@ -337,7 +337,7 @@ router.put(
         return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
       }
 
-      if (existing.hostId !== user.id) {
+      if (existing.streamerId !== user.id) {
         return res
           .status(403)
           .json({ message: '无权限修改此直播间' } as unknown as LiveRoomResponse)
@@ -363,7 +363,7 @@ router.put(
         where: { id: req.params.id },
         data,
         include: {
-          host: {
+          streamer: {
             select: {
               id: true,
               nickname: true,
@@ -433,7 +433,7 @@ router.delete(
         return res.status(404).json({ message: '直播间不存在' })
       }
 
-      if (existing.hostId !== user.id) {
+      if (existing.streamerId !== user.id) {
         return res.status(403).json({ message: '无权限删除此直播间' })
       }
 
@@ -492,7 +492,7 @@ router.post(
         return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
       }
 
-      if (existing.hostId !== user.id) {
+      if (existing.streamerId !== user.id) {
         return res
           .status(403)
           .json({ message: '无权限操作此直播间' } as unknown as LiveRoomResponse)
@@ -509,7 +509,7 @@ router.post(
           startedAt: new Date()
         },
         include: {
-          host: {
+          streamer: {
             select: {
               id: true,
               nickname: true,
@@ -577,7 +577,7 @@ router.post(
         return res.status(404).json({ message: '直播间不存在' } as unknown as LiveRoomResponse)
       }
 
-      if (existing.hostId !== user.id) {
+      if (existing.streamerId !== user.id) {
         return res
           .status(403)
           .json({ message: '无权限操作此直播间' } as unknown as LiveRoomResponse)
@@ -594,7 +594,7 @@ router.post(
           endedAt: new Date()
         },
         include: {
-          host: {
+          streamer: {
             select: {
               id: true,
               nickname: true,
@@ -678,12 +678,12 @@ router.get(
 
       const [rooms, total] = await Promise.all([
         prisma.liveRoom.findMany({
-          where: { hostId: req.params.hostId },
+          where: { streamerId: req.params.hostId },
           skip,
           take: pageSize,
           orderBy: { createdAt: 'desc' },
           include: {
-            host: {
+            streamer: {
               select: {
                 id: true,
                 nickname: true,
@@ -692,7 +692,7 @@ router.get(
             }
           }
         }),
-        prisma.liveRoom.count({ where: { hostId: req.params.hostId } })
+        prisma.liveRoom.count({ where: { streamerId: req.params.hostId } })
       ])
 
       const response: PagedResponse<LiveRoomResponse> = {
