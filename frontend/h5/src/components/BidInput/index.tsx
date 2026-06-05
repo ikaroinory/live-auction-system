@@ -112,10 +112,13 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
     return null
   }
 
-  const increments = [1, 2, 5, 10].map(multiplier => ({
-    label: `+${currentAuction.fixedIncrement * multiplier}`,
-    value: nextPrice + (currentAuction.fixedIncrement * multiplier) - nextPrice + nextPrice
-  }))
+  const increments = [1, 2, 5, 10].map(multiplier => {
+    const incrementAmount = currentAuction.fixedIncrement * multiplier
+    return {
+      label: `+${incrementAmount}`,
+      value: (currentPrice || currentAuction.startingPrice) + incrementAmount
+    }
+  })
 
   return (
     <div className={`bid-input-container ${animationType ? `animating ${animationType}` : ''}`}>
