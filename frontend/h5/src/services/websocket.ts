@@ -13,8 +13,8 @@ import type {
 } from '@live-auction/shared'
 
 const WS_URL = ''
-const HEARTBEAT_INTERVAL = 10000
-const HEARTBEAT_TIMEOUT = 5000
+const HEARTBEAT_INTERVAL = 30000
+const HEARTBEAT_TIMEOUT = 10000
 
 class WebSocketService {
   private socket: Socket | null = null
@@ -39,12 +39,14 @@ class WebSocketService {
     this.isConnected = false
     this.lastHeartbeatTime = Date.now()
 
-    console.log(`[WebSocket] Connecting to ${WS_URL}`)
+    console.log(`[WebSocket] Connecting to ${WS_URL || 'default path'}`)
     this.socket = io(WS_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: this.maxReconnectAttempts,
       reconnectionDelay: this.reconnectDelay,
+      pingInterval: 20000,
+      pingTimeout: 10000,
     })
 
     this.socket.on('connect', () => {
@@ -89,21 +91,15 @@ class WebSocketService {
     
     this.heartbeatTimer = setInterval(() => {
       if (this.isConnected && this.socket) {
-        const now = Date.now()
-        if (now - this.lastHeartbeatTime > HEARTBEAT_TIMEOUT) {
-          console.warn('[WebSocket] Heartbeat timeout, reconnecting...')
-          this.socket.disconnect()
-          this.socket.connect()
-          return
-        }
-        
         console.debug('[WebSocket] Sending heartbeat')
         this.socket.emit('PING')
         
+        if (this.heartbeatTimeoutTimer) {
+          clearTimeout(this.heartbeatTimeoutTimer)
+        }
+        
         this.heartbeatTimeoutTimer = setTimeout(() => {
-          console.warn('[WebSocket] No PONG response, reconnecting...')
-          this.socket?.disconnect()
-          this.socket?.connect()
+          console.warn('[WebSocket] Heartbeat timeout, no PONG received')
         }, HEARTBEAT_TIMEOUT)
       }
     }, HEARTBEAT_INTERVAL)
