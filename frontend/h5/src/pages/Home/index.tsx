@@ -13,7 +13,7 @@ export const Home = () => {
     const loadLiveRooms = async () => {
       try {
         const data = await liveRoomAPI.getLiveRooms()
-        setLiveRooms(data)
+        setLiveRooms(Array.isArray(data) ? data : data?.list || [])
       } catch (error) {
         console.error('Failed to load live rooms:', error)
       } finally {
