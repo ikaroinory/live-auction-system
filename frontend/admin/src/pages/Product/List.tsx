@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Tabs, Space } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
 import ProductTabContent, { LoadingStatus } from './components/ProductTabContent'
@@ -20,7 +20,7 @@ const ProductList: React.FC = () => {
 
   const activeTab = searchParams.get('tab') || 'live'
 
-  const fetchExplainingProduct = async () => {
+  const fetchExplainingProduct = useCallback(async () => {
     try {
       const result = await productService.getCurrentExplaining()
       if (result.success) {
@@ -29,10 +29,20 @@ const ProductList: React.FC = () => {
     } catch {
       setExplainingProductId(null)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    fetchExplainingProduct()
+    let isMounted = true
+    const fetch = async () => {
+      const result = await productService.getCurrentExplaining()
+      if (isMounted) {
+        setExplainingProductId(result.success ? result.productId : null)
+      }
+    }
+    fetch()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const { 
@@ -55,7 +65,7 @@ const ProductList: React.FC = () => {
     creatorId: user?.id?.toString()
   })
 
-  const convertProductToItem = (product: Product, index: number): ProductItem => {
+  const convertProductToItem = useCallback((product: Product, index: number): ProductItem => {
     const tags: ProductTagType[] = []
     if (product.tags?.includes(ProductTag.LATE_COMPENSATION)) tags.push(ProductTagType.LateCompensation)
     if (product.tags?.includes(ProductTag.FREE_SHIPPING)) tags.push(ProductTagType.FreeShipping)
@@ -79,17 +89,17 @@ const ProductList: React.FC = () => {
       auctionStartTime: product.auctionStartTime,
       auctionEndTime: product.auctionEndTime
     }
-  }
+  }, [explainingProductId])
 
   const liveProducts = useMemo(() => {
     if (!liveProductsData?.list) return []
     return liveProductsData.list.map((product, index) => convertProductToItem(product, index))
-  }, [liveProductsData, explainingProductId])
+  }, [liveProductsData, convertProductToItem])
 
   const pendingProducts = useMemo(() => {
     if (!pendingProductsData?.list) return []
     return pendingProductsData.list.map((product, index) => convertProductToItem(product, index))
-  }, [pendingProductsData, explainingProductId])
+  }, [pendingProductsData, convertProductToItem])
 
   const liveLoadingStatus: LoadingStatus = liveIsLoading ? 'loading' : liveError ? 'error' : 'success'
   const pendingLoadingStatus: LoadingStatus = pendingIsLoading ? 'loading' : pendingError ? 'error' : 'success'

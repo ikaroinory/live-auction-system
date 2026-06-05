@@ -14,7 +14,6 @@ import type {
   UpdateLiveRoomParams,
   LiveRoomFollowWithDetails,
   ProductParams,
-  ProductResponse,
   ExplainingProductResponse,
   Product,
 } from '@live-auction/shared'

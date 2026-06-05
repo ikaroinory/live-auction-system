@@ -4,12 +4,10 @@ import { prisma } from '../../lib/prisma'
 import { authMiddleware } from '../../middleware/auth'
 import { ProductTag } from '@prisma/client'
 import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
-import type { PagedResponse } from '../response'
 import {
   ProductResponse,
   CreateProductRequest,
   UpdateProductRequest,
-  ExplainingProductResponse,
   PagedProductResponse
 } from '@live-auction/shared'
 import {

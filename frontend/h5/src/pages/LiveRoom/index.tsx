@@ -9,19 +9,17 @@ import { useBidAnimation } from '../../hooks/useBidAnimation'
 import { RankingList } from '../../components/RankingList'
 import { ToastNotification } from '../../components/ToastNotification'
 import { Avatar, BubbleButton } from '../../components/ui'
-import {
-  HistoryIcon,
-  ShareIcon,
-  LikeIcon,
-  GiftIcon,
-  CloseIcon,
-} from '../../components/ui/icons'
+import { HistoryIcon, ShareIcon, LikeIcon, GiftIcon, CloseIcon } from '../../components/ui/icons'
 import { VideoPlayer } from './components/VideoPlayer'
 import { BidHistory } from './components/BidHistory'
 import { ProductModal } from './components/ProductModal'
 
 import { liveRoomAPI, productAPI } from '../../services/api'
-import type { LiveRoomWithStreamer, AuctionWithSeller, Product as ProductType } from '@live-auction/shared'
+import type {
+  LiveRoomWithStreamer,
+  AuctionWithSeller,
+  Product as ProductType,
+} from '@live-auction/shared'
 import './LiveRoom.scss'
 import styles from './styles.module.scss'
 import clsx from 'clsx'
@@ -107,7 +105,7 @@ export const LiveRoom = () => {
         if (data.streamerId) {
           const productsData = await productAPI.getProducts({
             creatorId: data.streamerId,
-            status: 'PUBLISHED'
+            status: 'PUBLISHED',
           })
           setProducts(productsData.list || [])
         }
@@ -214,18 +212,21 @@ export const LiveRoom = () => {
     setChatInput('')
   }, [chatInput, user, generateId])
 
-  const showEffects = useCallback((type: 'like' | 'gift') => {
-    const newAnimation: AnimationItem = {
-      id: generateId(),
-      type: type,
-      content: type === 'like' ? '❤️' : '🎉',
-      left: Math.random() * 60 + 20,
-    }
-    setAnimations((prev) => [...prev, newAnimation])
-    setTimeout(() => {
-      setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
-    }, 1000)
-  }, [generateId])
+  const showEffects = useCallback(
+    (type: 'like' | 'gift') => {
+      const newAnimation: AnimationItem = {
+        id: generateId(),
+        type: type,
+        content: type === 'like' ? '❤️' : '🎉',
+        left: Math.random() * 60 + 20,
+      }
+      setAnimations((prev) => [...prev, newAnimation])
+      setTimeout(() => {
+        setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
+      }, 1000)
+    },
+    [generateId]
+  )
 
   const handleShare = () => {
     Toast.show('分享链接已复制')

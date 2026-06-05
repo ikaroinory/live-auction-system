@@ -42,11 +42,7 @@ export const MenuItem: BaseComponent<'div', MenuItemProps> = ({
   return (
     <div className={styles.menuItem} onClick={onClick} {...props}>
       {icon && <div>{icon}</div>}
-      <div
-        className={isActive ? styles.menuItemNameActivate : styles.menuItemName}
-      >
-        {name}
-      </div>
+      <div className={isActive ? styles.menuItemNameActivate : styles.menuItemName}>{name}</div>
     </div>
   )
 }

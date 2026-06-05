@@ -13,11 +13,13 @@ interface AuctionStatusTagProps {
 }
 
 const AuctionStatusTag: React.FC<AuctionStatusTagProps> = ({ status, auctionEndTime }) => {
-  const getRemainingSeconds = () => Math.max(0, dayjs(auctionEndTime).diff(dayjs(), 'second'))
-
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(getRemainingSeconds)
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(
+    Math.max(0, dayjs(auctionEndTime).diff(dayjs(), 'second'))
+  )
 
   useEffect(() => {
+    const getRemainingSeconds = () => Math.max(0, dayjs(auctionEndTime).diff(dayjs(), 'second'))
+
     const interval = setInterval(() => {
       const remaining = getRemainingSeconds()
       setRemainingSeconds(remaining)

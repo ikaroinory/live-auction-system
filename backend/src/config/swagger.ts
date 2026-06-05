@@ -31,7 +31,11 @@ const options: swaggerJsdoc.Options = {
             nickname: { type: 'string', nullable: true, description: '昵称' },
             avatar: { type: 'string', nullable: true, description: '头像URL' },
             bio: { type: 'string', nullable: true, description: '个人简介' },
-            gender: { type: 'number', nullable: true, description: '性别（0: 未知, 1: 男, 2: 女）' },
+            gender: {
+              type: 'number',
+              nullable: true,
+              description: '性别（0: 未知, 1: 男, 2: 女）'
+            },
             birthday: { type: 'string', format: 'date', nullable: true, description: '生日' },
             location: { type: 'string', description: '所在地' },
             douyinId: { type: 'string', nullable: true, description: '抖音号' },
@@ -94,8 +98,18 @@ const options: swaggerJsdoc.Options = {
             coverImage: { type: 'string', nullable: true, description: '封面图片URL' },
             status: { type: 'string', description: '状态（PENDING/LIVE/ENDED）' },
             hostId: { type: 'string', description: '主播ID' },
-            startedAt: { type: 'string', format: 'date-time', nullable: true, description: '开始时间' },
-            endedAt: { type: 'string', format: 'date-time', nullable: true, description: '结束时间' },
+            startedAt: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: '开始时间'
+            },
+            endedAt: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: '结束时间'
+            },
             host: { $ref: '#/components/schemas/User', description: '主播信息' },
             createdAt: { type: 'string', format: 'date-time', description: '创建时间' }
           }

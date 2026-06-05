@@ -100,3 +100,39 @@ export interface ProductFormData {
   durationMinutes?: number
   extendSeconds?: number
 }
+
+export interface Bid {
+  id: string
+  productId: string
+  userId: string
+  price: number
+  createdAt: string
+}
+
+export interface BidResponse extends Bid {
+  user?: {
+    id: string
+    nickname: string | null
+    phone: string
+    avatar: string | null
+  }
+}
+
+export interface PagedBidResponse {
+  list: BidResponse[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export interface CreateBidRequest {
+  productId: string
+  price: number
+}
+
+export interface BidParams {
+  page?: number
+  pageSize?: number
+  productId?: string
+  userId?: string
+}
