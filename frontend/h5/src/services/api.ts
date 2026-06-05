@@ -112,8 +112,8 @@ export const productAPI = {
   getProductDetail: (id: string): Promise<Product> => {
     return apiClient.get(`/v1/products/${id}`)
   },
-  getCurrentExplaining: (): Promise<ExplainingProductResponse> => {
-    return apiClient.get('/v1/products/explaining')
+  getCurrentExplaining: (roomId?: string): Promise<ExplainingProductResponse> => {
+    return apiClient.get('/v1/products/explaining', { params: roomId ? { roomId } : undefined })
   },
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CloseIcon, ChevronLeftIcon } from '../../../../components/ui/icons'
 import { formatPrice } from '../../../../utils/format'
 import { Toast } from 'antd-mobile'
@@ -6,6 +6,7 @@ import styles from './ProductModal.module.scss'
 import { clsx } from 'clsx'
 import { Product } from '@live-auction/shared'
 import { BidInput } from '../../../../components/BidInput'
+import { useAuctionRoomStore } from '../../../../store/useAuctionRoomStore'
 
 interface ProductModalProps {
   visible: boolean
@@ -16,6 +17,24 @@ interface ProductModalProps {
 
 export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const { setCurrentAuction, updatePrice } = useAuctionRoomStore()
+
+  useEffect(() => {
+    if (selectedProduct) {
+      setCurrentAuction({
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        startingPrice: Number(selectedProduct.startingPrice),
+        fixedIncrement: Number(selectedProduct.fixedIncrement),
+        maxPrice: selectedProduct.maxPrice ? Number(selectedProduct.maxPrice) : undefined,
+        currentBidPrice: selectedProduct.currentBidPrice || 0,
+        durationMinutes: selectedProduct.durationMinutes || 0,
+        createdAt: selectedProduct.createdAt || new Date().toISOString(),
+        updatedAt: selectedProduct.updatedAt || new Date().toISOString(),
+      })
+      updatePrice(selectedProduct.currentBidPrice || Number(selectedProduct.startingPrice))
+    }
+  }, [selectedProduct, setCurrentAuction, updatePrice])
 
   const handleBidSuccess = () => {
     Toast.show('出价成功！')

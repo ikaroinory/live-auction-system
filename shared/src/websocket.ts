@@ -11,7 +11,8 @@ export type WebSocketMessageType =
   | 'AUCTION_ENDED'
   | 'AUCTION_CANCELLED'
   | 'PING'
-  | 'PONG';
+  | 'PONG'
+  | 'EXPLAINING_UPDATE';
 
 export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;
@@ -76,4 +77,9 @@ export interface BidFailedPayload {
 export interface AuctionExtendedPayload {
   auctionId: string;
   newEndTime: string;
+}
+
+export interface ExplainingUpdatePayload {
+  roomId: string;
+  productId: string | null;
 }

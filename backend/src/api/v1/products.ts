@@ -15,6 +15,7 @@ import {
   getRoomExplainingProduct,
   clearRoomExplainingProduct
 } from '../../lib/redis'
+import { broadcastExplainingUpdate } from '../../lib/websocket'
 
 interface DeleteResponse {
   message: string
@@ -139,6 +140,12 @@ router.get(
  *     tags: [商品]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: roomId
+ *         schema:
+ *           type: string
+ *         description: 直播间ID（用于观众查询特定直播间的讲解商品）
  *     responses:
  *       200:
  *         description: 查询成功
@@ -156,7 +163,7 @@ router.get(
  *                   type: string
  *                   nullable: true
  *       400:
- *         description: 用户未创建直播间
+ *         description: 用户未创建直播间或直播间不存在
  *       401:
  *         description: 未认证
  */
@@ -164,24 +171,39 @@ router.get(
   '/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (_req: Request, res: Response) => {
-      const user = requireAuth(_req)
+    async (req: Request<ParamsDictionary, unknown, unknown, { roomId?: string }>, res: Response) => {
+      const user = requireAuth(req)
+      const { roomId } = req.query
 
-      const liveRoom = await prisma.liveRoom.findFirst({
-        where: { streamerId: user.id },
-        select: { id: true }
-      })
+      let liveRoomId: string | null = null
 
-      if (!liveRoom) {
-        return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
+      if (roomId) {
+        const room = await prisma.liveRoom.findUnique({
+          where: { id: roomId },
+          select: { id: true }
+        })
+        if (!room) {
+          return res.status(400).json({ success: false, message: '直播间不存在', productId: null, roomId: null })
+        }
+        liveRoomId = room.id
+      } else {
+        const liveRoom = await prisma.liveRoom.findFirst({
+          where: { streamerId: user.id },
+          select: { id: true }
+        })
+
+        if (!liveRoom) {
+          return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
+        }
+        liveRoomId = liveRoom.id
       }
 
-      const productId = await getRoomExplainingProduct(liveRoom.id)
+      const productId = await getRoomExplainingProduct(liveRoomId)
 
       res.json({
         success: true,
         productId,
-        roomId: liveRoom.id
+        roomId: liveRoomId
       })
     }
   )
@@ -897,6 +919,9 @@ router.patch(
           await clearRoomExplainingProduct(roomId)
         }
       }
+
+      const currentProductId = start ? productId : null
+      broadcastExplainingUpdate(roomId, currentProductId).catch(console.error)
 
       res.json({
         success: true,

@@ -9,16 +9,19 @@ import type {
   RankingUpdatePayload,
   CountdownTickPayload,
   AuctionEndPayload,
+  ExplainingUpdatePayload,
 } from '@live-auction/shared'
 
-const WS_URL = import.meta.env.VITE_WS_URL || '/ws'
+const WS_URL = import.meta.env.VITE_WS_URL || ''
 
 class WebSocketService {
   private socket: Socket | null = null
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
   private reconnectDelay = 1000
-  private currentAuctionId: number | null = null
+  private currentAuctionId: string | null = null
+  private currentRoomId: string | null = null
+  private onExplainingUpdate: ((payload: ExplainingUpdatePayload) => void) | null = null
 
   connect() {
     if (this.socket?.connected) {
@@ -108,9 +111,15 @@ class WebSocketService {
         duration: 3000,
       })
     })
+
+    this.socket.on('EXPLAINING_UPDATE', (message: WebSocketMessage<ExplainingUpdatePayload>) => {
+      if (this.onExplainingUpdate) {
+        this.onExplainingUpdate(message.payload)
+      }
+    })
   }
 
-  joinRoom(auctionId: number, userId: number) {
+  joinRoom(auctionId: string, userId: string) {
     if (!this.socket?.connected) {
       console.error('WebSocket not connected')
       return
@@ -121,14 +130,35 @@ class WebSocketService {
     this.socket.emit('JOIN_ROOM', payload)
   }
 
-  leaveRoom(auctionId: number, userId: number) {
+  joinLiveRoom(roomId: string) {
+    if (!this.socket?.connected) {
+      console.error('WebSocket not connected')
+      return
+    }
+
+    this.currentRoomId = roomId
+    this.socket.join(roomId)
+  }
+
+  leaveRoom(auctionId: string, userId: string) {
     if (!this.socket?.connected) return
 
     this.socket.emit('LEAVE_ROOM', { auctionId, userId })
     this.currentAuctionId = null
   }
 
-  submitBid(auctionId: number, userId: number, price: number) {
+  leaveLiveRoom(roomId: string) {
+    if (!this.socket?.connected) return
+
+    this.socket.leave(roomId)
+    this.currentRoomId = null
+  }
+
+  setOnExplainingUpdate(callback: (payload: ExplainingUpdatePayload) => void) {
+    this.onExplainingUpdate = callback
+  }
+
+  submitBid(auctionId: string, userId: string, price: number) {
     if (!this.socket?.connected) {
       console.error('WebSocket not connected')
       return false

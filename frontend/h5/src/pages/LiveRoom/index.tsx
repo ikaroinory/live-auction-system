@@ -15,6 +15,7 @@ import { BidHistory } from './components/BidHistory'
 import { ProductModal } from './components/ProductModal'
 
 import { liveRoomAPI, productAPI } from '../../services/api'
+import { websocketService } from '../../services/websocket'
 import type {
   LiveRoomWithStreamer,
   AuctionWithSeller,
@@ -153,21 +154,23 @@ export const LiveRoom = () => {
   }, [id, setCurrentAuction, setBidHistory, updatePrice])
 
   useEffect(() => {
-    const fetchExplainingProduct = async () => {
-      try {
-        const result = await productAPI.getCurrentExplaining()
-        if (result.success) {
-          setExplainingProductId(result.productId)
-        }
-      } catch (error) {
-        console.error('Failed to fetch explaining product:', error)
-      }
+    const handleExplainingUpdate = async (payload: { roomId: string; productId: string | null }) => {
+      setExplainingProductId(payload.productId)
     }
 
-    fetchExplainingProduct()
-    const interval = setInterval(fetchExplainingProduct, 5000)
-    return () => clearInterval(interval)
-  }, [])
+    websocketService.setOnExplainingUpdate(handleExplainingUpdate)
+    
+    if (id) {
+      websocketService.joinLiveRoom(id)
+    }
+
+    return () => {
+      websocketService.setOnExplainingUpdate(() => {})
+      if (id) {
+        websocketService.leaveLiveRoom(id)
+      }
+    }
+  }, [id])
 
   const handleGoBack = () => {
     navigate(-1)
