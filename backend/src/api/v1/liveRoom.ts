@@ -162,6 +162,11 @@ router.get(
               nickname: true,
               avatar: true
             }
+          },
+          _count: {
+            select: {
+              followers: true
+            }
           }
         }
       })
