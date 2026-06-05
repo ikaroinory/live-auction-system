@@ -3,17 +3,7 @@ import { formatPrice } from '../../../../utils/format'
 import { Toast } from 'antd-mobile'
 import styles from './ProductModal.module.scss'
 import { clsx } from 'clsx'
-
-interface Product {
-  id: string
-  name: string
-  image: string
-  startingPrice: number
-  fixedIncrement: number
-  auctionStatus?: string
-  status?: string
-  isExplaining?: boolean
-}
+import { Product } from '@live-auction/shared'
 
 interface ProductModalProps {
   visible: boolean

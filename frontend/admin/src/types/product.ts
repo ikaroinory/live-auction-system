@@ -1,52 +1,16 @@
-export enum ProductStatus {
-  PENDING = 'PENDING',
-  PUBLISHED = 'PUBLISHED'
-}
+import {
+  ProductStatus,
+  ProductAuctionStatus,
+  ProductTag,
+  Product,
+  ProductFormData
+} from '@live-auction/shared'
 
-export enum ProductAuctionStatus {
-  NOT_STARTED = 'NOT_STARTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  ENDED = 'ENDED'
-}
+export { ProductStatus, ProductAuctionStatus, ProductTag }
 
-export enum ProductTag {
-  LATE_COMPENSATION = 'LATE_COMPENSATION',
-  FREE_SHIPPING = 'FREE_SHIPPING',
-  SHIPPING_INSURANCE = 'SHIPPING_INSURANCE',
-  AUCTION = 'AUCTION'
-}
+export type Product = Product
 
-export interface Product {
-  id: string
-  creatorId: string
-  name: string
-  image: string
-  startingPrice: number
-  fixedIncrement: number
-  maxPrice?: number
-  tags: ProductTag[]
-  durationMinutes: number
-  extendSeconds: number
-  auctionStatus: ProductAuctionStatus
-  auctionStartTime?: string
-  auctionEndTime?: string
-  currentBidPrice?: number
-  bidCount: number
-  status: ProductStatus
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ProductFormData {
-  name: string
-  image: string
-  startingPrice: number
-  fixedIncrement?: number
-  maxPrice?: number
-  tags?: ProductTag[]
-  durationMinutes?: number
-  extendSeconds?: number
-}
+export type ProductFormData = ProductFormData
 
 export interface ProductWithAuctionRule extends Product {
   fixedIncrement: number

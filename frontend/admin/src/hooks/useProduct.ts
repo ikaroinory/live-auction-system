@@ -2,17 +2,15 @@ import { useSWRConfig } from 'swr'
 import { useCustomSWR } from './useSWRConfig'
 import { productService } from '@/services'
 import type { Product, ProductFormData, ProductStatus } from '@/types'
+import { ProductParams } from '@live-auction/shared'
 
-interface ProductListParams {
-  page?: number
-  pageSize?: number
-  status?: ProductStatus
-  creatorId?: string
-}
+type ProductListParams = ProductParams
 
 interface ProductListResponse {
   list: Product[]
   total: number
+  page: number
+  pageSize: number
 }
 
 export function useProductList(params?: ProductListParams) {

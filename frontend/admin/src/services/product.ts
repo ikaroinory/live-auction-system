@@ -1,13 +1,9 @@
 import api from './api'
 import type { Product, ProductFormData, ProductStatus } from '@/types'
+import { ProductParams, ExplainingProductResponse, PagedProductResponse } from '@live-auction/shared'
 
 export const productService = {
-  getList: async (params?: {
-    page?: number
-    pageSize?: number
-    status?: ProductStatus
-    creatorId?: string
-  }): Promise<{ list: Product[]; total: number }> => {
+  getList: async (params?: ProductParams): Promise<PagedProductResponse> => {
     const response = await api.get('/products', { params })
     return response.data
   },
@@ -45,11 +41,7 @@ export const productService = {
     return response.data
   },
 
-  getCurrentExplaining: async (): Promise<{
-    success: boolean
-    productId: string | null
-    roomId: string | null
-  }> => {
+  getCurrentExplaining: async (): Promise<ExplainingProductResponse> => {
     const response = await api.get('/products/explaining')
     return response.data
   },

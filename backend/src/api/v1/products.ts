@@ -4,7 +4,14 @@ import { prisma } from '../../lib/prisma'
 import { authMiddleware } from '../../middleware/auth'
 import { ProductTag } from '@prisma/client'
 import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
-import type { ProductResponse, PagedResponse } from '../response'
+import type { PagedResponse } from '../response'
+import {
+  ProductResponse,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ExplainingProductResponse,
+  PagedProductResponse
+} from '@live-auction/shared'
 import {
   setRoomExplainingProduct,
   getRoomExplainingProduct,
@@ -16,30 +23,6 @@ interface DeleteResponse {
 }
 
 const router = Router()
-
-interface CreateProductRequest {
-  name: string
-  description?: string
-  image: string
-  startingPrice: number
-  fixedIncrement: number
-  maxPrice?: number
-  durationMinutes: number
-  extendSeconds?: number
-  tags?: string[]
-}
-
-interface UpdateProductRequest {
-  name?: string
-  description?: string
-  image?: string
-  startingPrice?: number
-  fixedIncrement?: number
-  maxPrice?: number
-  durationMinutes?: number
-  extendSeconds?: number
-  tags?: string[]
-}
 
 /**
  * @swagger
@@ -95,11 +78,11 @@ router.get(
     async (
       req: Request<
         ParamsDictionary,
-        PagedResponse<ProductResponse>,
+        PagedProductResponse,
         unknown,
         { status?: string; creatorId?: string; page?: string; pageSize?: string }
       >,
-      res: Response<PagedResponse<ProductResponse>>
+      res: Response<PagedProductResponse>
     ) => {
       const { status, creatorId } = req.query
       const page = parseInt(req.query.page || '1')
@@ -133,7 +116,7 @@ router.get(
         prisma.product.count({ where })
       ])
 
-      const response: PagedResponse<ProductResponse> = {
+      const response: PagedProductResponse = {
         list: products.map(
           (product): ProductResponse => ({
             ...product,
@@ -680,11 +663,11 @@ router.get(
     async (
       req: Request<
         { creatorId: string },
-        PagedResponse<ProductResponse>,
+        PagedProductResponse,
         unknown,
         { page?: string; pageSize?: string }
       >,
-      res: Response<PagedResponse<ProductResponse>>
+      res: Response<PagedProductResponse>
     ) => {
       const page = parseInt(req.query.page || '1')
       const pageSize = parseInt(req.query.pageSize || '10')
@@ -709,7 +692,7 @@ router.get(
         prisma.product.count({ where: { creatorId: req.params.creatorId } })
       ])
 
-      const response: PagedResponse<ProductResponse> = {
+      const response: PagedProductResponse = {
         list: products.map(
           (product): ProductResponse => ({
             ...product,

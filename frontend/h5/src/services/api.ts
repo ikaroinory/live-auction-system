@@ -13,6 +13,10 @@ import type {
   CreateLiveRoomParams,
   UpdateLiveRoomParams,
   LiveRoomFollowWithDetails,
+  ProductParams,
+  ProductResponse,
+  ExplainingProductResponse,
+  Product,
 } from '@live-auction/shared'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
@@ -102,31 +106,11 @@ export const liveRoomAPI = {
   },
 }
 
-export interface ProductParams {
-  page?: number
-  pageSize?: number
-  status?: string
-  creatorId?: string
-}
-
-export interface ProductResponse {
-  list: unknown[]
-  total: number
-  page: number
-  pageSize: number
-}
-
-export interface ExplainingProductResponse {
-  success: boolean
-  productId: string | null
-  roomId: string | null
-}
-
 export const productAPI = {
-  getProducts: (params?: ProductParams): Promise<ProductResponse> => {
+  getProducts: (params?: ProductParams): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
     return apiClient.get('/v1/products', { params })
   },
-  getProductDetail: (id: string): Promise<unknown> => {
+  getProductDetail: (id: string): Promise<Product> => {
     return apiClient.get(`/v1/products/${id}`)
   },
   getCurrentExplaining: (): Promise<ExplainingProductResponse> => {
