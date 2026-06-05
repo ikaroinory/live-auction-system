@@ -12,7 +12,7 @@ import type {
   ExplainingUpdatePayload,
 } from '@live-auction/shared'
 
-const WS_URL = import.meta.env.VITE_WS_URL || ''
+const WS_URL = import.meta.env.VITE_WS_URL || '/ws'
 
 class WebSocketService {
   private socket: Socket | null = null
