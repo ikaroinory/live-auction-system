@@ -131,7 +131,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
     socket.on('SUBMIT_BID', async (payload: BidPayload) => {
       try {
-        const { productId, userId, price } = payload
+        const { auctionId: productId, userId, price } = payload
 
         const product = await prisma.product.findUnique({
           where: { id: productId }
