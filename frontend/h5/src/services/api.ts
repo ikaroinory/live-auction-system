@@ -116,12 +116,21 @@ export interface ProductResponse {
   pageSize: number
 }
 
+export interface ExplainingProductResponse {
+  success: boolean
+  productId: string | null
+  roomId: string | null
+}
+
 export const productAPI = {
   getProducts: (params?: ProductParams): Promise<ProductResponse> => {
     return apiClient.get('/v1/products', { params })
   },
   getProductDetail: (id: string): Promise<unknown> => {
     return apiClient.get(`/v1/products/${id}`)
+  },
+  getCurrentExplaining: (): Promise<ExplainingProductResponse> => {
+    return apiClient.get('/v1/products/explaining')
   },
 }
 

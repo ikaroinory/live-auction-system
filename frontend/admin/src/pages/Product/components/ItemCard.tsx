@@ -176,6 +176,7 @@ interface ButtonGroupProps {
   auctionStatus?: ProductAuctionStatus
   refresh?: () => void
   isExplaining?: boolean
+  onRefreshExplaining?: () => void
 }
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
@@ -248,6 +249,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
       await toggleExplaining(props.productId, !props.isExplaining)
       Toast.success(props.isExplaining ? '结束讲解成功' : '开始讲解成功')
       props.refresh?.()
+      props.onRefreshExplaining?.()
     } catch {
       Toast.error('操作失败，请稍后重试')
     }
@@ -302,7 +304,8 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
               结束竞拍
             </Button>
           )}
-          <Button
+          {props.auctionStatus !== ProductAuctionStatus.ENDED && (
+            <Button
               theme="outline"
               type={props.isExplaining ? 'danger' : 'tertiary'}
               icon={<IconMicrophone />}
@@ -310,6 +313,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
             >
               {props.isExplaining ? '结束讲解' : '开始讲解'}
             </Button>
+          )}
         </>
       )}
     </Space>
@@ -342,6 +346,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
           auctionStatus={props.auctionStatus}
           refresh={props.refresh}
           isExplaining={props.isExplaining}
+          onRefreshExplaining={props.onRefreshExplaining}
         />
       </div>
     </Card>

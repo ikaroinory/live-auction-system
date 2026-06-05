@@ -20,23 +20,19 @@ const ProductList: React.FC = () => {
 
   const activeTab = searchParams.get('tab') || 'live'
 
-  useEffect(() => {
-    const fetchExplainingProduct = async () => {
-      try {
-        const result = await productService.getCurrentExplaining()
-        if (result.success) {
-          setExplainingProductId(result.productId)
-        }
-      } catch {
-        setExplainingProductId(null)
+  const fetchExplainingProduct = async () => {
+    try {
+      const result = await productService.getCurrentExplaining()
+      if (result.success) {
+        setExplainingProductId(result.productId)
       }
+    } catch {
+      setExplainingProductId(null)
     }
+  }
 
+  useEffect(() => {
     fetchExplainingProduct()
-
-    const interval = setInterval(fetchExplainingProduct, 5000)
-
-    return () => clearInterval(interval)
   }, [])
 
   const { 
@@ -129,6 +125,7 @@ const ProductList: React.FC = () => {
             loadingStatus={liveLoadingStatus}
             errorMessage={liveErrorMessage}
             onStatusChange={refreshLiveProducts}
+            onRefreshExplaining={fetchExplainingProduct}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="待上架商品" itemKey="pending">
@@ -139,6 +136,7 @@ const ProductList: React.FC = () => {
             loadingStatus={pendingLoadingStatus}
             errorMessage={pendingErrorMessage}
             onStatusChange={refreshPendingProducts}
+            onRefreshExplaining={fetchExplainingProduct}
           />
         </Tabs.TabPane>
       </Tabs>

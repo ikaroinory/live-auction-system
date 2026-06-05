@@ -52,6 +52,7 @@ export const LiveRoom = () => {
   const [isFollowed, setIsFollowed] = useState(false)
   const [showProductModal, setShowProductModal] = useState(false)
   const [products, setProducts] = useState<ProductType[]>([])
+  const [explainingProductId, setExplainingProductId] = useState<string | null>(null)
   const [chatInput, setChatInput] = useState('')
   const [animations, setAnimations] = useState<AnimationItem[]>([])
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -152,6 +153,23 @@ export const LiveRoom = () => {
 
     loadLiveRoom()
   }, [id, setCurrentAuction, setBidHistory, updatePrice])
+
+  useEffect(() => {
+    const fetchExplainingProduct = async () => {
+      try {
+        const result = await productAPI.getCurrentExplaining()
+        if (result.success) {
+          setExplainingProductId(result.productId)
+        }
+      } catch (error) {
+        console.error('Failed to fetch explaining product:', error)
+      }
+    }
+
+    fetchExplainingProduct()
+    const interval = setInterval(fetchExplainingProduct, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleGoBack = () => {
     navigate(-1)
@@ -376,6 +394,7 @@ export const LiveRoom = () => {
         visible={showProductModal}
         onClose={() => setShowProductModal(false)}
         products={products}
+        explainingProductId={explainingProductId}
       />
 
       <ToastNotification />

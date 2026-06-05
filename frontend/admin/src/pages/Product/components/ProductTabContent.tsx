@@ -13,6 +13,7 @@ export interface ProductTabContentProps {
   loadingStatus?: LoadingStatus
   errorMessage?: string
   onStatusChange?: () => void
+  onRefreshExplaining?: () => void
 }
 
 const ProductTabContent: React.FC<ProductTabContentProps> = ({
@@ -21,7 +22,8 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
   dataSource,
   loadingStatus = 'success',
   errorMessage,
-  onStatusChange
+  onStatusChange,
+  onRefreshExplaining
 }) => {
   const navigate = useNavigate()
 
@@ -46,7 +48,7 @@ const ProductTabContent: React.FC<ProductTabContentProps> = ({
       <div style={{ maxHeight: 'calc(100vh - 320px)', overflowY: 'auto' }}>
         <Space style={{ width: '100%' }} vertical spacing={12}>
           {dataSource.map((item) => (
-            <ItemCard key={item.id} {...item} refresh={onStatusChange} />
+            <ItemCard key={item.id} {...item} refresh={onStatusChange} onRefreshExplaining={onRefreshExplaining} />
           ))}
         </Space>
       </div>
