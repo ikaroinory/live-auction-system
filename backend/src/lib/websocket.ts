@@ -72,7 +72,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         let room = rooms.get(productId)
 
         if (!room) {
-          const currentPrice = product.currentBidPrice || product.startingPrice
+          const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
           const endTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
 
           room = {
@@ -158,7 +158,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         let room = rooms.get(productId)
 
         if (!room) {
-          const currentPrice = product.currentBidPrice || product.startingPrice
+          const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
           const endTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
 
           room = {
