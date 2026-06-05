@@ -16,10 +16,12 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@live-auction/shared": ["../shared/src"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../shared/src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
