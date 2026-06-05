@@ -20,9 +20,10 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_TARGET,
           changeOrigin: true,
         },
-        '/ws': {
+        '/socket.io': {
           target: env.VITE_WS_TARGET,
           ws: true,
+          changeOrigin: true,
         },
       },
     },

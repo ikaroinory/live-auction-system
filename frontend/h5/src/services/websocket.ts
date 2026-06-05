@@ -12,7 +12,7 @@ import type {
   ExplainingUpdatePayload,
 } from '@live-auction/shared'
 
-const WS_URL = import.meta.env.VITE_WS_URL || '/ws'
+const WS_URL = ''
 const HEARTBEAT_INTERVAL = 10000
 const HEARTBEAT_TIMEOUT = 5000
 
