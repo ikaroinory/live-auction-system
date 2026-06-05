@@ -7,6 +7,8 @@ import { clsx } from 'clsx'
 import { Product } from '@live-auction/shared'
 import { BidInput } from '../../../../components/BidInput'
 import { useAuctionRoomStore } from '../../../../store/useAuctionRoomStore'
+import { useUserStore } from '../../../../store/useUserStore'
+import { websocketService } from '../../../../services/websocket'
 
 interface ProductModalProps {
   visible: boolean
@@ -18,9 +20,10 @@ interface ProductModalProps {
 export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const { setCurrentAuction, updatePrice } = useAuctionRoomStore()
+  const { user } = useUserStore()
 
   useEffect(() => {
-    if (selectedProduct) {
+    if (selectedProduct && user?.id) {
       setCurrentAuction({
         id: selectedProduct.id,
         name: selectedProduct.name,
@@ -33,8 +36,10 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
         updatedAt: selectedProduct.updatedAt || new Date().toISOString(),
       })
       updatePrice(selectedProduct.currentBidPrice || Number(selectedProduct.startingPrice))
+      
+      websocketService.joinRoom(selectedProduct.id, user.id)
     }
-  }, [selectedProduct, setCurrentAuction, updatePrice])
+  }, [selectedProduct, setCurrentAuction, updatePrice, user])
 
   const handleBidSuccess = () => {
     Toast.show('出价成功！')
