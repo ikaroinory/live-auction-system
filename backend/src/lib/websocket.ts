@@ -132,16 +132,6 @@ export function setupWebSocket(httpServer: HttpServer): Server {
     socket.on('SUBMIT_BID', async (payload: BidPayload) => {
       try {
         const { productId, userId, price } = payload
-        const room = rooms.get(productId)
-
-        if (!room) {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: '竞拍房间不存在'
-          }))
-          return
-        }
 
         const product = await prisma.product.findUnique({
           where: { id: productId }
@@ -165,8 +155,28 @@ export function setupWebSocket(httpServer: HttpServer): Server {
           return
         }
 
-        const currentPrice = room.currentPrice
-        const minNextPrice = currentPrice + Number(product.fixedIncrement)
+        let room = rooms.get(productId)
+
+        if (!room) {
+          const currentPrice = product.currentBidPrice || product.startingPrice
+          const endTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+
+          room = {
+            productId,
+            currentPrice,
+            endTime,
+            bidders: new Set(),
+            timer: null
+          }
+
+          rooms.set(productId, room)
+          startAuctionTimer(productId, room)
+        }
+
+        room.bidders.add(userId)
+        socket.join(productId)
+
+        const minNextPrice = room.currentPrice + Number(product.fixedIncrement)
 
         if (price < minNextPrice) {
           socket.emit('BID_FAILED', createMessage('BID_FAILED', {
