@@ -13,8 +13,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@live-auction/shared': path.resolve(__dirname, '../../shared/src/index.ts'),
+      '@live-auction/shared': path.resolve(__dirname, '../../shared/src'),
     },
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   server: {
     port: 3001,
