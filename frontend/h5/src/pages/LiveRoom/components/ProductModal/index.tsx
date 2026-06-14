@@ -59,12 +59,18 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
     if (product.auctionStatus === 'IN_PROGRESS') {
       return '竞拍中'
     }
+    if (product.auctionStatus === 'ENDED') {
+      return '已结束'
+    }
     return '即将开拍'
   }
 
   const getStatusClass = (product: Product) => {
     if (product.auctionStatus === 'IN_PROGRESS') {
       return styles.statusInProgress
+    }
+    if (product.auctionStatus === 'ENDED') {
+      return styles.statusEnded
     }
     return styles.statusUpcoming
   }
@@ -150,7 +156,10 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
         <div className={styles.productModalContent}>
           {products && products.length > 0 ? (
             <div className={styles.productList}>
-              {products.map((product) => (
+              {[...products].sort((a, b) => {
+                const order = { IN_PROGRESS: 0, NOT_STARTED: 1, ENDED: 2 }
+                return (order[a.auctionStatus] || 2) - (order[b.auctionStatus] || 2)
+              }).map((product) => (
                 <div key={product.id} className={clsx(styles.productCard, { [styles.explaining]: explainingProductId === product.id })}>
                   <div className={styles.productContent}>
                     <div className={styles.productImageWrapper}>
@@ -186,7 +195,7 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
                         onClick={() => handleSelectProduct(product)}
                         disabled={product.auctionStatus !== 'IN_PROGRESS'}
                       >
-                        {product.auctionStatus === 'IN_PROGRESS' ? '去出价' : '即将开拍'}
+                        {product.auctionStatus === 'IN_PROGRESS' ? '去出价' : product.auctionStatus === 'ENDED' ? '已结束' : '即将开拍'}
                       </button>
                     </div>
                   </div>
