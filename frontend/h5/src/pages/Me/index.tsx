@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
@@ -14,7 +15,13 @@ import { MenuItemProps } from '@/components/ui/menu/menu-item'
 
 export const Me = () => {
   const navigate = useNavigate()
-  const { user, logout } = useUserStore()
+  const { user, logout, fetchUser } = useUserStore()
+
+  useEffect(() => {
+    if (user) {
+      fetchUser()
+    }
+  }, [user, fetchUser])
 
   const menuItems: MenuItemProps[] = [
     {
