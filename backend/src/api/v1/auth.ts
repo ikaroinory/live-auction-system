@@ -237,10 +237,10 @@ router.get(
       ...userData,
       birthday: userData.birthday ? userData.birthday.toISOString().split('T')[0] : undefined,
       createdAt: userData.createdAt.toISOString(),
-      likes: stats[0]?.likes || 0,
-      mutual: stats[0]?.mutual || 0,
-      following: stats[0]?.following || 0,
-      followers: stats[0]?.followers || 0
+      likes: Number(stats[0]?.likes) || 0,
+      mutual: Number(stats[0]?.mutual) || 0,
+      following: Number(stats[0]?.following) || 0,
+      followers: Number(stats[0]?.followers) || 0
     }
 
     res.json(response)
