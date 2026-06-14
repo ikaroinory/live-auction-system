@@ -32,9 +32,9 @@ const ProductList: React.FC = () => {
     }
   }, [])
 
-  const { 
-    data: liveProductsData, 
-    isLoading: liveIsLoading, 
+  const {
+    data: liveProductsData,
+    isLoading: liveIsLoading,
     error: liveError,
     refresh: refreshLiveProducts
   } = useProductList({
@@ -42,9 +42,9 @@ const ProductList: React.FC = () => {
     creatorId: user?.id?.toString()
   })
 
-  const { 
-    data: pendingProductsData, 
-    isLoading: pendingIsLoading, 
+  const {
+    data: pendingProductsData,
+    isLoading: pendingIsLoading,
     error: pendingError,
     refresh: refreshPendingProducts
   } = useProductList({
@@ -63,7 +63,7 @@ const ProductList: React.FC = () => {
     fetch()
 
     websocketService.connect()
-    
+
     const handleAuctionEnd = () => {
       refreshLiveProducts()
     }
@@ -75,31 +75,34 @@ const ProductList: React.FC = () => {
     }
   }, [refreshLiveProducts])
 
-  const convertProductToItem = useCallback((product: Product, index: number): ProductItem => {
-    const tags: ProductTagType[] = []
-    if (product.tags?.includes(ProductTag.LATE_COMPENSATION)) tags.push(ProductTagType.LateCompensation)
-    if (product.tags?.includes(ProductTag.FREE_SHIPPING)) tags.push(ProductTagType.FreeShipping)
-    if (product.tags?.includes(ProductTag.SHIPPING_INSURANCE)) tags.push(ProductTagType.ShippingInsurance)
-    if (product.tags?.includes(ProductTag.AUCTION)) tags.push(ProductTagType.Auction)
-    return {
-      id: index + 1,
-      productId: product.id,
-      name: product.name,
-      image: product.image,
-      tags,
-      startingPrice: Number(product.startingPrice),
-      fixedIncrement: Number(product.fixedIncrement),
-      maxPrice: product.maxPrice ? Number(product.maxPrice) : undefined,
-      currentPrice: product.currentBidPrice,
-      bidCount: product.bidCount,
-      status: product.status,
-      tags: product.tags,
-      isExplaining: explainingProductId === product.id,
-      auctionStatus: product.auctionStatus,
-      auctionStartTime: product.auctionStartTime,
-      auctionEndTime: product.auctionEndTime
-    }
-  }, [explainingProductId])
+  const convertProductToItem = useCallback(
+    (product: Product, index: number): ProductItem => {
+      const tags: ProductTagType[] = []
+      if (product.tags?.includes(ProductTag.LATE_COMPENSATION)) tags.push(ProductTagType.LateCompensation)
+      if (product.tags?.includes(ProductTag.FREE_SHIPPING)) tags.push(ProductTagType.FreeShipping)
+      if (product.tags?.includes(ProductTag.SHIPPING_INSURANCE)) tags.push(ProductTagType.ShippingInsurance)
+      if (product.tags?.includes(ProductTag.AUCTION)) tags.push(ProductTagType.Auction)
+      return {
+        id: index + 1,
+        productId: product.id,
+        name: product.name,
+        image: product.image,
+        tags,
+        startingPrice: Number(product.startingPrice),
+        fixedIncrement: Number(product.fixedIncrement),
+        maxPrice: product.maxPrice ? Number(product.maxPrice) : undefined,
+        currentPrice: product.currentBidPrice,
+        bidCount: product.bidCount,
+        status: product.status,
+        tags: product.tags,
+        isExplaining: explainingProductId === product.id,
+        auctionStatus: product.auctionStatus,
+        auctionStartTime: product.auctionStartTime,
+        auctionEndTime: product.auctionEndTime
+      }
+    },
+    [explainingProductId]
+  )
 
   const liveProducts = useMemo(() => {
     if (!liveProductsData?.list) return []

@@ -68,11 +68,14 @@ export function setupWebSocket(httpServer: HttpServer): Server {
           // 这是直播间，直接加入房间用于接收广播
           socket.join(auctionId)
           console.log(`Client ${socket.id} joined live room: ${auctionId}`)
-          socket.emit('JOIN_ROOM_SUCCESS', createMessage('JOIN_ROOM_SUCCESS', {
-            auctionId,
-            currentPrice: 0,
-            remainingMs: 0
-          }))
+          socket.emit(
+            'JOIN_ROOM_SUCCESS',
+            createMessage('JOIN_ROOM_SUCCESS', {
+              auctionId,
+              currentPrice: 0,
+              remainingMs: 0
+            })
+          )
           return
         }
 
@@ -82,10 +85,13 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         })
 
         if (!product) {
-          socket.emit('JOIN_ROOM_FAILED', createMessage('JOIN_ROOM_FAILED', {
-            auctionId,
-            reason: '商品或直播间不存在'
-          }))
+          socket.emit(
+            'JOIN_ROOM_FAILED',
+            createMessage('JOIN_ROOM_FAILED', {
+              auctionId,
+              reason: '商品或直播间不存在'
+            })
+          )
           return
         }
 
@@ -93,7 +99,9 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
         if (!room) {
           const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
-          const baseEndTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const baseEndTime = product.auctionEndTime
+            ? product.auctionEndTime.getTime()
+            : Date.now() + product.durationMinutes * 60 * 1000
           const endTime = baseEndTime
 
           room = {
@@ -113,24 +121,32 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         room.bidders.add(userId)
         socket.join(auctionId)
 
-        socket.emit('JOIN_ROOM_SUCCESS', createMessage('JOIN_ROOM_SUCCESS', {
-          auctionId,
-          currentPrice: room.currentPrice,
-          remainingMs: Math.max(0, room.endTime - Date.now())
-        }))
+        socket.emit(
+          'JOIN_ROOM_SUCCESS',
+          createMessage('JOIN_ROOM_SUCCESS', {
+            auctionId,
+            currentPrice: room.currentPrice,
+            remainingMs: Math.max(0, room.endTime - Date.now())
+          })
+        )
 
         const rankings = await getRankings(auctionId)
-        socket.emit('RANKING_UPDATE', createMessage('RANKING_UPDATE', {
-          auctionId,
-          rankings
-        }))
-
+        socket.emit(
+          'RANKING_UPDATE',
+          createMessage('RANKING_UPDATE', {
+            auctionId,
+            rankings
+          })
+        )
       } catch (error) {
         console.error('JOIN_ROOM error:', error)
-        socket.emit('JOIN_ROOM_FAILED', createMessage('JOIN_ROOM_FAILED', {
-          auctionId: payload.auctionId,
-          reason: '服务器错误'
-        }))
+        socket.emit(
+          'JOIN_ROOM_FAILED',
+          createMessage('JOIN_ROOM_FAILED', {
+            auctionId: payload.auctionId,
+            reason: '服务器错误'
+          })
+        )
       }
     })
 
@@ -160,20 +176,26 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         })
 
         if (!product) {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: '商品不存在'
-          }))
+          socket.emit(
+            'BID_FAILED',
+            createMessage('BID_FAILED', {
+              auctionId: productId,
+              userId,
+              reason: '商品不存在'
+            })
+          )
           return
         }
 
         if (product.auctionStatus !== 'IN_PROGRESS') {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: '竞拍未在进行中'
-          }))
+          socket.emit(
+            'BID_FAILED',
+            createMessage('BID_FAILED', {
+              auctionId: productId,
+              userId,
+              reason: '竞拍未在进行中'
+            })
+          )
           return
         }
 
@@ -181,7 +203,9 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
         if (!room) {
           const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
-          const baseEndTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const baseEndTime = product.auctionEndTime
+            ? product.auctionEndTime.getTime()
+            : Date.now() + product.durationMinutes * 60 * 1000
           const endTime = baseEndTime
 
           room = {
@@ -203,20 +227,26 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         const minNextPrice = room.currentPrice + Number(product.fixedIncrement)
 
         if (price < minNextPrice) {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: `出价必须高于 ${minNextPrice}`
-          }))
+          socket.emit(
+            'BID_FAILED',
+            createMessage('BID_FAILED', {
+              auctionId: productId,
+              userId,
+              reason: `出价必须高于 ${minNextPrice}`
+            })
+          )
           return
         }
 
         if (product.maxPrice && price > Number(product.maxPrice)) {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: `出价不能超过最高价 ${product.maxPrice}`
-          }))
+          socket.emit(
+            'BID_FAILED',
+            createMessage('BID_FAILED', {
+              auctionId: productId,
+              userId,
+              reason: `出价不能超过最高价 ${product.maxPrice}`
+            })
+          )
           return
         }
 
@@ -224,11 +254,14 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         const lock = await redisClient.set(lockKey, userId, 'NX', 'PX', 1000)
 
         if (!lock) {
-          socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-            auctionId: productId,
-            userId,
-            reason: '系统繁忙，请稍后重试'
-          }))
+          socket.emit(
+            'BID_FAILED',
+            createMessage('BID_FAILED', {
+              auctionId: productId,
+              userId,
+              reason: '系统繁忙，请稍后重试'
+            })
+          )
           return
         }
 
@@ -238,22 +271,28 @@ export function setupWebSocket(httpServer: HttpServer): Server {
           })
 
           if (!updatedProduct || updatedProduct.auctionStatus !== 'IN_PROGRESS') {
-            socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-              auctionId: productId,
-              userId,
-              reason: '竞拍已结束'
-            }))
+            socket.emit(
+              'BID_FAILED',
+              createMessage('BID_FAILED', {
+                auctionId: productId,
+                userId,
+                reason: '竞拍已结束'
+              })
+            )
             return
           }
 
           const actualCurrentPrice = updatedProduct.currentBidPrice || updatedProduct.startingPrice
 
           if (price <= Number(actualCurrentPrice)) {
-            socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-              auctionId: productId,
-              userId,
-              reason: '出价必须高于当前价格'
-            }))
+            socket.emit(
+              'BID_FAILED',
+              createMessage('BID_FAILED', {
+                auctionId: productId,
+                userId,
+                reason: '出价必须高于当前价格'
+              })
+            )
             return
           }
 
@@ -284,14 +323,20 @@ export function setupWebSocket(httpServer: HttpServer): Server {
             }
           })
 
-          room.endTime = Math.max(room.baseEndTime, Date.now() + updatedProduct.extendSeconds * 1000)
+          room.endTime = Math.max(
+            room.baseEndTime,
+            Date.now() + updatedProduct.extendSeconds * 1000
+          )
 
-          socket.emit('BID_SUCCESS', createMessage('BID_SUCCESS', {
-            auctionId: productId,
-            userId,
-            price,
-            username: bid.user?.nickname || bid.user?.phone
-          } as BidSuccessPayload))
+          socket.emit(
+            'BID_SUCCESS',
+            createMessage('BID_SUCCESS', {
+              auctionId: productId,
+              userId,
+              price,
+              username: bid.user?.nickname || bid.user?.phone
+            } as BidSuccessPayload)
+          )
 
           const priceUpdate: PriceUpdatePayload = {
             auctionId: productId,
@@ -308,18 +353,19 @@ export function setupWebSocket(httpServer: HttpServer): Server {
             rankings
           }
           io.to(productId).emit('RANKING_UPDATE', createMessage('RANKING_UPDATE', rankingUpdate))
-
         } finally {
           await redisClient.del(lockKey)
         }
-
       } catch (error) {
         console.error('SUBMIT_BID error:', error)
-        socket.emit('BID_FAILED', createMessage('BID_FAILED', {
-          auctionId: payload.productId,
-          userId: payload.userId,
-          reason: '服务器错误'
-        } as BidFailedPayload))
+        socket.emit(
+          'BID_FAILED',
+          createMessage('BID_FAILED', {
+            auctionId: payload.productId,
+            userId: payload.userId,
+            reason: '服务器错误'
+          } as BidFailedPayload)
+        )
       }
     })
 
@@ -387,7 +433,6 @@ function startAuctionTimer(productId: string, room: AuctionRoom): void {
     }
     const io = getIO()
     io?.to(productId).emit('COUNTDOWN_TICK', createMessage('COUNTDOWN_TICK', tickPayload))
-
   }, 1000)
 }
 
@@ -452,7 +497,10 @@ export async function extendAuction(productId: string, extendSeconds: number): P
   io?.to(productId).emit('AUCTION_EXTENDED', createMessage('AUCTION_EXTENDED', extendedPayload))
 }
 
-export async function broadcastExplainingUpdate(roomId: string, productId: string | null): Promise<void> {
+export async function broadcastExplainingUpdate(
+  roomId: string,
+  productId: string | null
+): Promise<void> {
   const io = getIO()
   if (!io) return
 
@@ -464,7 +512,11 @@ export async function broadcastExplainingUpdate(roomId: string, productId: strin
   io.to(roomId).emit('EXPLAINING_UPDATE', createMessage('EXPLAINING_UPDATE', payload))
 }
 
-export async function broadcastProductUpdate(roomId: string, productId: string, auctionStatus: string): Promise<void> {
+export async function broadcastProductUpdate(
+  roomId: string,
+  productId: string,
+  auctionStatus: string
+): Promise<void> {
   const io = getIO()
   if (!io) return
 

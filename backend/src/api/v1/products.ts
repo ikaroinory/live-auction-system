@@ -15,7 +15,12 @@ import {
   getRoomExplainingProduct,
   clearRoomExplainingProduct
 } from '../../lib/redis'
-import { broadcastExplainingUpdate, broadcastProductUpdate, endAuction, getIO } from '../../lib/websocket'
+import {
+  broadcastExplainingUpdate,
+  broadcastProductUpdate,
+  endAuction,
+  getIO
+} from '../../lib/websocket'
 
 interface DeleteResponse {
   message: string
@@ -171,7 +176,10 @@ router.get(
   '/explaining',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<ParamsDictionary, unknown, unknown, { roomId?: string }>, res: Response) => {
+    async (
+      req: Request<ParamsDictionary, unknown, unknown, { roomId?: string }>,
+      res: Response
+    ) => {
       const user = requireAuth(req)
       const { roomId } = req.query
 
@@ -183,7 +191,9 @@ router.get(
           select: { id: true }
         })
         if (!room) {
-          return res.status(400).json({ success: false, message: '直播间不存在', productId: null, roomId: null })
+          return res
+            .status(400)
+            .json({ success: false, message: '直播间不存在', productId: null, roomId: null })
         }
         liveRoomId = room.id
       } else {
@@ -193,7 +203,9 @@ router.get(
         })
 
         if (!liveRoom) {
-          return res.status(400).json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
+          return res
+            .status(400)
+            .json({ success: false, message: '用户未创建直播间', productId: null, roomId: null })
         }
         liveRoomId = liveRoom.id
       }
@@ -967,66 +979,66 @@ router.patch(
 router.patch(
   '/:id/start-auction',
   authMiddleware,
-  wrapAuthHandler(
-    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
-      const user = requireAuth(req)
+  wrapAuthHandler(async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+    const user = requireAuth(req)
 
-      const existing = await prisma.product.findUnique({
-        where: { id: req.params.id }
-      })
+    const existing = await prisma.product.findUnique({
+      where: { id: req.params.id }
+    })
 
-      if (!existing) {
-        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
-      }
+    if (!existing) {
+      return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+    }
 
-      if (existing.creatorId !== user.id) {
-        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
-      }
+    if (existing.creatorId !== user.id) {
+      return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+    }
 
-      if (existing.auctionStatus !== 'NOT_STARTED') {
-        return res.status(400).json({ message: '商品竞拍已开始或已结束' } as unknown as ProductResponse)
-      }
+    if (existing.auctionStatus !== 'NOT_STARTED') {
+      return res
+        .status(400)
+        .json({ message: '商品竞拍已开始或已结束' } as unknown as ProductResponse)
+    }
 
-      const auctionEndTime = new Date(Date.now() + existing.durationMinutes * 60 * 1000)
+    const auctionEndTime = new Date(Date.now() + existing.durationMinutes * 60 * 1000)
 
-      const updated = await prisma.product.update({
-        where: { id: req.params.id },
-        data: {
-          auctionStatus: 'IN_PROGRESS',
-          auctionStartTime: new Date(),
-          auctionEndTime
-        },
-        include: {
-          creator: {
-            select: {
-              id: true,
-              nickname: true,
-              avatar: true
-            }
+    const updated = await prisma.product.update({
+      where: { id: req.params.id },
+      data: {
+        auctionStatus: 'IN_PROGRESS',
+        auctionStartTime: new Date(),
+        auctionEndTime
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            nickname: true,
+            avatar: true
           }
         }
-      })
-
-      const response: ProductResponse = {
-        ...updated,
-        createdAt: updated.createdAt.toISOString()
       }
+    })
 
-      const liveRooms = await prisma.liveRoom.findMany({
-        where: { streamerId: updated.creatorId, status: 1 }
-      })
-      for (const room of liveRooms) {
-        broadcastProductUpdate(room.id, req.params.id, 'IN_PROGRESS').catch(console.error)
-      }
-
-      const delayMs = auctionEndTime.getTime() - Date.now()
-      setTimeout(() => {
-        endAuction(req.params.id).catch(console.error)
-      }, delayMs)
-
-      res.json(response)
+    const response: ProductResponse = {
+      ...updated,
+      createdAt: updated.createdAt.toISOString()
     }
-  )
+
+    const liveRooms = await prisma.liveRoom.findMany({
+      where: { streamerId: updated.creatorId, status: 1 }
+    })
+    for (const room of liveRooms) {
+      broadcastProductUpdate(room.id, req.params.id, 'IN_PROGRESS').catch(console.error)
+    }
+
+    const delayMs = auctionEndTime.getTime() - Date.now()
+    setTimeout(() => {
+      endAuction(req.params.id).catch(console.error)
+    }, delayMs)
+
+    res.json(response)
+  })
 )
 
 /**
@@ -1063,74 +1075,72 @@ router.patch(
 router.patch(
   '/:id/end-auction',
   authMiddleware,
-  wrapAuthHandler(
-    async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
-      const user = requireAuth(req)
+  wrapAuthHandler(async (req: Request<{ id: string }>, res: Response<ProductResponse>) => {
+    const user = requireAuth(req)
 
-      const existing = await prisma.product.findUnique({
-        where: { id: req.params.id }
-      })
+    const existing = await prisma.product.findUnique({
+      where: { id: req.params.id }
+    })
 
-      if (!existing) {
-        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
-      }
+    if (!existing) {
+      return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
+    }
 
-      if (existing.creatorId !== user.id) {
-        return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
-      }
+    if (existing.creatorId !== user.id) {
+      return res.status(403).json({ message: '无权限操作此商品' } as unknown as ProductResponse)
+    }
 
-      if (existing.auctionStatus !== 'IN_PROGRESS') {
-        return res.status(400).json({ message: '商品竞拍未在进行中' } as unknown as ProductResponse)
-      }
+    if (existing.auctionStatus !== 'IN_PROGRESS') {
+      return res.status(400).json({ message: '商品竞拍未在进行中' } as unknown as ProductResponse)
+    }
 
-      const productId = req.params.id
+    const productId = req.params.id
 
-      const updated = await prisma.product.update({
-        where: { id: productId },
-        data: {
-          auctionStatus: 'ENDED',
-          auctionEndTime: new Date()
-        },
-        include: {
-          creator: {
-            select: {
-              id: true,
-              nickname: true,
-              avatar: true
-            }
+    const updated = await prisma.product.update({
+      where: { id: productId },
+      data: {
+        auctionStatus: 'ENDED',
+        auctionEndTime: new Date()
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            nickname: true,
+            avatar: true
           }
         }
-      })
-
-      const response: ProductResponse = {
-        ...updated,
-        createdAt: updated.createdAt.toISOString()
       }
+    })
 
-      // 向商品房间发送 PRODUCT_UPDATE（用户点击去出价后会加入这个房间）
-      const io = getIO()
-      const productUpdatePayload = {
-        roomId: productId,
-        productId,
-        auctionStatus: 'ENDED'
-      }
-      io?.to(productId).emit('PRODUCT_UPDATE', {
-        type: 'PRODUCT_UPDATE',
-        payload: productUpdatePayload,
-        timestamp: Date.now()
-      })
-
-      // 发送 PRODUCT_UPDATE 广播到直播间
-      const liveRooms = await prisma.liveRoom.findMany({
-        where: { streamerId: updated.creatorId, status: 1 }
-      })
-      for (const room of liveRooms) {
-        broadcastProductUpdate(room.id, productId, 'ENDED').catch(console.error)
-      }
-
-      res.json(response)
+    const response: ProductResponse = {
+      ...updated,
+      createdAt: updated.createdAt.toISOString()
     }
-  )
+
+    // 向商品房间发送 PRODUCT_UPDATE（用户点击去出价后会加入这个房间）
+    const io = getIO()
+    const productUpdatePayload = {
+      roomId: productId,
+      productId,
+      auctionStatus: 'ENDED'
+    }
+    io?.to(productId).emit('PRODUCT_UPDATE', {
+      type: 'PRODUCT_UPDATE',
+      payload: productUpdatePayload,
+      timestamp: Date.now()
+    })
+
+    // 发送 PRODUCT_UPDATE 广播到直播间
+    const liveRooms = await prisma.liveRoom.findMany({
+      where: { streamerId: updated.creatorId, status: 1 }
+    })
+    for (const room of liveRooms) {
+      broadcastProductUpdate(room.id, productId, 'ENDED').catch(console.error)
+    }
+
+    res.json(response)
+  })
 )
 
 export default router

@@ -31,7 +31,10 @@ export const productService = {
     await api.patch(`/products/${id}/status`, { status })
   },
 
-  toggleExplaining: async (id: string, start: boolean = true): Promise<{
+  toggleExplaining: async (
+    id: string,
+    start: boolean = true
+  ): Promise<{
     success: boolean
     message: string
     prevExplainingProductId: string | null

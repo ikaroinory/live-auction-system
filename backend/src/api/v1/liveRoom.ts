@@ -746,7 +746,10 @@ router.post(
   '/:id/follow',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }, { message: string }>, res: Response<{ message: string }>) => {
+    async (
+      req: Request<{ id: string }, { message: string }>,
+      res: Response<{ message: string }>
+    ) => {
       const user = requireAuth(req)
 
       const existing = await prisma.liveRoom.findUnique({
@@ -794,7 +797,10 @@ router.post(
   '/:id/unfollow',
   authMiddleware,
   wrapAuthHandler(
-    async (req: Request<{ id: string }, { message: string }>, res: Response<{ message: string }>) => {
+    async (
+      req: Request<{ id: string }, { message: string }>,
+      res: Response<{ message: string }>
+    ) => {
       const user = requireAuth(req)
 
       await prisma.liveRoomFollow.deleteMany({

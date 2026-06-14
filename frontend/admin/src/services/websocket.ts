@@ -18,7 +18,7 @@ class WebSocketService {
       transports: ['websocket', 'polling'],
       reconnection: true,
       pingInterval: 20000,
-      pingTimeout: 10000,
+      pingTimeout: 10000
     })
 
     this.socket.on('connect', () => {

@@ -3,7 +3,12 @@ import type { ParamsDictionary } from 'express-serve-static-core'
 import { prisma } from '../../lib/prisma'
 import { authMiddleware } from '../../middleware/auth'
 import { wrapAuthHandler, requireAuth } from '../utils'
-import { PagedProductResponse, ProductResponse, ProductAuctionStatus, ProductStatus } from '@live-auction/shared'
+import {
+  PagedProductResponse,
+  ProductResponse,
+  ProductAuctionStatus,
+  ProductStatus
+} from '@live-auction/shared'
 
 const router = Router()
 
@@ -81,7 +86,7 @@ router.get(
           )
       `
 
-      const productIds = wonProducts.map(p => p.productId)
+      const productIds = wonProducts.map((p) => p.productId)
 
       if (productIds.length === 0) {
         const response: PagedProductResponse = {

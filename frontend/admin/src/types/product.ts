@@ -1,10 +1,4 @@
-import {
-  ProductStatus,
-  ProductAuctionStatus,
-  ProductTag,
-  Product,
-  ProductFormData
-} from '@live-auction/shared'
+import { ProductStatus, ProductAuctionStatus, ProductTag, Product, ProductFormData } from '@live-auction/shared'
 
 export { ProductStatus, ProductAuctionStatus, ProductTag }
 

@@ -3,12 +3,7 @@ import type { ParamsDictionary } from 'express-serve-static-core'
 import { prisma } from '../../lib/prisma'
 import { authMiddleware } from '../../middleware/auth'
 import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
-import {
-  BidResponse,
-  PagedBidResponse,
-  CreateBidRequest,
-  BidParams
-} from '@live-auction/shared'
+import { BidResponse, PagedBidResponse, CreateBidRequest, BidParams } from '@live-auction/shared'
 
 const router = Router()
 
@@ -103,11 +98,13 @@ router.get(
       ])
 
       const response: PagedBidResponse = {
-        list: bids.map((bid): BidResponse => ({
-          ...bid,
-          price: Number(bid.price),
-          createdAt: bid.createdAt.toISOString()
-        })),
+        list: bids.map(
+          (bid): BidResponse => ({
+            ...bid,
+            price: Number(bid.price),
+            createdAt: bid.createdAt.toISOString()
+          })
+        ),
         total,
         page,
         pageSize
@@ -175,12 +172,7 @@ router.get(
   authMiddleware,
   wrapAuthHandler(
     async (
-      req: Request<
-        ParamsDictionary,
-        PagedBidResponse,
-        unknown,
-        BidParams
-      >,
+      req: Request<ParamsDictionary, PagedBidResponse, unknown, BidParams>,
       res: Response<PagedBidResponse>
     ) => {
       const { page = 1, pageSize = 10, productId, userId } = req.query
@@ -215,11 +207,13 @@ router.get(
       ])
 
       const response: PagedBidResponse = {
-        list: bids.map((bid): BidResponse => ({
-          ...bid,
-          price: Number(bid.price),
-          createdAt: bid.createdAt.toISOString()
-        })),
+        list: bids.map(
+          (bid): BidResponse => ({
+            ...bid,
+            price: Number(bid.price),
+            createdAt: bid.createdAt.toISOString()
+          })
+        ),
         total,
         page,
         pageSize
@@ -260,35 +254,33 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  wrapAuthHandler(
-    async (req: Request<{ id: string }, BidResponse>, res: Response<BidResponse>) => {
-      const bid = await prisma.bid.findUnique({
-        where: { id: req.params.id },
-        include: {
-          user: {
-            select: {
-              id: true,
-              nickname: true,
-              phone: true,
-              avatar: true
-            }
+  wrapAuthHandler(async (req: Request<{ id: string }, BidResponse>, res: Response<BidResponse>) => {
+    const bid = await prisma.bid.findUnique({
+      where: { id: req.params.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+            phone: true,
+            avatar: true
           }
         }
-      })
-
-      if (!bid) {
-        return res.status(404).json({ message: '出价记录不存在' } as unknown as BidResponse)
       }
+    })
 
-      const response: BidResponse = {
-        ...bid,
-        price: Number(bid.price),
-        createdAt: bid.createdAt.toISOString()
-      }
-
-      res.json(response)
+    if (!bid) {
+      return res.status(404).json({ message: '出价记录不存在' } as unknown as BidResponse)
     }
-  )
+
+    const response: BidResponse = {
+      ...bid,
+      price: Number(bid.price),
+      createdAt: bid.createdAt.toISOString()
+    }
+
+    res.json(response)
+  })
 )
 
 /**
@@ -492,11 +484,13 @@ router.get(
       ])
 
       const response: PagedBidResponse = {
-        list: bids.map((bid): BidResponse => ({
-          ...bid,
-          price: Number(bid.price),
-          createdAt: bid.createdAt.toISOString()
-        })),
+        list: bids.map(
+          (bid): BidResponse => ({
+            ...bid,
+            price: Number(bid.price),
+            createdAt: bid.createdAt.toISOString()
+          })
+        ),
         total,
         page,
         pageSize

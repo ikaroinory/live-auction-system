@@ -68,7 +68,6 @@ const AuctionStatusTag: React.FC<AuctionStatusTagProps> = ({ status, auctionEndT
 }
 
 interface ItemInformationProps {
-  width?: Property.Width<string | number>
   name?: string
   image?: string
   tags?: ProductTag[]
@@ -78,7 +77,7 @@ const ItemInformation: React.FC<ItemInformationProps> = (props) => {
   const hasTag = (tag: ProductTag) => props.tags?.includes(tag)
 
   return (
-    <Space style={{ width: props.width }} align="center">
+    <Space align="center">
       <Image width={64} height={64} src={props.image} />
       <Space vertical align="start" spacing={4}>
         <Skeleton
@@ -159,15 +158,17 @@ const ItemData: React.FC<ItemDataProps> = ({ startingPrice, fixedIncrement, maxP
   ]
 
   return (
-    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      {items.map((item) => (
-        <Space key={item.name} style={{ width: 128 }} vertical spacing={4}>
-          <Typography.Numeral strong parser={parseParser(item.type)}>
-            {item.value ?? '-'}
-          </Typography.Numeral>
-          <Typography.Text type="tertiary">{item.name}</Typography.Text>
-        </Space>
-      ))}
+    <div style={{ width: 600 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {items.map((item) => (
+          <Space key={item.name} style={{ width: 128 }} vertical spacing={4}>
+            <Typography.Numeral strong parser={parseParser(item.type)}>
+              {item.value ?? '-'}
+            </Typography.Numeral>
+            <Typography.Text type="tertiary">{item.name}</Typography.Text>
+          </Space>
+        ))}
+      </div>
     </div>
   )
 }
@@ -322,35 +323,40 @@ const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
   )
 }
 
-type ItemCardProps = { id: number } & Omit<ItemInformationProps, 'width'> & ItemDataProps & ButtonGroupProps
+type ItemCardProps = { id: number } & ItemInformationProps & ItemDataProps & ButtonGroupProps
 
 export const ItemCard: React.FC<ItemCardProps> = (props) => {
   return (
-    <Card style={{ width: '100%' }} bodyStyle={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Typography.Text type="quaternary">{props.id}</Typography.Text>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-        <div style={{ width: '100%', display: 'flex' }}>
-          <ItemInformation width={460} name={props.name} image={props.image} tags={props.tags} />
-          <ItemData
-            startingPrice={props.startingPrice}
-            fixedIncrement={props.fixedIncrement}
-            maxPrice={props.maxPrice}
-            currentPrice={props.currentPrice}
-            bidCount={props.bidCount}
-          />
+    <Card
+      style={{ width: '100%' }}
+      bodyStyle={{ width: '100%', display: 'flex', gap: 4, flexDirection: 'column', alignItems: 'flex-end' }}
+    >
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <Typography.Text style={{ marginRight: 16 }} type="quaternary">
+            {props.id}
+          </Typography.Text>
+          <ItemInformation name={props.name} image={props.image} tags={props.tags} />
         </div>
-        {props.status === ProductStatus.PUBLISHED && (
-          <AuctionStatusTag status={props.auctionStatus} auctionEndTime={props.auctionEndTime} />
-        )}
-        <ButtonGroup
-          productId={props.productId}
-          status={props.status}
-          auctionStatus={props.auctionStatus}
-          refresh={props.refresh}
-          isExplaining={props.isExplaining}
-          onRefreshExplaining={props.onRefreshExplaining}
+        <ItemData
+          startingPrice={props.startingPrice}
+          fixedIncrement={props.fixedIncrement}
+          maxPrice={props.maxPrice}
+          currentPrice={props.currentPrice}
+          bidCount={props.bidCount}
         />
       </div>
+      {props.status === ProductStatus.PUBLISHED && (
+        <AuctionStatusTag status={props.auctionStatus} auctionEndTime={props.auctionEndTime} />
+      )}
+      <ButtonGroup
+        productId={props.productId}
+        status={props.status}
+        auctionStatus={props.auctionStatus}
+        refresh={props.refresh}
+        isExplaining={props.isExplaining}
+        onRefreshExplaining={props.onRefreshExplaining}
+      />
     </Card>
   )
 }
