@@ -19,8 +19,35 @@ interface ProductModalProps {
 
 export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [localProducts, setLocalProducts] = useState<Product[]>(products)
   const { setCurrentAuction, updatePrice, updateBidCount, bidCount, remainingMs } = useAuctionRoomStore()
   const { user } = useUserStore()
+
+  useEffect(() => {
+    setLocalProducts(products)
+  }, [products])
+
+  useEffect(() => {
+    const handleProductUpdate = (payload: { roomId: string; productId: string; auctionStatus: string }) => {
+      setLocalProducts(prevProducts => 
+        prevProducts.map(product => 
+          product.id === payload.productId 
+            ? { ...product, auctionStatus: payload.auctionStatus as Product['auctionStatus'] }
+            : product
+        )
+      )
+      
+      if (selectedProduct && selectedProduct.id === payload.productId) {
+        setSelectedProduct(prev => prev ? { ...prev, auctionStatus: payload.auctionStatus as Product['auctionStatus'] } : null)
+      }
+    }
+
+    websocketService.setOnProductUpdate(handleProductUpdate)
+    
+    return () => {
+      websocketService.setOnProductUpdate(() => {})
+    }
+  }, [selectedProduct])
 
   useEffect(() => {
     if (selectedProduct && user?.id) {
@@ -155,9 +182,9 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
           </button>
         </div>
         <div className={styles.productModalContent}>
-          {products && products.length > 0 ? (
+          {localProducts && localProducts.length > 0 ? (
             <div className={styles.productList}>
-              {[...products].sort((a, b) => {
+              {[...localProducts].sort((a, b) => {
                 const statusOrder: Record<string, number> = { IN_PROGRESS: 0, NOT_STARTED: 1, ENDED: 2 }
                 const aOrder = statusOrder[a.auctionStatus] ?? 2
                 const bOrder = statusOrder[b.auctionStatus] ?? 2
