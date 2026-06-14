@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STOMP WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #status { padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        #status.connected { background-color: #d4edda; color: #155724; }
+        #status.disconnected { background-color: #f8d7da; color: #721c24; }
+        #status.connecting { background-color: #fff3cd; color: #856404; }
+        #messages { height: 300px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        #messageInput { width: 60%; padding: 8px; }
+        #senderInput { width: 20%; padding: 8px; }
+        #sendBtn { padding: 8px 16px; }
+        .message { margin: 5px 0; padding: 8px; border-radius: 4px; }
+        .message.sent { background-color: #007bff; color: white; text-align: right; }
+        .message.received { background-color: #e9ecef; color: #212529; }
+    </style>
+</head>
+<body>
+    <h1>STOMP WebSocket Test</h1>
+    <div id="status" class="disconnected">未连接</div>
+    <input type="text" id="senderInput" placeholder="昵称" value="测试用户">
+    <input type="text" id="messageInput" placeholder="输入消息..." onkeydown="if(event.keyCode==13) sendMessage()">
+    <button id="sendBtn" onclick="sendMessage()">发送</button>
+    <button onclick="connect()">连接</button>
+    <button onclick="disconnect()">断开</button>
+    <div id="messages"></div>
+
+    <script>
+        var stompClient = null;
+        var statusDiv = document.getElementById('status');
+        var messagesDiv = document.getElementById('messages');
+        var messageInput = document.getElementById('messageInput');
+        var senderInput = document.getElementById('senderInput');
+
+        function connect() {
+            if (stompClient && stompClient.connected) {
+                alert('已经连接');
+                return;
+            }
+            
+            statusDiv.className = 'connecting';
+            statusDiv.textContent = '连接中...';
+            
+            var socket = new WebSocket('ws://localhost:8080/ws/chat');
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                statusDiv.className = 'connected';
+                statusDiv.textContent = '已连接 - STOMP协议';
+                addMessage('系统', 'STOMP WebSocket 连接成功！', 'received');
+                
+                stompClient.subscribe('/topic/messages', function(message) {
+                    var data = JSON.parse(message.body);
+                    addMessage(data.sender, data.content, 'received');
+                });
+            }, function(error) {
+                statusDiv.className = 'disconnected';
+                statusDiv.textContent = '连接失败';
+                addMessage('系统', '连接错误: ' + error, 'received');
+            });
+        }
+
+        function disconnect() {
+            if (stompClient) {
+                stompClient.disconnect();
+                stompClient = null;
+                statusDiv.className = 'disconnected';
+                statusDiv.textContent = '已断开';
+                addMessage('系统', '连接已断开', 'received');
+            }
+        }
+
+        function sendMessage() {
+            var message = messageInput.value.trim();
+            var sender = senderInput.value.trim() || '匿名';
+            
+            if (message && stompClient && stompClient.connected) {
+                stompClient.send("/app/chat", {}, JSON.stringify({
+                    'sender': sender,
+                    'content': message
+                }));
+                addMessage('我', message, 'sent');
+                messageInput.value = '';
+            } else if (!stompClient || !stompClient.connected) {
+                alert('请先连接');
+            }
+        }
+
+        function addMessage(sender, message, type) {
+            var div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.innerHTML = '<strong>' + sender + ':</strong> ' + message;
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        window.onload = function() {
+            connect();
+        };
+    </script>
+</body>
+</html>
