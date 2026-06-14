@@ -158,3 +158,105 @@
     opacity: 0.9;
   }
 }
+
+.custom-nav-bar {
+  background: var(--douyin-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.custom-nav-bar .adm-nav-bar-title {
+  color: var(--douyin-text);
+  font-weight: 600;
+}
+
+.custom-nav-bar .adm-nav-bar-left {
+  color: var(--douyin-text);
+}
+
+.page-content {
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.custom-list {
+  background: transparent;
+}
+
+.custom-list .adm-list-header {
+  color: var(--douyin-text-secondary);
+  font-size: 14px;
+  padding: 16px 0 12px;
+  font-weight: 500;
+}
+
+.custom-list .adm-list-body {
+  background: transparent;
+}
+
+.list-item {
+  background: var(--douyin-bg-light);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+}
+
+.list-item .adm-list-item-content {
+  padding: 0;
+}
+
+.record-card {
+  padding: 16px;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.record-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--douyin-text);
+}
+
+.record-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--douyin-primary);
+  margin-bottom: 8px;
+}
+
+.record-time {
+  font-size: 13px;
+  color: var(--douyin-text-tertiary);
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.winning {
+    background: rgba(254, 44, 85, 0.15);
+    color: var(--douyin-primary);
+  }
+  
+  &.outbid {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--douyin-text-secondary);
+  }
+  
+  &.pending {
+    background: rgba(254, 44, 85, 0.15);
+    color: var(--douyin-primary);
+  }
+  
+  &.completed {
+    background: rgba(46, 168, 107, 0.15);
+    color: #2ea86b;
+  }
+}
