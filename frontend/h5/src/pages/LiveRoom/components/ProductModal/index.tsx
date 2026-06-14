@@ -157,7 +157,7 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
                 </div>
                 <div className={styles.bidProductStats}>
                   <span>已出价 {bidCount} 次</span>
-                  <span>剩余 {Math.floor(remainingMs / 60000)} 分钟</span>
+                  <span>剩余 {remainingMs >= 60000 ? `${Math.floor(remainingMs / 60000)} 分钟` : `${Math.ceil(remainingMs / 1000)} 秒`}</span>
                 </div>
               </div>
             </div>
