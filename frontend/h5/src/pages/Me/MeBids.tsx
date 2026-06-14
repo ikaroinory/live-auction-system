@@ -12,7 +12,7 @@ export const MeBids = () => {
       <NavBar 
         className="custom-nav-bar"
         leftContent={<ChevronLeftIcon style={{ width: 20, height: 20 }} />}
-        onLeftClick={() => navigate('/me')}
+        onLeftClick={() => navigate(-1)}
         title="我的出价"
       />
 

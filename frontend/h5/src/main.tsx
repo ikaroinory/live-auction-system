@@ -92,9 +92,6 @@ const router = createBrowserRouter([
       { path: '/bids', element: <MeBids /> },
       { path: '/orders', element: <MeOrders /> },
       { path: '/me', element: <Me /> },
-
-      { path: '/me/bids', element: <MeBids /> },
-      { path: '/me/orders', element: <MeOrders /> },
     ],
   },
 
@@ -102,6 +99,8 @@ const router = createBrowserRouter([
 
   { path: '/me/avatar', element: <AvatarEdit /> },
   { path: '/me/profile', element: <ProfileEdit /> },
+  { path: '/me/bids', element: <MeBids /> },
+  { path: '/me/orders', element: <MeOrders /> },
 
   { path: '/live/:id', element: <LiveRoom /> },
 ])
