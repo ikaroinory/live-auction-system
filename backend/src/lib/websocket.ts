@@ -422,6 +422,13 @@ export async function endAuction(productId: string): Promise<void> {
 
   io?.to(productId).emit('AUCTION_ENDED', createMessage('AUCTION_ENDED', endPayload))
 
+  const productUpdatePayload: ProductUpdatePayload = {
+    roomId: productId,
+    productId,
+    auctionStatus: 'ENDED'
+  }
+  io?.to(productId).emit('PRODUCT_UPDATE', createMessage('PRODUCT_UPDATE', productUpdatePayload))
+
   const liveRooms = await prisma.liveRoom.findMany({
     where: { streamerId: product.creatorId, status: 1 }
   })
