@@ -57,19 +57,19 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
     socket.on('JOIN_ROOM', async (payload: JoinRoomPayload) => {
       try {
-        const { productId, userId } = payload
+        const { auctionId, userId } = payload
 
         // 先尝试作为直播间ID查找
         const liveRoom = await prisma.liveRoom.findUnique({
-          where: { id: productId }
+          where: { id: auctionId }
         })
 
         if (liveRoom) {
           // 这是直播间，直接加入房间用于接收广播
-          socket.join(productId)
-          console.log(`Client ${socket.id} joined live room: ${productId}`)
+          socket.join(auctionId)
+          console.log(`Client ${socket.id} joined live room: ${auctionId}`)
           socket.emit('JOIN_ROOM_SUCCESS', createMessage('JOIN_ROOM_SUCCESS', {
-            productId,
+            auctionId,
             currentPrice: 0,
             remainingMs: 0
           }))
@@ -78,18 +78,18 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
         // 否则作为商品ID查找
         const product = await prisma.product.findUnique({
-          where: { id: productId }
+          where: { id: auctionId }
         })
 
         if (!product) {
           socket.emit('JOIN_ROOM_FAILED', createMessage('JOIN_ROOM_FAILED', {
-            productId,
+            auctionId,
             reason: '商品或直播间不存在'
           }))
           return
         }
 
-        let room = rooms.get(productId)
+        let room = rooms.get(auctionId)
 
         if (!room) {
           const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
@@ -97,7 +97,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
           const endTime = baseEndTime
 
           room = {
-            productId,
+            productId: auctionId,
             currentPrice,
             endTime,
             baseEndTime,
@@ -105,48 +105,48 @@ export function setupWebSocket(httpServer: HttpServer): Server {
             timer: null
           }
 
-          rooms.set(productId, room)
+          rooms.set(auctionId, room)
 
-          startAuctionTimer(productId, room)
+          startAuctionTimer(auctionId, room)
         }
 
         room.bidders.add(userId)
-        socket.join(productId)
+        socket.join(auctionId)
 
         socket.emit('JOIN_ROOM_SUCCESS', createMessage('JOIN_ROOM_SUCCESS', {
-          productId,
+          auctionId,
           currentPrice: room.currentPrice,
           remainingMs: Math.max(0, room.endTime - Date.now())
         }))
 
-        const rankings = await getRankings(productId)
+        const rankings = await getRankings(auctionId)
         socket.emit('RANKING_UPDATE', createMessage('RANKING_UPDATE', {
-          auctionId: productId,
+          auctionId,
           rankings
         }))
 
       } catch (error) {
         console.error('JOIN_ROOM error:', error)
         socket.emit('JOIN_ROOM_FAILED', createMessage('JOIN_ROOM_FAILED', {
-          productId: payload.productId,
+          auctionId: payload.auctionId,
           reason: '服务器错误'
         }))
       }
     })
 
     socket.on('LEAVE_ROOM', (payload: JoinRoomPayload) => {
-      const { productId, userId } = payload
-      const room = rooms.get(productId)
+      const { auctionId, userId } = payload
+      const room = rooms.get(auctionId)
 
       if (room) {
         room.bidders.delete(userId)
-        socket.leave(productId)
+        socket.leave(auctionId)
 
         if (room.bidders.size === 0) {
           if (room.timer) {
             clearInterval(room.timer)
           }
-          rooms.delete(productId)
+          rooms.delete(auctionId)
         }
       }
     })
