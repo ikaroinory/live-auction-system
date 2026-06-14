@@ -18,7 +18,7 @@ export const Me = () => {
   const { user, logout, fetchUser } = useUserStore()
 
   useEffect(() => {
-    if (user) {
+    if (user && user.followers === undefined) {
       fetchUser()
     }
   }, [user, fetchUser])
