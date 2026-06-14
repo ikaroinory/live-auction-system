@@ -420,6 +420,13 @@ export async function endAuction(productId: string): Promise<void> {
   }
 
   io?.to(productId).emit('AUCTION_ENDED', createMessage('AUCTION_ENDED', endPayload))
+
+  const liveRooms = await prisma.liveRoom.findMany({
+    where: { streamerId: product.creatorId, status: 1 }
+  })
+  for (const room of liveRooms) {
+    await broadcastProductUpdate(room.id, productId, 'ENDED')
+  }
 }
 
 export async function extendAuction(productId: string, extendSeconds: number): Promise<void> {
