@@ -1012,7 +1012,12 @@ router.patch(
         createdAt: updated.createdAt.toISOString()
       }
 
-      broadcastProductUpdate(updated.creatorId, req.params.id, 'IN_PROGRESS').catch(console.error)
+      const liveRooms = await prisma.liveRoom.findMany({
+        where: { streamerId: updated.creatorId, status: 1 }
+      })
+      for (const room of liveRooms) {
+        broadcastProductUpdate(room.id, req.params.id, 'IN_PROGRESS').catch(console.error)
+      }
 
       res.json(response)
     }
