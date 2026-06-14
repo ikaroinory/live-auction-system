@@ -390,14 +390,14 @@ function startAuctionTimer(productId: string, room: AuctionRoom): void {
   }, 1000)
 }
 
-async function endAuction(productId: string): Promise<void> {
+export async function endAuction(productId: string): Promise<void> {
   const io = getIO()
 
   const product = await prisma.product.findUnique({
     where: { id: productId }
   })
 
-  if (!product) return
+  if (!product || product.auctionStatus === 'ENDED') return
 
   const winningBid = await prisma.bid.findFirst({
     where: { productId },

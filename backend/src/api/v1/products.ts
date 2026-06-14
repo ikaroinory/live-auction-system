@@ -15,7 +15,7 @@ import {
   getRoomExplainingProduct,
   clearRoomExplainingProduct
 } from '../../lib/redis'
-import { broadcastExplainingUpdate, broadcastProductUpdate } from '../../lib/websocket'
+import { broadcastExplainingUpdate, broadcastProductUpdate, endAuction } from '../../lib/websocket'
 
 interface DeleteResponse {
   message: string
@@ -1018,6 +1018,11 @@ router.patch(
       for (const room of liveRooms) {
         broadcastProductUpdate(room.id, req.params.id, 'IN_PROGRESS').catch(console.error)
       }
+
+      const delayMs = auctionEndTime.getTime() - Date.now()
+      setTimeout(() => {
+        endAuction(req.params.id).catch(console.error)
+      }, delayMs)
 
       res.json(response)
     }
