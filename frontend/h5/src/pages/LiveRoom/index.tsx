@@ -6,7 +6,7 @@ import { useUserStore } from '../../store/useUserStore'
 import { useWebSocket } from '../../hooks/useWebSocket'
 import { useCountdown } from '../../hooks/useCountdown'
 import { useBidAnimation } from '../../hooks/useBidAnimation'
-import { RankingList } from '../../components/RankingList'
+
 import { ToastNotification } from '../../components/ToastNotification'
 import { Avatar, BubbleButton } from '../../components/ui'
 import { HistoryIcon, ShareIcon, LikeIcon, GiftIcon, CloseIcon } from '../../components/ui/icons'
@@ -59,7 +59,6 @@ export const LiveRoom = () => {
   const { user } = useUserStore()
   const {
     currentAuction,
-    rankings,
     remainingMs,
     updatePrice,
     bidHistory,
@@ -330,9 +329,7 @@ export const LiveRoom = () => {
           <div ref={chatEndRef} />
         </div>
 
-        <div className="ranking-section">
-          <RankingList rankings={rankings} />
-        </div>
+
 
         <div className="bid-section safe-area-bottom">
           <div className={styles.actionBar}>
