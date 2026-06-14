@@ -29,13 +29,12 @@ export const Me = () => {
     },
     {
       icon: <HistoryIcon />,
-      name: '浏览历史',
-      navigation: '/me/history',
+      name: '浏览历史'
     },
     {
       icon: <SettingsIcon />,
       name: '设置',
-      navigation: '/me/settings',
+      navigation: '/me/profile',
     },
   ]
 
@@ -76,10 +75,10 @@ export const Me = () => {
 
         <div style={{ marginTop: 32, display: 'flex' }}>
           <Display style={{ flex: 1 }}>
-            <Display.Item name={'获赞'} count={user ? 700 : '-'} />
-            <Display.Item name={'互关'} count={user ? 33 : '-'} />
-            <Display.Item name={'关注'} count={user ? 128 : '-'} />
-            <Display.Item name={'粉丝'} count={user ? 65 : '-'} />
+            <Display.Item name={'获赞'} count={user ? 0 : '-'} />
+            <Display.Item name={'互关'} count={user ? 0 : '-'} />
+            <Display.Item name={'关注'} count={user ? 0 : '-'} />
+            <Display.Item name={'粉丝'} count={user ? 0 : '-'} />
           </Display>
 
           <button className="edit-btn" onClick={handleNicknameClick}>
