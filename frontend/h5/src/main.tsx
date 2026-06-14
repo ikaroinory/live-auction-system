@@ -55,14 +55,6 @@ function MainFramework() {
       navigation: '/home',
     },
     {
-      name: <div style={style}>我的出价</div>,
-      navigation: '/bids',
-    },
-    {
-      name: <div style={style}>我的订单</div>,
-      navigation: '/orders',
-    },
-    {
       name: <div style={style}>我</div>,
       navigation: '/me',
     },
@@ -89,8 +81,6 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to={'/home'} replace /> },
 
       { path: '/home', element: <Home /> },
-      { path: '/bids', element: <MeBids /> },
-      { path: '/orders', element: <MeOrders /> },
       { path: '/me', element: <Me /> },
     ],
   },
