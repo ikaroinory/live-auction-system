@@ -719,4 +719,94 @@ router.get(
   )
 )
 
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}/follow:
+ *   post:
+ *     summary: 关注直播间
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 关注成功
+ *       401:
+ *         description: 未认证
+ *       404:
+ *         description: 直播间不存在
+ */
+router.post(
+  '/:id/follow',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }, { message: string }>, res: Response<{ message: string }>) => {
+      const user = requireAuth(req)
+
+      const existing = await prisma.liveRoom.findUnique({
+        where: { id: req.params.id }
+      })
+
+      if (!existing) {
+        return res.status(404).json({ message: '直播间不存在' })
+      }
+
+      await prisma.liveRoomFollow.create({
+        data: {
+          userId: user.id,
+          liveRoomId: req.params.id
+        }
+      })
+
+      res.json({ message: '关注成功' })
+    }
+  )
+)
+
+/**
+ * @swagger
+ * /api/v1/live-rooms/{id}/unfollow:
+ *   post:
+ *     summary: 取消关注直播间
+ *     tags: [直播间]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 直播间ID
+ *     responses:
+ *       200:
+ *         description: 取消关注成功
+ *       401:
+ *         description: 未认证
+ */
+router.post(
+  '/:id/unfollow',
+  authMiddleware,
+  wrapAuthHandler(
+    async (req: Request<{ id: string }, { message: string }>, res: Response<{ message: string }>) => {
+      const user = requireAuth(req)
+
+      await prisma.liveRoomFollow.deleteMany({
+        where: {
+          userId: user.id,
+          liveRoomId: req.params.id
+        }
+      })
+
+      res.json({ message: '取消关注成功' })
+    }
+  )
+)
+
 export default router
