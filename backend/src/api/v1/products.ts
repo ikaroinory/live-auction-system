@@ -1083,10 +1083,14 @@ router.patch(
         return res.status(400).json({ message: '商品竞拍未在进行中' } as unknown as ProductResponse)
       }
 
-      await endAuction(req.params.id)
+      const productId = req.params.id
 
-      const updated = await prisma.product.findUnique({
-        where: { id: req.params.id },
+      const updated = await prisma.product.update({
+        where: { id: productId },
+        data: {
+          auctionStatus: 'ENDED',
+          auctionEndTime: new Date()
+        },
         include: {
           creator: {
             select: {
@@ -1098,13 +1102,17 @@ router.patch(
         }
       })
 
-      if (!updated) {
-        return res.status(404).json({ message: '商品不存在' } as unknown as ProductResponse)
-      }
-
       const response: ProductResponse = {
         ...updated,
         createdAt: updated.createdAt.toISOString()
+      }
+
+      // 发送 PRODUCT_UPDATE 广播到直播间
+      const liveRooms = await prisma.liveRoom.findMany({
+        where: { streamerId: updated.creatorId, status: 1 }
+      })
+      for (const room of liveRooms) {
+        broadcastProductUpdate(room.id, productId, 'ENDED').catch(console.error)
       }
 
       res.json(response)
