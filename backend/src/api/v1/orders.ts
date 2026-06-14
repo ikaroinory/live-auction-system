@@ -108,6 +108,7 @@ router.get(
       >,
       res: Response<PagedOrderResponse>
     ) => {
+      const user = requireAuth(req)
       const page = parseInt(req.query.page || '1')
       const pageSize = parseInt(req.query.pageSize || '10')
       const skip = (page - 1) * pageSize
@@ -137,6 +138,7 @@ router.get(
         INNER JOIN Product p ON b.productId = p.id
         INNER JOIN User u ON b.userId = u.id
         WHERE p.auctionStatus = 'ENDED'
+          AND p.creatorId = ${user.id}
           AND b.price = (
             SELECT MAX(b2.price)
             FROM Bid b2
@@ -151,6 +153,7 @@ router.get(
         FROM Bid b
         INNER JOIN Product p ON b.productId = p.id
         WHERE p.auctionStatus = 'ENDED'
+          AND p.creatorId = ${user.id}
           AND b.price = (
             SELECT MAX(b2.price)
             FROM Bid b2
