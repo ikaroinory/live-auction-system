@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Tag, Avatar, Empty } from '@douyinfe/semi-ui'
+import { Table, Tag, Image, Empty } from '@douyinfe/semi-ui'
 import { Typography } from '@douyinfe/semi-ui'
 import { orderService, type OrderItem } from '@/services'
 
@@ -31,7 +31,7 @@ const OrderList: React.FC = () => {
       dataIndex: 'productName',
       render: (name: string, record: OrderItem) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Avatar size="small" image={record.productImage} />
+          <Image width={48} height={48} src={record.productImage} />
           <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {name}
           </span>
