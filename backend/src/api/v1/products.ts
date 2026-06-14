@@ -15,7 +15,7 @@ import {
   getRoomExplainingProduct,
   clearRoomExplainingProduct
 } from '../../lib/redis'
-import { broadcastExplainingUpdate, broadcastProductUpdate, endAuction } from '../../lib/websocket'
+import { broadcastExplainingUpdate, broadcastProductUpdate, endAuction, getIO } from '../../lib/websocket'
 
 interface DeleteResponse {
   message: string
@@ -1106,6 +1106,19 @@ router.patch(
         ...updated,
         createdAt: updated.createdAt.toISOString()
       }
+
+      // 向商品房间发送 PRODUCT_UPDATE（用户点击去出价后会加入这个房间）
+      const io = getIO()
+      const productUpdatePayload = {
+        roomId: productId,
+        productId,
+        auctionStatus: 'ENDED'
+      }
+      io?.to(productId).emit('PRODUCT_UPDATE', {
+        type: 'PRODUCT_UPDATE',
+        payload: productUpdatePayload,
+        timestamp: Date.now()
+      })
 
       // 发送 PRODUCT_UPDATE 广播到直播间
       const liveRooms = await prisma.liveRoom.findMany({
