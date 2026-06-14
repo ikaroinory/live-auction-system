@@ -57,61 +57,15 @@
   }
 }
 
-.bid-quick-buttons {
+.bid-button-wrapper {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  justify-content: center;
   
-  .quick-bid-btn {
-    flex: 1;
-    height: 40px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    
-    &:active {
-      transform: scale(0.98);
-    }
-    
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-}
-
-.bid-input-wrapper {
-  display: flex;
-  gap: 8px;
-  
-  .bid-input {
-    flex: 1;
-    height: 48px;
-    padding: 0 16px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.2s ease;
-    
-    &:focus {
-      border-color: #ff6b35;
-    }
-    
-    &:disabled {
-      background: #f5f5f5;
-    }
-  }
-  
-  .bid-submit-btn {
-    width: 100px;
-    height: 48px;
-    border-radius: 8px;
+  .bid-button {
+    width: 100%;
+    max-width: 280px;
+    height: 56px;
+    border-radius: 28px;
     border: none;
     background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
     color: #fff;
@@ -119,6 +73,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
     
     &:active {
       transform: scale(0.98);
@@ -127,6 +86,15 @@
     &:disabled {
       opacity: 0.7;
       cursor: not-allowed;
+    }
+    
+    .bid-price {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .bid-label {
+      font-size: 16px;
     }
   }
 }
