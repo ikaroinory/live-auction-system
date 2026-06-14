@@ -157,8 +157,10 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
           {products && products.length > 0 ? (
             <div className={styles.productList}>
               {[...products].sort((a, b) => {
-                const order = { IN_PROGRESS: 0, NOT_STARTED: 1, ENDED: 2 }
-                return (order[a.auctionStatus] || 2) - (order[b.auctionStatus] || 2)
+                const statusOrder: Record<string, number> = { IN_PROGRESS: 0, NOT_STARTED: 1, ENDED: 2 }
+                const aOrder = statusOrder[a.auctionStatus] ?? 2
+                const bOrder = statusOrder[b.auctionStatus] ?? 2
+                return aOrder - bOrder
               }).map((product) => (
                 <div key={product.id} className={clsx(styles.productCard, { [styles.explaining]: explainingProductId === product.id })}>
                   <div className={styles.productContent}>
