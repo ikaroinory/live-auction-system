@@ -57,14 +57,8 @@ export const LiveRoom = () => {
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const { user } = useUserStore()
-  const {
-    currentAuction,
-    remainingMs,
-    updatePrice,
-    bidHistory,
-    setCurrentAuction,
-    setBidHistory,
-  } = useAuctionRoomStore()
+  const { currentAuction, remainingMs, updatePrice, bidHistory, setCurrentAuction, setBidHistory } =
+    useAuctionRoomStore()
 
   useWebSocket({
     auctionId: currentAuction?.id,
@@ -153,14 +147,21 @@ export const LiveRoom = () => {
   }, [id, setCurrentAuction, setBidHistory, updatePrice])
 
   useEffect(() => {
-    const handleExplainingUpdate = async (payload: { roomId: string; productId: string | null }) => {
+    const handleExplainingUpdate = async (payload: {
+      roomId: string
+      productId: string | null
+    }) => {
       setExplainingProductId(payload.productId)
     }
 
-    const handleProductUpdate = async (payload: { roomId: string; productId: string; auctionStatus: string }) => {
-      setProducts(prevProducts => 
-        prevProducts.map(product => 
-          product.id === payload.productId 
+    const handleProductUpdate = async (payload: {
+      roomId: string
+      productId: string
+      auctionStatus: string
+    }) => {
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === payload.productId
             ? { ...product, auctionStatus: payload.auctionStatus }
             : product
         )
@@ -169,7 +170,7 @@ export const LiveRoom = () => {
 
     websocketService.setOnExplainingUpdate(handleExplainingUpdate)
     websocketService.setOnProductUpdate(handleProductUpdate)
-    
+
     if (id) {
       websocketService.joinLiveRoom(id)
     }
@@ -340,8 +341,6 @@ export const LiveRoom = () => {
           ))}
           <div ref={chatEndRef} />
         </div>
-
-
 
         <div className="bid-section safe-area-bottom">
           <div className={styles.actionBar}>

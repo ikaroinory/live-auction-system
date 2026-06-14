@@ -90,16 +90,16 @@ class WebSocketService {
 
   private startHeartbeat() {
     this.stopHeartbeat()
-    
+
     this.heartbeatTimer = setInterval(() => {
       if (this.isConnected && this.socket) {
         console.debug('[WebSocket] Sending heartbeat')
         this.socket.emit('PING')
-        
+
         if (this.heartbeatTimeoutTimer) {
           clearTimeout(this.heartbeatTimeoutTimer)
         }
-        
+
         this.heartbeatTimeoutTimer = setTimeout(() => {
           console.warn('[WebSocket] Heartbeat timeout, no PONG received')
         }, HEARTBEAT_TIMEOUT)

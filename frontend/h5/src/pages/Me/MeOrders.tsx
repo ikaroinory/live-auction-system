@@ -46,7 +46,7 @@ export const MeOrders = () => {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     })
   }
 
@@ -81,12 +81,8 @@ export const MeOrders = () => {
                         {getOrderStatus() === 'pending' ? '待支付' : '已完成'}
                       </span>
                     </div>
-                    <div className={styles.recordPrice}>
-                      {formatPrice(order.currentBidPrice)}
-                    </div>
-                    <div className={styles.recordTime}>
-                      {formatTime(order.auctionEndTime)}
-                    </div>
+                    <div className={styles.recordPrice}>{formatPrice(order.currentBidPrice)}</div>
+                    <div className={styles.recordTime}>{formatTime(order.auctionEndTime)}</div>
                   </div>
                 </List.Item>
               ))

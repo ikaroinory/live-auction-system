@@ -195,21 +195,39 @@ router.get(
   wrapAuthHandler(async (req: Request, res: Response<UserResponse>) => {
     const user = requireAuth(req)
 
-    const userData = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: {
-        id: true,
-        phone: true,
-        nickname: true,
-        avatar: true,
-        bio: true,
-        gender: true,
-        birthday: true,
-        location: true,
-        douyinId: true,
-        createdAt: true
-      }
-    })
+    const [userData, stats] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: {
+          id: true,
+          phone: true,
+          nickname: true,
+          avatar: true,
+          bio: true,
+          gender: true,
+          birthday: true,
+          location: true,
+          douyinId: true,
+          createdAt: true
+        }
+      }),
+      prisma.$queryRaw<
+        Array<{
+          likes: number
+          mutual: number
+          following: number
+          followers: number
+        }>
+      >`
+        SELECT 
+          COALESCE((SELECT COUNT(*) FROM Bid b WHERE b.userId = ${user.id}), 0) as likes,
+          COALESCE((SELECT COUNT(*) FROM LiveRoomFollow lrf WHERE lrf.userId = ${user.id}), 0) as mutual,
+          COALESCE((SELECT COUNT(*) FROM LiveRoomFollow lrf WHERE lrf.userId = ${user.id}), 0) as following,
+          COALESCE((SELECT COUNT(DISTINCT lrf.userId) FROM LiveRoomFollow lrf 
+            INNER JOIN LiveRoom lr ON lrf.liveRoomId = lr.id 
+            WHERE lr.streamerId = ${user.id}), 0) as followers
+      `
+    ])
 
     if (!userData) {
       return res.status(404).json({ message: '用户不存在' } as unknown as UserResponse)
@@ -218,7 +236,11 @@ router.get(
     const response: UserResponse = {
       ...userData,
       birthday: userData.birthday ? userData.birthday.toISOString().split('T')[0] : undefined,
-      createdAt: userData.createdAt.toISOString()
+      createdAt: userData.createdAt.toISOString(),
+      likes: stats[0]?.likes || 0,
+      mutual: stats[0]?.mutual || 0,
+      following: stats[0]?.following || 0,
+      followers: stats[0]?.followers || 0
     }
 
     res.json(response)

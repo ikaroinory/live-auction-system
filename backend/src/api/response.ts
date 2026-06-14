@@ -22,6 +22,10 @@ export interface UserResponse {
   location: string
   douyinId: string | null
   createdAt: string
+  likes: number
+  mutual: number
+  following: number
+  followers: number
 }
 
 export interface ProductResponse {

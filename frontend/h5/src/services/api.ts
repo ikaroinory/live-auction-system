@@ -108,7 +108,9 @@ export const liveRoomAPI = {
 }
 
 export const productAPI = {
-  getProducts: (params?: ProductParams): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
+  getProducts: (
+    params?: ProductParams
+  ): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
     return apiClient.get('/v1/products', { params })
   },
   getProductDetail: (id: string): Promise<Product> => {
@@ -129,7 +131,10 @@ export const bidAPI = {
 }
 
 export const orderAPI = {
-  getMyOrders: (params?: { page?: number; pageSize?: number }): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
+  getMyOrders: (params?: {
+    page?: number
+    pageSize?: number
+  }): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
     return apiClient.get('/v1/orders/my', { params })
   },
 }

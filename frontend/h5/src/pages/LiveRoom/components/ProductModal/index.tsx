@@ -17,10 +17,16 @@ interface ProductModalProps {
   explainingProductId?: string | null
 }
 
-export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
+export const ProductModal = ({
+  visible,
+  onClose,
+  products,
+  explainingProductId,
+}: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [localProducts, setLocalProducts] = useState<Product[]>(products)
-  const { setCurrentAuction, updatePrice, updateBidCount, bidCount, remainingMs } = useAuctionRoomStore()
+  const { setCurrentAuction, updatePrice, updateBidCount, bidCount, remainingMs } =
+    useAuctionRoomStore()
   const { user } = useUserStore()
 
   useEffect(() => {
@@ -28,22 +34,30 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
   }, [products])
 
   useEffect(() => {
-    const handleProductUpdate = (payload: { roomId: string; productId: string; auctionStatus: string }) => {
-      setLocalProducts(prevProducts => 
-        prevProducts.map(product => 
-          product.id === payload.productId 
+    const handleProductUpdate = (payload: {
+      roomId: string
+      productId: string
+      auctionStatus: string
+    }) => {
+      setLocalProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === payload.productId
             ? { ...product, auctionStatus: payload.auctionStatus as Product['auctionStatus'] }
             : product
         )
       )
-      
+
       if (selectedProduct && selectedProduct.id === payload.productId) {
-        setSelectedProduct(prev => prev ? { ...prev, auctionStatus: payload.auctionStatus as Product['auctionStatus'] } : null)
+        setSelectedProduct((prev) =>
+          prev
+            ? { ...prev, auctionStatus: payload.auctionStatus as Product['auctionStatus'] }
+            : null
+        )
       }
     }
 
     websocketService.setOnProductUpdate(handleProductUpdate)
-    
+
     return () => {
       websocketService.setOnProductUpdate(() => {})
     }
@@ -64,7 +78,7 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
       })
       updatePrice(selectedProduct.currentBidPrice || Number(selectedProduct.startingPrice))
       updateBidCount(selectedProduct.bidCount || 0)
-      
+
       websocketService.joinRoom(selectedProduct.id, user.id)
     }
   }, [selectedProduct, setCurrentAuction, updatePrice, updateBidCount, user])
@@ -142,9 +156,7 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
                     className={styles.bidProductImage}
                   />
                 ) : (
-                  <div className={styles.noImagePlaceholder}>
-                    暂无图片
-                  </div>
+                  <div className={styles.noImagePlaceholder}>暂无图片</div>
                 )}
               </div>
               <div className={styles.bidProductDetail}>
@@ -157,7 +169,12 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
                 </div>
                 <div className={styles.bidProductStats}>
                   <span>已出价 {bidCount} 次</span>
-                  <span>剩余 {remainingMs >= 60000 ? `${Math.floor(remainingMs / 60000)} 分钟` : `${Math.ceil(remainingMs / 1000)} 秒`}</span>
+                  <span>
+                    剩余{' '}
+                    {remainingMs >= 60000
+                      ? `${Math.floor(remainingMs / 60000)} 分钟`
+                      : `${Math.ceil(remainingMs / 1000)} 秒`}
+                  </span>
                 </div>
               </div>
             </div>
@@ -184,58 +201,73 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
         <div className={styles.productModalContent}>
           {localProducts && localProducts.length > 0 ? (
             <div className={styles.productList}>
-              {[...localProducts].sort((a, b) => {
-                const statusOrder: Record<string, number> = { IN_PROGRESS: 0, NOT_STARTED: 1, ENDED: 2 }
-                const aOrder = statusOrder[a.auctionStatus] ?? 2
-                const bOrder = statusOrder[b.auctionStatus] ?? 2
-                return aOrder - bOrder
-              }).map((product) => (
-                <div key={product.id} className={clsx(styles.productCard, { [styles.explaining]: explainingProductId === product.id })}>
-                  <div className={styles.productContent}>
-                    <div className={styles.productImageWrapper}>
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className={styles.productImage}
-                        />
-                      ) : (
-                        <div className={styles.noImagePlaceholder}>
-                          暂无图片
+              {[...localProducts]
+                .sort((a, b) => {
+                  const statusOrder: Record<string, number> = {
+                    IN_PROGRESS: 0,
+                    NOT_STARTED: 1,
+                    ENDED: 2,
+                  }
+                  const aOrder = statusOrder[a.auctionStatus] ?? 2
+                  const bOrder = statusOrder[b.auctionStatus] ?? 2
+                  return aOrder - bOrder
+                })
+                .map((product) => (
+                  <div
+                    key={product.id}
+                    className={clsx(styles.productCard, {
+                      [styles.explaining]: explainingProductId === product.id,
+                    })}
+                  >
+                    <div className={styles.productContent}>
+                      <div className={styles.productImageWrapper}>
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className={styles.productImage}
+                          />
+                        ) : (
+                          <div className={styles.noImagePlaceholder}>暂无图片</div>
+                        )}
+                        {explainingProductId === product.id && (
+                          <div className={styles.explainingBadge}>正在讲解</div>
+                        )}
+                      </div>
+                      <div className={styles.productInfo}>
+                        <div className={styles.productTitle}>{product.name}</div>
+                        <div className={clsx(styles.productStatusLabel, getStatusClass(product))}>
+                          {getStatusLabel(product)}
                         </div>
-                      )}
-                      {explainingProductId === product.id && (
-                        <div className={styles.explainingBadge}>正在讲解</div>
-                      )}
-                    </div>
-                    <div className={styles.productInfo}>
-                      <div className={styles.productTitle}>{product.name}</div>
-                      <div className={clsx(styles.productStatusLabel, getStatusClass(product))}>
-                        {getStatusLabel(product)}
+                        {explainingProductId === product.id && (
+                          <div className={styles.explainingLabel}>主播正在讲解此商品</div>
+                        )}
+                        <div className={styles.productPriceWrapper}>
+                          <span className={styles.productPriceLabel}>起拍价</span>
+                          <span className={styles.productPrice}>
+                            {formatPrice(product.startingPrice)}
+                          </span>
+                        </div>
+                        <button
+                          className={clsx(styles.productBuyBtn, {
+                            [styles.disabled]: product.auctionStatus !== 'IN_PROGRESS',
+                          })}
+                          onClick={() => handleSelectProduct(product)}
+                          disabled={product.auctionStatus !== 'IN_PROGRESS'}
+                        >
+                          {product.auctionStatus === 'IN_PROGRESS'
+                            ? '去出价'
+                            : product.auctionStatus === 'ENDED'
+                              ? '已结束'
+                              : '即将开拍'}
+                        </button>
                       </div>
-                      {explainingProductId === product.id && (
-                        <div className={styles.explainingLabel}>主播正在讲解此商品</div>
-                      )}
-                      <div className={styles.productPriceWrapper}>
-                        <span className={styles.productPriceLabel}>起拍价</span>
-                        <span className={styles.productPrice}>{formatPrice(product.startingPrice)}</span>
-                      </div>
-                      <button
-                        className={clsx(styles.productBuyBtn, { [styles.disabled]: product.auctionStatus !== 'IN_PROGRESS' })}
-                        onClick={() => handleSelectProduct(product)}
-                        disabled={product.auctionStatus !== 'IN_PROGRESS'}
-                      >
-                        {product.auctionStatus === 'IN_PROGRESS' ? '去出价' : product.auctionStatus === 'ENDED' ? '已结束' : '即将开拍'}
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           ) : (
-            <div className={styles.emptyState}>
-              暂无上架商品
-            </div>
+            <div className={styles.emptyState}>暂无上架商品</div>
           )}
         </div>
       </div>

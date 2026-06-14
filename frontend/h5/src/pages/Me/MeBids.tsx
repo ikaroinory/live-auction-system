@@ -45,7 +45,7 @@ export const MeBids = () => {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     })
   }
 
@@ -75,9 +75,7 @@ export const MeBids = () => {
                 <List.Item key={bid.id} className={styles.listItem}>
                   <div className={styles.recordCard}>
                     <div className={styles.recordHeader}>
-                      <div className={styles.recordTitle}>
-                        {bid.product?.name || '商品名称'}
-                      </div>
+                      <div className={styles.recordTitle}>{bid.product?.name || '商品名称'}</div>
                       <span className={`${styles.status} ${styles[getBidStatus()]}`}>
                         {getBidStatus() === 'winning' ? '领先' : '已出局'}
                       </span>

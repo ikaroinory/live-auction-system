@@ -21,9 +21,10 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
   const { user } = useUserStore()
   const { currentAuction, currentPrice, updatePrice, addBidToHistory } = useAuctionRoomStore()
 
-  const nextPrice = currentPrice > 0
-    ? Number(currentPrice) + (currentAuction?.fixedIncrement || 10)
-    : currentAuction?.startingPrice || 0
+  const nextPrice =
+    currentPrice > 0
+      ? Number(currentPrice) + (currentAuction?.fixedIncrement || 10)
+      : currentAuction?.startingPrice || 0
 
   useEffect(() => {
     if (animationType) {
@@ -38,16 +39,16 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
     if (!user?.id || !currentAuction?.id || isSubmitting) return
 
     setIsSubmitting(true)
-    
+
     const success = websocketService.submitBid(currentAuction.id, user.id, nextPrice)
-    
+
     if (success) {
       const bid = {
         id: generateId(),
         auctionId: currentAuction.id,
         userId: user.id,
         price: nextPrice,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
       addBidToHistory(bid)
       updatePrice(nextPrice)
@@ -57,11 +58,20 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
       setAnimationType('fail')
       onBidFailed?.('网络连接失败')
     }
-    
+
     setTimeout(() => {
       setIsSubmitting(false)
     }, 500)
-  }, [user, currentAuction, isSubmitting, nextPrice, addBidToHistory, updatePrice, onBidSuccess, onBidFailed])
+  }, [
+    user,
+    currentAuction,
+    isSubmitting,
+    nextPrice,
+    addBidToHistory,
+    updatePrice,
+    onBidSuccess,
+    onBidFailed,
+  ])
 
   if (!currentAuction) {
     return null
@@ -75,11 +85,7 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
       </div>
 
       <div className="bid-button-wrapper">
-        <button
-          className="bid-button"
-          onClick={handleBid}
-          disabled={isSubmitting}
-        >
+        <button className="bid-button" onClick={handleBid} disabled={isSubmitting}>
           <span className="bid-price">{formatPrice(nextPrice)}</span>
           <span className="bid-label">{isSubmitting ? '出价中...' : '立即出价'}</span>
         </button>
@@ -90,9 +96,7 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
           每次至少加价 {formatPrice(currentAuction.fixedIncrement)}
         </span>
         {currentAuction.maxPrice && (
-          <span className="max-price-info">
-            最高限价 {formatPrice(currentAuction.maxPrice)}
-          </span>
+          <span className="max-price-info">最高限价 {formatPrice(currentAuction.maxPrice)}</span>
         )}
       </div>
 
