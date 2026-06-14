@@ -1,8 +1,21 @@
 import { create } from 'zustand'
-import type { Auction, RankingItem, Bid } from '@live-auction/shared'
+import type { RankingItem, Bid } from '@live-auction/shared'
+
+// 定义拍卖房间使用的商品类型，兼容 Product 和实际传递的数据
+interface AuctionProduct {
+  id: string
+  name?: string
+  startingPrice: number
+  fixedIncrement: number
+  maxPrice?: number
+  currentBidPrice?: number
+  durationMinutes?: number
+  createdAt?: string
+  updatedAt?: string
+}
 
 interface AuctionRoomState {
-  currentAuction: Auction | null
+  currentAuction: AuctionProduct | null
   currentPrice: number
   rankings: RankingItem[]
   myBids: Bid[]
@@ -12,7 +25,7 @@ interface AuctionRoomState {
   isLeading: boolean
   lastBidTime: number
 
-  setCurrentAuction: (auction: Auction | null) => void
+  setCurrentAuction: (auction: AuctionProduct | null) => void
   updatePrice: (price: number) => void
   updateRankings: (rankings: RankingItem[]) => void
   addMyBid: (bid: Bid) => void

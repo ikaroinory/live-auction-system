@@ -22,8 +22,8 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
   const { user } = useUserStore()
   const { currentAuction, currentPrice, updatePrice, addBidToHistory } = useAuctionRoomStore()
 
-  const nextPrice = currentPrice > 0 
-    ? currentPrice + (currentAuction?.fixedIncrement || 10) 
+  const nextPrice = currentPrice > 0
+    ? Number(currentPrice) + (currentAuction?.fixedIncrement || 10)
     : currentAuction?.startingPrice || 0
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export const BidInput = ({ onBidSuccess, onBidFailed }: BidInputProps) => {
     const incrementAmount = currentAuction.fixedIncrement * multiplier
     return {
       label: `+${incrementAmount}`,
-      value: (currentPrice || currentAuction.startingPrice) + incrementAmount
+      value: Number(currentPrice || currentAuction.startingPrice) + incrementAmount
     }
   })
 
