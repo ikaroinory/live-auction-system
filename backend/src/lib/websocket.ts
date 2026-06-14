@@ -20,6 +20,7 @@ interface AuctionRoom {
   productId: string
   currentPrice: number
   endTime: number
+  baseEndTime: number
   bidders: Set<string>
   timer: ReturnType<typeof setInterval> | null
 }
@@ -73,12 +74,14 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
         if (!room) {
           const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
-          const endTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const baseEndTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const endTime = baseEndTime
 
           room = {
             productId,
             currentPrice,
             endTime,
+            baseEndTime,
             bidders: new Set(),
             timer: null
           }
@@ -159,12 +162,14 @@ export function setupWebSocket(httpServer: HttpServer): Server {
 
         if (!room) {
           const currentPrice = Number(product.currentBidPrice) || Number(product.startingPrice)
-          const endTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const baseEndTime = product.auctionEndTime ? product.auctionEndTime.getTime() : Date.now() + product.durationMinutes * 60 * 1000
+          const endTime = baseEndTime
 
           room = {
             productId,
             currentPrice,
             endTime,
+            baseEndTime,
             bidders: new Set(),
             timer: null
           }
@@ -260,7 +265,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
             }
           })
 
-          room.endTime = Date.now() + updatedProduct.extendSeconds * 1000 + 1000
+          room.endTime = Math.max(room.baseEndTime, Date.now() + updatedProduct.extendSeconds * 1000)
 
           socket.emit('BID_SUCCESS', createMessage('BID_SUCCESS', {
             auctionId: productId,

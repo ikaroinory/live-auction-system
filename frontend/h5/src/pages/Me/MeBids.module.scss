@@ -1,0 +1,93 @@
+.pageContent {
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.customList {
+  background: transparent;
+
+  :global(.adm-list-header) {
+    color: var(--douyin-text-secondary);
+    font-size: 14px;
+    padding: 16px 0 12px;
+    font-weight: 500;
+  }
+
+  :global(.adm-list-body) {
+    background: transparent;
+    border: none;
+  }
+}
+
+.listItem {
+  background: var(--douyin-bg-light);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+
+  :global(.adm-list-item-content) {
+    padding: 0;
+    border: none;
+  }
+
+  :global(.adm-list-item-content-prefix) {
+    border: none;
+  }
+}
+
+.recordCard {
+  padding: 16px;
+}
+
+.recordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recordTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--douyin-text);
+}
+
+.recordPrice {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--douyin-primary);
+  margin-bottom: 8px;
+}
+
+.recordTime {
+  font-size: 13px;
+  color: var(--douyin-text-tertiary);
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.winning {
+    background: rgba(254, 44, 85, 0.15);
+    color: var(--douyin-primary);
+  }
+
+  &.outbid {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--douyin-text-secondary);
+  }
+
+  &.pending {
+    background: rgba(254, 44, 85, 0.15);
+    color: var(--douyin-primary);
+  }
+
+  &.completed {
+    background: rgba(46, 168, 107, 0.15);
+    color: #2ea86b;
+  }
+}

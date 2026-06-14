@@ -16,6 +16,8 @@ import type {
   ProductParams,
   ExplainingProductResponse,
   Product,
+  BidParams,
+  PagedBidResponse,
 } from '@live-auction/shared'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
@@ -114,6 +116,21 @@ export const productAPI = {
   },
   getCurrentExplaining: (roomId?: string): Promise<ExplainingProductResponse> => {
     return apiClient.get('/v1/products/explaining', { params: roomId ? { roomId } : undefined })
+  },
+}
+
+export const bidAPI = {
+  getBids: (params?: BidParams): Promise<PagedBidResponse> => {
+    return apiClient.get('/v1/bids', { params })
+  },
+  getMyBids: (params?: { page?: number; pageSize?: number }): Promise<PagedBidResponse> => {
+    return apiClient.get('/v1/bids/my', { params })
+  },
+}
+
+export const orderAPI = {
+  getMyOrders: (params?: { page?: number; pageSize?: number }): Promise<{ list: Product[]; total: number; page: number; pageSize: number }> => {
+    return apiClient.get('/v1/orders/my', { params })
   },
 }
 

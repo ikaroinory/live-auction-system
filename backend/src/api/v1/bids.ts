@@ -14,6 +14,112 @@ const router = Router()
 
 /**
  * @swagger
+ * /api/v1/bids/my:
+ *   get:
+ *     summary: 获取当前用户的出价记录
+ *     tags: [出价]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 页码
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 每页数量
+ *     responses:
+ *       200:
+ *         description: 成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Bid'
+ *                 total:
+ *                   type: number
+ *                 page:
+ *                   type: number
+ *                 pageSize:
+ *                   type: number
+ *       401:
+ *         description: 未认证
+ */
+router.get(
+  '/my',
+  authMiddleware,
+  wrapAuthHandler(
+    async (
+      req: Request<
+        ParamsDictionary,
+        PagedBidResponse,
+        unknown,
+        { page?: string; pageSize?: string }
+      >,
+      res: Response<PagedBidResponse>
+    ) => {
+      const user = requireAuth(req)
+      const page = parseInt(req.query.page || '1')
+      const pageSize = parseInt(req.query.pageSize || '10')
+      const skip = (page - 1) * pageSize
+
+      const [bids, total] = await Promise.all([
+        prisma.bid.findMany({
+          where: { userId: user.id },
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+                phone: true,
+                avatar: true
+              }
+            },
+            product: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                auctionStatus: true,
+                currentBidPrice: true,
+                auctionEndTime: true
+              }
+            }
+          }
+        }),
+        prisma.bid.count({ where: { userId: user.id } })
+      ])
+
+      const response: PagedBidResponse = {
+        list: bids.map((bid): BidResponse => ({
+          ...bid,
+          price: Number(bid.price),
+          createdAt: bid.createdAt.toISOString()
+        })),
+        total,
+        page,
+        pageSize
+      }
+
+      res.json(response)
+    }
+  )
+)
+
+/**
+ * @swagger
  * /api/v1/bids:
  *   get:
  *     summary: 获取出价记录列表
@@ -111,6 +217,7 @@ router.get(
       const response: PagedBidResponse = {
         list: bids.map((bid): BidResponse => ({
           ...bid,
+          price: Number(bid.price),
           createdAt: bid.createdAt.toISOString()
         })),
         total,
@@ -175,6 +282,7 @@ router.get(
 
       const response: BidResponse = {
         ...bid,
+        price: Number(bid.price),
         createdAt: bid.createdAt.toISOString()
       }
 
@@ -250,7 +358,7 @@ router.post(
         return res.status(400).json({ message: '商品竞拍未在进行中' } as unknown as BidResponse)
       }
 
-      const currentPrice = product.currentBidPrice || product.startingPrice
+      const currentPrice = Number(product.currentBidPrice || product.startingPrice)
       if (price <= currentPrice) {
         return res.status(400).json({ message: '出价必须高于当前价格' } as unknown as BidResponse)
       }
@@ -283,6 +391,7 @@ router.post(
 
       const response: BidResponse = {
         ...bid,
+        price: Number(bid.price),
         createdAt: bid.createdAt.toISOString()
       }
 
@@ -385,6 +494,7 @@ router.get(
       const response: PagedBidResponse = {
         list: bids.map((bid): BidResponse => ({
           ...bid,
+          price: Number(bid.price),
           createdAt: bid.createdAt.toISOString()
         })),
         total,
