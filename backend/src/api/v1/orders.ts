@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import type { ParamsDictionary } from 'express-serve-static-core'
 import { prisma } from '../../lib/prisma'
 import { authMiddleware } from '../../middleware/auth'
-import { wrapAuthHandler, wrapHandler, requireAuth } from '../utils'
+import { wrapAuthHandler, requireAuth } from '../utils'
 import {
   PagedProductResponse,
   ProductResponse,
@@ -171,7 +171,7 @@ router.get(
           status: 1,
           createdAt: item.createdAt.toISOString()
         })),
-        total: total[0]?.count || 0,
+        total: Number(total[0]?.count) || 0,
         page,
         pageSize
       }
