@@ -116,9 +116,9 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
               <div className={styles.bidProductDetail}>
                 <div className={styles.bidProductTitle}>{selectedProduct.name}</div>
                 <div className={styles.bidProductPriceInfo}>
-                  <span className={styles.bidProductCurrentLabel}>当前价</span>
+                  <span className={styles.bidProductCurrentLabel}>起拍价</span>
                   <span className={styles.bidProductCurrentPrice}>
-                    {formatPrice(selectedProduct.currentBidPrice || selectedProduct.startingPrice)}
+                    {formatPrice(selectedProduct.startingPrice)}
                   </span>
                 </div>
                 <div className={styles.bidProductStats}>
