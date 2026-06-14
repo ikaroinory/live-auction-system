@@ -15,7 +15,7 @@ import {
   getRoomExplainingProduct,
   clearRoomExplainingProduct
 } from '../../lib/redis'
-import { broadcastExplainingUpdate } from '../../lib/websocket'
+import { broadcastExplainingUpdate, broadcastProductUpdate } from '../../lib/websocket'
 
 interface DeleteResponse {
   message: string
@@ -1011,6 +1011,8 @@ router.patch(
         ...updated,
         createdAt: updated.createdAt.toISOString()
       }
+
+      broadcastProductUpdate(updated.creatorId, req.params.id, 'IN_PROGRESS').catch(console.error)
 
       res.json(response)
     }

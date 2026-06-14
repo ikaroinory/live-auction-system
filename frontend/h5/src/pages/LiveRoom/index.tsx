@@ -157,7 +157,18 @@ export const LiveRoom = () => {
       setExplainingProductId(payload.productId)
     }
 
+    const handleProductUpdate = async (payload: { roomId: string; productId: string; auctionStatus: string }) => {
+      setProducts(prevProducts => 
+        prevProducts.map(product => 
+          product.id === payload.productId 
+            ? { ...product, auctionStatus: payload.auctionStatus }
+            : product
+        )
+      )
+    }
+
     websocketService.setOnExplainingUpdate(handleExplainingUpdate)
+    websocketService.setOnProductUpdate(handleProductUpdate)
     
     if (id) {
       websocketService.joinLiveRoom(id)
@@ -165,6 +176,7 @@ export const LiveRoom = () => {
 
     return () => {
       websocketService.setOnExplainingUpdate(() => {})
+      websocketService.setOnProductUpdate(() => {})
       if (id) {
         websocketService.leaveLiveRoom(id)
       }
