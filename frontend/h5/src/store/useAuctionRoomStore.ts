@@ -17,6 +17,7 @@ interface AuctionProduct {
 interface AuctionRoomState {
   currentAuction: AuctionProduct | null
   currentPrice: number
+  bidCount: number
   rankings: RankingItem[]
   myBids: Bid[]
   bidHistory: Bid[]
@@ -27,6 +28,7 @@ interface AuctionRoomState {
 
   setCurrentAuction: (auction: AuctionProduct | null) => void
   updatePrice: (price: number) => void
+  updateBidCount: (count: number) => void
   updateRankings: (rankings: RankingItem[]) => void
   addMyBid: (bid: Bid) => void
   addBidToHistory: (bid: Bid) => void
@@ -40,6 +42,7 @@ interface AuctionRoomState {
 export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
   currentAuction: null,
   currentPrice: 0,
+  bidCount: 0,
   rankings: [],
   myBids: [],
   bidHistory: [],
@@ -50,6 +53,7 @@ export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
 
   setCurrentAuction: (auction) => set({ currentAuction: auction }),
   updatePrice: (price) => set({ currentPrice: price, lastBidTime: Date.now() }),
+  updateBidCount: (count) => set({ bidCount: count }),
   updateRankings: (rankings) => set({ rankings }),
   addMyBid: (bid) => set((state) => ({ myBids: [bid, ...state.myBids] })),
   addBidToHistory: (bid) => set((state) => ({ bidHistory: [bid, ...state.bidHistory] })),
@@ -61,6 +65,7 @@ export const useAuctionRoomStore = create<AuctionRoomState>((set) => ({
     set({
       currentAuction: null,
       currentPrice: 0,
+      bidCount: 0,
       rankings: [],
       myBids: [],
       bidHistory: [],

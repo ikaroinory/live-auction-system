@@ -19,7 +19,7 @@ interface ProductModalProps {
 
 export const ProductModal = ({ visible, onClose, products, explainingProductId }: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const { setCurrentAuction, updatePrice } = useAuctionRoomStore()
+  const { setCurrentAuction, updatePrice, updateBidCount, bidCount, remainingMs } = useAuctionRoomStore()
   const { user } = useUserStore()
 
   useEffect(() => {
@@ -36,10 +36,11 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
         updatedAt: selectedProduct.updatedAt || new Date().toISOString(),
       })
       updatePrice(selectedProduct.currentBidPrice || Number(selectedProduct.startingPrice))
+      updateBidCount(selectedProduct.bidCount || 0)
       
       websocketService.joinRoom(selectedProduct.id, user.id)
     }
-  }, [selectedProduct, setCurrentAuction, updatePrice, user])
+  }, [selectedProduct, setCurrentAuction, updatePrice, updateBidCount, user])
 
   const handleBidSuccess = () => {
     Toast.show('出价成功！')
@@ -128,8 +129,8 @@ export const ProductModal = ({ visible, onClose, products, explainingProductId }
                   </span>
                 </div>
                 <div className={styles.bidProductStats}>
-                  <span>已出价 {selectedProduct.bidCount} 次</span>
-                  <span>剩余 {selectedProduct.durationMinutes} 分钟</span>
+                  <span>已出价 {bidCount} 次</span>
+                  <span>剩余 {Math.floor(remainingMs / 60000)} 分钟</span>
                 </div>
               </div>
             </div>

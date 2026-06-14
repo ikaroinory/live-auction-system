@@ -35,6 +35,7 @@ export interface PriceUpdatePayload {
   currentPrice: number
   bidderId: string
   bidderName: string
+  bidCount: number
 }
 
 export interface RankingUpdatePayload {

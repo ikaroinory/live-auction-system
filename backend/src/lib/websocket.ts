@@ -297,7 +297,8 @@ export function setupWebSocket(httpServer: HttpServer): Server {
             auctionId: productId,
             currentPrice: price,
             bidderId: userId,
-            bidderName: bid.user?.nickname || bid.user?.phone || '匿名用户'
+            bidderName: bid.user?.nickname || bid.user?.phone || '匿名用户',
+            bidCount: updatedProduct.bidCount + 1
           }
           io.to(productId).emit('PRICE_UPDATE', createMessage('PRICE_UPDATE', priceUpdate))
 

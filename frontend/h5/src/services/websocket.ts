@@ -127,6 +127,7 @@ class WebSocketService {
     this.socket.off('PRICE_UPDATE')
     this.socket.on('PRICE_UPDATE', (message: WebSocketMessage<PriceUpdatePayload>) => {
       auctionStore.updatePrice(message.payload.currentPrice)
+      auctionStore.updateBidCount(message.payload.bidCount)
     })
 
     this.socket.off('RANKING_UPDATE')
