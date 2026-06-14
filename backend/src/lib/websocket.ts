@@ -59,6 +59,24 @@ export function setupWebSocket(httpServer: HttpServer): Server {
       try {
         const { productId, userId } = payload
 
+        // 先尝试作为直播间ID查找
+        const liveRoom = await prisma.liveRoom.findUnique({
+          where: { id: productId }
+        })
+
+        if (liveRoom) {
+          // 这是直播间，直接加入房间用于接收广播
+          socket.join(productId)
+          console.log(`Client ${socket.id} joined live room: ${productId}`)
+          socket.emit('JOIN_ROOM_SUCCESS', createMessage('JOIN_ROOM_SUCCESS', {
+            productId,
+            currentPrice: 0,
+            remainingMs: 0
+          }))
+          return
+        }
+
+        // 否则作为商品ID查找
         const product = await prisma.product.findUnique({
           where: { id: productId }
         })
@@ -66,7 +84,7 @@ export function setupWebSocket(httpServer: HttpServer): Server {
         if (!product) {
           socket.emit('JOIN_ROOM_FAILED', createMessage('JOIN_ROOM_FAILED', {
             productId,
-            reason: '商品不存在'
+            reason: '商品或直播间不存在'
           }))
           return
         }

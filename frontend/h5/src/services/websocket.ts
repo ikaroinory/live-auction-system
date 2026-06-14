@@ -212,13 +212,15 @@ class WebSocketService {
   }
 
   joinLiveRoom(roomId: string) {
+    this.currentRoomId = roomId
+
     if (!this.socket || !this.isConnected) {
-      console.error('[WebSocket] Not connected')
+      console.log('[WebSocket] Not connected yet, will join room after connection')
       return
     }
 
-    this.currentRoomId = roomId
     this.socket.emit('JOIN_ROOM', { auctionId: roomId, userId: '' })
+    console.log(`[WebSocket] Joined live room: ${roomId}`)
   }
 
   leaveRoom(auctionId: string, userId: string) {
