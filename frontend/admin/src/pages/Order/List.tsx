@@ -27,11 +27,6 @@ const OrderList: React.FC = () => {
 
   const columns = [
     {
-      title: '订单号',
-      dataIndex: 'id',
-      width: 120
-    },
-    {
       title: '商品信息',
       dataIndex: 'productName',
       render: (name: string, record: OrderItem) => (
@@ -58,15 +53,7 @@ const OrderList: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       width: 100,
-      render: (status: number) => {
-        const statusMap: Record<number, { text: string; color: string }> = {
-          0: { text: '待支付', color: 'warning' },
-          1: { text: '已支付', color: 'success' },
-          2: { text: '已取消', color: 'default' }
-        }
-        const { text, color } = statusMap[status] || { text: '未知', color: 'default' }
-        return <Tag color={color}>{text}</Tag>
-      }
+      render: () => <Tag color="warning">待支付</Tag>
     },
     {
       title: '创建时间',
