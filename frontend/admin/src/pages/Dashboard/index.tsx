@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, Row, Col, Typography, Spin } from '@douyinfe/semi-ui'
 import { IconLive, IconTickCircle, IconGift, IconArrowUp } from '@douyinfe/semi-icons'
 import api from '@/services/api'
+import { useUserStore } from '@/store'
 
 const { Title, Text } = Typography
 
@@ -15,6 +16,14 @@ interface StatsData {
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<StatsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const { user } = useUserStore()
+
+  const getGreeting = (): string => {
+    const hour = new Date().getHours()
+    if (hour < 12) return '早上好'
+    if (hour < 18) return '下午好'
+    return '晚上好'
+  }
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -75,9 +84,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <Title heading={4} style={{ marginBottom: 24 }}>
-        数据概览
-      </Title>
+      <div style={{ marginBottom: 24 }}>
+        <Title heading={4} style={{ marginBottom: 8 }}>
+          {getGreeting()}，{user?.username || '管理员'}
+        </Title>
+        <Text type="tertiary">数据概览</Text>
+      </div>
       <Row gutter={16}>
         {statItems.map((stat, index) => (
           <Col span={6} key={index}>
