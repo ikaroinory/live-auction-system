@@ -116,6 +116,14 @@ export interface BidResponse extends Bid {
     phone: string;
     avatar: string | null;
   };
+  product?: {
+    id: string;
+    name: string;
+    image: string;
+    auctionStatus: ProductAuctionStatus;
+    currentBidPrice: number | null;
+    auctionEndTime: string | null;
+  };
 }
 
 export interface PagedBidResponse {

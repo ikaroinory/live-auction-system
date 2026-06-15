@@ -27,11 +27,35 @@ export const MeBids = () => {
     fetchBids()
   }, [])
 
-  const getBidStatus = () => {
-    // 根据商品的竞拍状态和当前价格判断出价状态
-    // 这里需要从bid中获取商品信息，但目前的API返回的bid中没有商品信息
-    // 暂时返回一个默认状态
-    return 'winning'
+  const getBidStatus = (bid: BidResponse): 'winning' | 'out' | 'won' | 'lost' | 'pending' => {
+    const { product, price } = bid
+    const currentPrice = product?.currentBidPrice || 0
+    const auctionStatus = product?.auctionStatus
+
+    if (auctionStatus === 'NOT_STARTED') {
+      return 'pending'
+    }
+
+    if (auctionStatus === 'IN_PROGRESS') {
+      return price >= currentPrice ? 'winning' : 'out'
+    }
+
+    if (auctionStatus === 'ENDED') {
+      return price >= currentPrice ? 'won' : 'lost'
+    }
+
+    return 'pending'
+  }
+
+  const getStatusText = (status: ReturnType<typeof getBidStatus>): string => {
+    const statusMap: Record<ReturnType<typeof getBidStatus>, string> = {
+      winning: '领先',
+      out: '已出局',
+      won: '已中标',
+      lost: '未中标',
+      pending: '未开始',
+    }
+    return statusMap[status]
   }
 
   const formatPrice = (price: number) => {
@@ -76,8 +100,8 @@ export const MeBids = () => {
                   <div className={styles.recordCard}>
                     <div className={styles.recordHeader}>
                       <div className={styles.recordTitle}>{bid.product?.name || '商品名称'}</div>
-                      <span className={`${styles.status} ${styles[getBidStatus()]}`}>
-                        {getBidStatus() === 'winning' ? '领先' : '已出局'}
+                      <span className={`${styles.status} ${styles[getBidStatus(bid)]}`}>
+                        {getStatusText(getBidStatus(bid))}
                       </span>
                     </div>
                     <div className={styles.recordPrice}>{formatPrice(bid.price)}</div>
