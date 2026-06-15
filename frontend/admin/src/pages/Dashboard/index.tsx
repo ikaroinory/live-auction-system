@@ -1,32 +1,73 @@
-import React from 'react'
-import { Card, Row, Col, Typography } from '@douyinfe/semi-ui'
+import React, { useState, useEffect } from 'react'
+import { Card, Row, Col, Typography, Spin } from '@douyinfe/semi-ui'
 import { IconLive, IconTickCircle, IconGift, IconArrowUp } from '@douyinfe/semi-icons'
+import api from '@/services/api'
 
 const { Title, Text } = Typography
 
+interface StatsData {
+  ongoingAuctions: number
+  todayOrders: number
+  totalProducts: number
+  gmv: number
+}
+
 const Dashboard: React.FC = () => {
-  const stats = [
+  const [stats, setStats] = useState<StatsData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/stats')
+        setStats(response.data)
+      } catch (error) {
+        console.error('Failed to fetch stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
+
+  const formatGmv = (gmv: number): string => {
+    if (gmv >= 10000) {
+      return `¥${(gmv / 10000).toFixed(2)}万`
+    }
+    return `¥${gmv.toLocaleString()}`
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <Spin size="large" />
+      </div>
+    )
+  }
+
+  const statItems = [
     {
       title: '进行中竞拍',
-      value: '12',
+      value: stats?.ongoingAuctions?.toString() || '0',
       icon: <IconLive size="extra-large" />,
       color: '#ff2d55'
     },
     {
       title: '今日订单',
-      value: '156',
+      value: stats?.todayOrders?.toString() || '0',
       icon: <IconTickCircle size="extra-large" />,
       color: '#5856d6'
     },
     {
       title: '商品总数',
-      value: '320',
+      value: stats?.totalProducts?.toString() || '0',
       icon: <IconGift size="extra-large" />,
       color: '#34c759'
     },
     {
       title: 'GMV',
-      value: '¥28,560',
+      value: formatGmv(stats?.gmv || 0),
       icon: <IconArrowUp size="extra-large" />,
       color: '#ff9500'
     }
@@ -38,7 +79,7 @@ const Dashboard: React.FC = () => {
         数据概览
       </Title>
       <Row gutter={16}>
-        {stats.map((stat, index) => (
+        {statItems.map((stat, index) => (
           <Col span={6} key={index}>
             <Card
               style={{
