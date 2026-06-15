@@ -11,6 +11,7 @@ import type {
   AuctionEndPayload,
   ExplainingUpdatePayload,
   ProductUpdatePayload,
+  ProductStatusChangedPayload,
 } from '@live-auction/shared'
 
 const WS_URL = ''
@@ -26,6 +27,7 @@ class WebSocketService {
   private currentRoomId: string | null = null
   private onExplainingUpdate: ((payload: ExplainingUpdatePayload) => void) | null = null
   private onProductUpdate: ((payload: ProductUpdatePayload) => void) | null = null
+  private onProductStatusChanged: ((payload: ProductStatusChangedPayload) => void) | null = null
   private isConnected = false
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null
   private heartbeatTimeoutTimer: ReturnType<typeof setTimeout> | null = null
@@ -190,6 +192,16 @@ class WebSocketService {
       }
     })
 
+    this.socket.off('PRODUCT_STATUS_CHANGED')
+    this.socket.on(
+      'PRODUCT_STATUS_CHANGED',
+      (message: WebSocketMessage<ProductStatusChangedPayload>) => {
+        if (this.onProductStatusChanged) {
+          this.onProductStatusChanged(message.payload)
+        }
+      }
+    )
+
     this.socket.off('PONG')
     this.socket.on('PONG', () => {
       this.lastHeartbeatTime = Date.now()
@@ -244,6 +256,10 @@ class WebSocketService {
 
   setOnProductUpdate(callback: (payload: ProductUpdatePayload) => void) {
     this.onProductUpdate = callback
+  }
+
+  setOnProductStatusChanged(callback: (payload: ProductStatusChangedPayload) => void) {
+    this.onProductStatusChanged = callback
   }
 
   submitBid(auctionId: string, userId: string, price: number) {

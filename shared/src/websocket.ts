@@ -13,7 +13,8 @@ export type WebSocketMessageType =
   | 'PING'
   | 'PONG'
   | 'EXPLAINING_UPDATE'
-  | 'PRODUCT_UPDATE';
+  | 'PRODUCT_UPDATE'
+  | 'PRODUCT_STATUS_CHANGED';
 
 export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;
@@ -90,4 +91,10 @@ export interface ProductUpdatePayload {
   roomId: string;
   productId: string;
   auctionStatus: string;
+}
+
+export interface ProductStatusChangedPayload {
+  productId: string;
+  creatorId: string;
+  status: string;
 }

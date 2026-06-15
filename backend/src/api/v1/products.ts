@@ -18,6 +18,7 @@ import {
 import {
   broadcastExplainingUpdate,
   broadcastProductUpdate,
+  broadcastProductStatusChanged,
   endAuction,
   getIO
 } from '../../lib/websocket'
@@ -820,6 +821,10 @@ router.patch(
           }
         }
       })
+
+      broadcastProductStatusChanged(updated.id, updated.creatorId, updated.status).catch(
+        console.error
+      )
 
       const response: ProductResponse = {
         ...updated,

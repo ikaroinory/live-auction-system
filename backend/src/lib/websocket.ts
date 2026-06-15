@@ -14,7 +14,8 @@ import {
   BidFailedPayload,
   AuctionExtendedPayload,
   ExplainingUpdatePayload,
-  ProductUpdatePayload
+  ProductUpdatePayload,
+  ProductStatusChangedPayload
 } from '@live-auction/shared'
 
 interface AuctionRoom {
@@ -527,4 +528,21 @@ export async function broadcastProductUpdate(
   }
 
   io.to(roomId).emit('PRODUCT_UPDATE', createMessage('PRODUCT_UPDATE', payload))
+}
+
+export async function broadcastProductStatusChanged(
+  productId: string,
+  creatorId: string,
+  status: string
+): Promise<void> {
+  const io = getIO()
+  if (!io) return
+
+  const payload: ProductStatusChangedPayload = {
+    productId,
+    creatorId,
+    status
+  }
+
+  io.emit('PRODUCT_STATUS_CHANGED', createMessage('PRODUCT_STATUS_CHANGED', payload))
 }

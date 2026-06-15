@@ -2,25 +2,47 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Empty, Toast } from 'antd-mobile'
 import { LiveStreamCard } from './components/LiveStreamCard'
-import type { LiveRoomWithStreamer } from '@live-auction/shared'
+import type { LiveRoomWithStreamer, ProductStatusChangedPayload } from '@live-auction/shared'
 import './Home.scss'
 import { liveRoomAPI } from '@/services/api'
+import { websocketService } from '@/services/websocket'
 
 export const Home = () => {
   const [liveRooms, setLiveRooms] = useState<LiveRoomWithStreamer[]>([])
   const [liveRoomsLoading, setLiveRoomsLoading] = useState(true)
-  useEffect(() => {
-    const loadLiveRooms = async () => {
-      try {
-        const data = await liveRoomAPI.getLiveRooms()
-        setLiveRooms(Array.isArray(data) ? data : data?.list || [])
-      } catch (error) {
-        console.error('Failed to load live rooms:', error)
-      } finally {
-        setLiveRoomsLoading(false)
-      }
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const refreshLiveRooms = useCallback(async () => {
+    try {
+      const data = await liveRoomAPI.getLiveRooms()
+      setLiveRooms(Array.isArray(data) ? data : data?.list || [])
+    } catch (error) {
+      console.error('Failed to load live rooms:', error)
+    } finally {
+      setLiveRoomsLoading(false)
     }
-    loadLiveRooms()
+  }, [])
+
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
+    refreshLiveRooms()
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [refreshKey, refreshLiveRooms])
+
+  useEffect(() => {
+    websocketService.connect()
+
+    const handleProductStatusChanged = (payload: ProductStatusChangedPayload) => {
+      console.log('[Home] Product status changed:', payload)
+      setRefreshKey((k) => k + 1)
+    }
+
+    websocketService.setOnProductStatusChanged(handleProductStatusChanged)
+
+    return () => {
+      websocketService.setOnProductStatusChanged(() => {})
+      websocketService.disconnect()
+    }
   }, [])
 
   const navigate = useNavigate()
