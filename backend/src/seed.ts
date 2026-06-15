@@ -161,7 +161,7 @@ async function seedData() {
       durationMinutes: number
       extendSeconds: number
       auctionStatus: 'NOT_STARTED'
-      status: 'PUBLISHED'
+      status: 'PUBLISHED' | 'PENDING'
     }[] = []
 
     for (let i = 0; i < users.length; i++) {
@@ -186,7 +186,7 @@ async function seedData() {
           durationMinutes: 30 + Math.floor(Math.random() * 90),
           extendSeconds: 10 + Math.floor(Math.random() * 20),
           auctionStatus: 'NOT_STARTED',
-          status: 'PUBLISHED'
+          status: 'PENDING'
         })
       }
     }
