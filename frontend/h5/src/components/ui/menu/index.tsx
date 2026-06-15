@@ -9,8 +9,8 @@ interface MenuProps {
 export const Menu: BaseComponent<'div', MenuProps> = ({ items, ...props }) => {
   return (
     <div className={styles.menu} {...props}>
-      {items?.map((item) => (
-        <MenuItem {...item} />
+      {items?.map((item, index) => (
+        <MenuItem key={index} {...item} />
       ))}
     </div>
   )
