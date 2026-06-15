@@ -63,8 +63,7 @@ const Login: React.FC = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
-        <h1 className={styles.loginTitle}>直播竞拍管理系统</h1>
-        <p className={styles.loginSubtitle}>商家/主播端管理后台</p>
+        <h1 className={styles.loginTitle}>登录抖店</h1>
         <Form onSubmit={handleSubmit} className={styles.loginForm}>
           <Form.Input
             field="phone"
