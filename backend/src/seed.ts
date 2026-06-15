@@ -30,9 +30,9 @@ const USER_NAMES = [
   { phone: '13800000020', nickname: '诗意人生' }
 ]
 
-const GENDERS = ['MALE', 'FEMALE', 'UNKNOWN'] as const
+const GENDERS: ('MALE' | 'FEMALE' | 'UNKNOWN')[] = ['MALE', 'FEMALE', 'UNKNOWN']
 
-const LOCATIONS = ['北京', '上海', '广州', '深圳', '杭州', '成都', '武汉', '南京', '西安', '重庆']
+const LOCATIONS = ['北京', '上海', '广东 · 广州', '广东 · 深圳', '浙江 · 杭州', '四川 · 成都', '湖北 · 武汉', '江苏 · 南京', '陕西 · 西安', '重庆']
 
 const PRODUCT_TEMPLATES = [
   {
@@ -101,58 +101,71 @@ function generateDouyinId(): string {
 
 async function seedData() {
   console.log('🚀 开始生成模拟数据...')
+  const startTime = Date.now()
 
   try {
     console.log('🗑️ 正在清空现有数据...')
     await prisma.bid.deleteMany({})
-    await prisma.order.deleteMany({})
-    await prisma.auction.deleteMany({})
     await prisma.liveRoomFollow.deleteMany({})
     await prisma.product.deleteMany({})
     await prisma.liveRoom.deleteMany({})
     await prisma.user.deleteMany({})
 
-    console.log('👤 正在创建用户...')
+    console.log('👤 正在批量创建用户...')
     const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, SALT_ROUNDS)
-    const users = []
+    
+    const userData = USER_NAMES.map((user, index) => ({
+      phone: user.phone,
+      password: hashedPassword,
+      nickname: user.nickname,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${index}`,
+      bio: '热爱生活，喜欢分享好物。关注我，每天都有惊喜！',
+      gender: GENDERS[Math.floor(Math.random() * GENDERS.length)],
+      location: '中国 · ' + LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)],
+      douyinId: generateDouyinId()
+    }))
 
-    for (let i = 0; i < 20; i++) {
-      const userData = USER_NAMES[i]
-      const user = await prisma.user.create({
-        data: {
-          phone: userData.phone,
-          password: hashedPassword,
-          nickname: userData.nickname,
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
-          bio: `热爱生活，喜欢分享好物。关注我，每天都有惊喜！`,
-          gender: GENDERS[Math.floor(Math.random() * GENDERS.length)],
-          location: LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)],
-          douyinId: generateDouyinId()
-        }
-      })
-      users.push(user)
-      console.log(`  ✓ 创建用户: ${user.nickname} (${user.phone})`)
-    }
+    await prisma.user.createMany({
+      data: userData,
+      skipDuplicates: true
+    })
+    console.log(`  ✓ 批量创建用户: ${userData.length} 个`)
 
-    console.log('📺 正在创建直播间和商品...')
-    const products = []
+    const users = await prisma.user.findMany({
+      orderBy: { phone: 'asc' }
+    })
+
+    console.log('📺 正在批量创建直播间...')
+    const liveRoomData = users.map((user, index) => ({
+      streamerId: user.id,
+      title: ROOM_TITLES[index % ROOM_TITLES.length] + ` (第${index + 1}号)`,
+      description: `欢迎来到${user.nickname}的直播间！这里有各种精品好物等你来拍！`,
+      coverImage: `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&crop=entropy&cs=tinysrgb`,
+      status: Math.random() > 0.3 ? 1 : 0
+    }))
+
+    await prisma.liveRoom.createMany({
+      data: liveRoomData
+    })
+    console.log(`  ✓ 批量创建直播间: ${liveRoomData.length} 个`)
+
+    console.log('🛍️ 正在批量创建商品...')
+    const productData: {
+      creatorId: string
+      name: string
+      image: string
+      startingPrice: number
+      fixedIncrement: number
+      maxPrice: number
+      tags: string[]
+      durationMinutes: number
+      extendSeconds: number
+      auctionStatus: 'NOT_STARTED'
+      status: 'PUBLISHED'
+    }[] = []
 
     for (let i = 0; i < users.length; i++) {
       const user = users[i]
-
-      const roomTitle = ROOM_TITLES[i % ROOM_TITLES.length] + ` (第${i + 1}号)`
-      const liveRoom = await prisma.liveRoom.create({
-        data: {
-          streamerId: user.id,
-          title: roomTitle,
-          description: `欢迎来到${user.nickname}的直播间！这里有各种精品好物等你来拍！`,
-          coverImage: `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&crop=entropy&cs=tinysrgb`,
-          status: Math.random() > 0.3 ? 1 : 0
-        }
-      })
-
-      console.log(`  ✓ 创建直播间: ${liveRoom.title}`)
-
       for (let j = 0; j < 5; j++) {
         const templateIndex = (i * 5 + j) % PRODUCT_TEMPLATES.length
         const template = PRODUCT_TEMPLATES[templateIndex]
@@ -162,32 +175,36 @@ async function seedData() {
         if (Math.random() > 0.6) randomTags.push('AUCTION')
         if (Math.random() > 0.7) randomTags.push('SHIPPING_INSURANCE')
 
-        const product = await prisma.product.create({
-          data: {
-            creatorId: user.id,
-            name: template.name + (j > 0 ? ` #${j + 1}` : ''),
-            image: template.image,
-            startingPrice: template.startingPrice + Math.floor(Math.random() * 100),
-            fixedIncrement: Math.floor(template.startingPrice * 0.1),
-            maxPrice: template.startingPrice * 3 + Math.floor(Math.random() * 500),
-            tags: randomTags,
-            durationMinutes: 30 + Math.floor(Math.random() * 90),
-            extendSeconds: 10 + Math.floor(Math.random() * 20),
-            auctionStatus: 'NOT_STARTED',
-            status: 'PUBLISHED'
-          }
+        productData.push({
+          creatorId: user.id,
+          name: template.name + (j > 0 ? ` #${j + 1}` : ''),
+          image: template.image,
+          startingPrice: template.startingPrice + Math.floor(Math.random() * 100),
+          fixedIncrement: Math.floor(template.startingPrice * 0.1),
+          maxPrice: template.startingPrice * 3 + Math.floor(Math.random() * 500),
+          tags: randomTags,
+          durationMinutes: 30 + Math.floor(Math.random() * 90),
+          extendSeconds: 10 + Math.floor(Math.random() * 20),
+          auctionStatus: 'NOT_STARTED',
+          status: 'PUBLISHED'
         })
-
-        products.push(product)
-        console.log(`    ✓ 创建商品: ${product.name}`)
       }
     }
+
+    await prisma.product.createMany({
+      data: productData
+    })
+    console.log(`  ✓ 批量创建商品: ${productData.length} 个`)
+
+    const endTime = Date.now()
+    const duration = (endTime - startTime) / 1000
 
     console.log('\n✨ 数据生成完成！')
     console.log(`  👤 用户: ${users.length} 个`)
     console.log(`  📺 直播间: ${users.length} 个`)
-    console.log(`  🛍️  商品: ${products.length} 个`)
+    console.log(`  🛍️  商品: ${productData.length} 个`)
     console.log(`  🔑 默认密码: ${DEFAULT_PASSWORD}`)
+    console.log(`  ⏱️  耗时: ${duration.toFixed(2)} 秒`)
   } catch (error) {
     console.error('❌ 生成数据时出错:', error)
     throw error
