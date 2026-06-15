@@ -86,7 +86,7 @@ const Dashboard: React.FC = () => {
     <div>
       <div style={{ marginBottom: 24 }}>
         <Title heading={4} style={{ marginBottom: 8 }}>
-          {getGreeting()}，{user?.username || '管理员'}
+          {getGreeting()}，{user?.nickname || '管理员'}
         </Title>
         <Text type="tertiary">数据概览</Text>
       </div>

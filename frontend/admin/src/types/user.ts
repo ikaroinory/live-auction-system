@@ -1,8 +1,9 @@
 export interface User {
   id: number
-  username: string
-  email: string
-  role: 'admin' | 'seller'
+  nickname: string
+  email?: string
+  phone?: string
+  role?: 'admin' | 'seller'
   avatar?: string
   createdAt: string
 }
