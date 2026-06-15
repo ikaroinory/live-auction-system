@@ -181,9 +181,9 @@ async function seedData() {
         const templateIndex = (i * 5 + j) % PRODUCT_TEMPLATES.length
         const template = PRODUCT_TEMPLATES[templateIndex]
 
-        const randomTags: string[] = []
+        const randomTags: string[] = ['AUCTION']
         if (Math.random() > 0.5) randomTags.push('FREE_SHIPPING')
-        if (Math.random() > 0.6) randomTags.push('AUCTION')
+        if (Math.random() > 0.6) randomTags.push('LATE_COMPENSATION')
         if (Math.random() > 0.7) randomTags.push('SHIPPING_INSURANCE')
 
         productData.push({
