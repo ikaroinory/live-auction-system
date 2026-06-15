@@ -64,9 +64,8 @@ export const Login = () => {
       <Layout.Main>
         <div>
           <div className="logo">
-            <div className="logo-icon">🎁</div>
-            <h1>实时竞拍大师</h1>
-            <p>抖音电商直播竞拍系统</p>
+            <img src="https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/2025_0313_logo.png"/>
+            <h1>抖音</h1>
           </div>
 
           <div className="form">
