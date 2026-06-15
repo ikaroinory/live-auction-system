@@ -20,6 +20,7 @@ import type {
   LiveRoomWithStreamer,
   AuctionWithSeller,
   Product as ProductType,
+  ProductStatusChangedPayload,
 } from '@live-auction/shared'
 import './LiveRoom.scss'
 import styles from './styles.module.scss'
@@ -168,8 +169,33 @@ export const LiveRoom = () => {
       )
     }
 
+    const handleProductStatusChanged = async (payload: ProductStatusChangedPayload) => {
+      if (!liveRoom?.streamerId) return
+      if (payload.creatorId !== liveRoom.streamerId) return
+
+      if (payload.status === 'PENDING') {
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== payload.productId)
+        )
+      } else if (payload.status === 'PUBLISHED') {
+        try {
+          const productData = await productAPI.getProduct(payload.productId)
+          setProducts((prevProducts) => {
+            const exists = prevProducts.find((p) => p.id === payload.productId)
+            if (exists) {
+              return prevProducts.map((p) => (p.id === payload.productId ? productData : p))
+            }
+            return [...prevProducts, productData]
+          })
+        } catch (error) {
+          console.error('Failed to load product:', error)
+        }
+      }
+    }
+
     websocketService.setOnExplainingUpdate(handleExplainingUpdate)
     websocketService.setOnProductUpdate(handleProductUpdate)
+    websocketService.setOnProductStatusChanged(handleProductStatusChanged)
 
     if (id) {
       websocketService.joinLiveRoom(id)
@@ -186,11 +212,12 @@ export const LiveRoom = () => {
     return () => {
       websocketService.setOnExplainingUpdate(() => {})
       websocketService.setOnProductUpdate(() => {})
+      websocketService.setOnProductStatusChanged(() => {})
       if (id) {
         websocketService.leaveLiveRoom(id)
       }
     }
-  }, [id])
+  }, [id, liveRoom?.streamerId])
 
   const handleGoBack = () => {
     navigate(-1)
