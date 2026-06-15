@@ -32,7 +32,18 @@ const USER_NAMES = [
 
 const GENDERS: ('MALE' | 'FEMALE' | 'UNKNOWN')[] = ['MALE', 'FEMALE', 'UNKNOWN']
 
-const LOCATIONS = ['北京', '上海', '广东 · 广州', '广东 · 深圳', '浙江 · 杭州', '四川 · 成都', '湖北 · 武汉', '江苏 · 南京', '陕西 · 西安', '重庆']
+const LOCATIONS = [
+  '北京',
+  '上海',
+  '广东 · 广州',
+  '广东 · 深圳',
+  '浙江 · 杭州',
+  '四川 · 成都',
+  '湖北 · 武汉',
+  '江苏 · 南京',
+  '陕西 · 西安',
+  '重庆'
+]
 
 const PRODUCT_TEMPLATES = [
   {
@@ -113,7 +124,7 @@ async function seedData() {
 
     console.log('👤 正在批量创建用户...')
     const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, SALT_ROUNDS)
-    
+
     const userData = USER_NAMES.map((user, index) => ({
       phone: user.phone,
       password: hashedPassword,

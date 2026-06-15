@@ -15,22 +15,21 @@ interface StatsResponse {
 router.get(
   '/',
   authMiddleware,
-  wrapAuthHandler(
-    async (req: Request, res: Response<StatsResponse>) => {
-      const user = requireAuth(req)
+  wrapAuthHandler(async (req: Request, res: Response<StatsResponse>) => {
+    const user = requireAuth(req)
 
-      const now = new Date()
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
+    const now = new Date()
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
 
-      const [ongoingAuctions, todayOrders, totalProducts, gmv] = await Promise.all([
-        prisma.product.count({
-          where: {
-            creatorId: user.id,
-            auctionStatus: 'IN_PROGRESS'
-          }
-        }),
-        prisma.$queryRaw<Array<{ count: number }>>`
+    const [ongoingAuctions, todayOrders, totalProducts, gmv] = await Promise.all([
+      prisma.product.count({
+        where: {
+          creatorId: user.id,
+          auctionStatus: 'IN_PROGRESS'
+        }
+      }),
+      prisma.$queryRaw<Array<{ count: number }>>`
           SELECT COUNT(DISTINCT b.productId) as count
           FROM Bid b
           INNER JOIN Product p ON b.productId = p.id
@@ -44,12 +43,12 @@ router.get(
             AND b.createdAt >= ${todayStart}
             AND b.createdAt < ${todayEnd}
         `,
-        prisma.product.count({
-          where: {
-            creatorId: user.id
-          }
-        }),
-        prisma.$queryRaw<Array<{ total: number }>>`
+      prisma.product.count({
+        where: {
+          creatorId: user.id
+        }
+      }),
+      prisma.$queryRaw<Array<{ total: number }>>`
           SELECT COALESCE(SUM(b.price), 0) as total
           FROM Bid b
           INNER JOIN Product p ON b.productId = p.id
@@ -61,18 +60,17 @@ router.get(
               WHERE b2.productId = b.productId
             )
         `
-      ])
+    ])
 
-      const response: StatsResponse = {
-        ongoingAuctions,
-        todayOrders: Number(todayOrders[0]?.count) || 0,
-        totalProducts,
-        gmv: Number(gmv[0]?.total) || 0
-      }
-
-      res.json(response)
+    const response: StatsResponse = {
+      ongoingAuctions,
+      todayOrders: Number(todayOrders[0]?.count) || 0,
+      totalProducts,
+      gmv: Number(gmv[0]?.total) || 0
     }
-  )
+
+    res.json(response)
+  })
 )
 
 export default router

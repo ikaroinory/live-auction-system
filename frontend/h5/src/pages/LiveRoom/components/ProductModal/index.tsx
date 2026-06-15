@@ -225,14 +225,14 @@ export const ProductModal = ({
                       <div className={styles.productImageWrapper}>
                         {product.image ? (
                           <>
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className={styles.productImage}
-                          />
-                                                  {explainingProductId === product.id && (
-                          <div className={styles.explainingLabel}>讲解中</div>
-                        )}
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className={styles.productImage}
+                            />
+                            {explainingProductId === product.id && (
+                              <div className={styles.explainingLabel}>讲解中</div>
+                            )}
                           </>
                         ) : (
                           <div className={styles.noImagePlaceholder}>暂无图片</div>
