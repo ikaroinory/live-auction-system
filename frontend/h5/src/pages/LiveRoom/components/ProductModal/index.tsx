@@ -224,16 +224,18 @@ export const ProductModal = ({
                     <div className={styles.productContent}>
                       <div className={styles.productImageWrapper}>
                         {product.image ? (
+                          <>
                           <img
                             src={product.image}
                             alt={product.name}
                             className={styles.productImage}
                           />
+                                                  {explainingProductId === product.id && (
+                          <div className={styles.explainingLabel}>讲解中</div>
+                        )}
+                          </>
                         ) : (
                           <div className={styles.noImagePlaceholder}>暂无图片</div>
-                        )}
-                        {explainingProductId === product.id && (
-                          <div className={styles.explainingBadge}>正在讲解</div>
                         )}
                       </div>
                       <div className={styles.productInfo}>
@@ -241,9 +243,6 @@ export const ProductModal = ({
                         <div className={clsx(styles.productStatusLabel, getStatusClass(product))}>
                           {getStatusLabel(product)}
                         </div>
-                        {explainingProductId === product.id && (
-                          <div className={styles.explainingLabel}>主播正在讲解此商品</div>
-                        )}
                         <div className={styles.productPriceWrapper}>
                           <span className={styles.productPriceLabel}>起拍价</span>
                           <span className={styles.productPrice}>
