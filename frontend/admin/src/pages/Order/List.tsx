@@ -53,7 +53,7 @@ const OrderList: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       width: 100,
-      render: () => <Tag color="warning">待支付</Tag>
+      render: () => <Tag color="red">待支付</Tag>
     },
     {
       title: '创建时间',

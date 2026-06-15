@@ -33,8 +33,6 @@ const LayoutComponent: React.FC = () => {
       </Button>
     </div>
   )
-  console.log(location.pathname)
-  console.log(location.pathname.slice(1))
 
   return (
     <Layout>
@@ -49,9 +47,11 @@ const LayoutComponent: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Button theme="borderless" icon={mode === 'dark' ? <IconSun /> : <IconMoon />} onClick={toggleMode} />
           <Dropdown render={userMenu} position="bottomRight">
-            <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
-              {user?.username?.charAt(0).toUpperCase()}
-            </Avatar>
+            <div>
+              <Avatar size="small" src={user?.avatar} style={{ cursor: 'pointer' }}>
+                {user?.username?.charAt(0).toUpperCase()}
+              </Avatar>
+            </div>
           </Dropdown>
         </div>
       </Header>
