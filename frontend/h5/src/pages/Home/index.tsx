@@ -135,8 +135,6 @@ export const Home = () => {
     )
   }
 
-  console.log(activeLiveRooms)
-
   return (
     <div className="home-page">
       <div
