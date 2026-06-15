@@ -76,18 +76,23 @@
     color: var(--douyin-primary);
   }
 
-  &.outbid {
+  &.out {
     background: rgba(255, 255, 255, 0.08);
     color: var(--douyin-text-secondary);
+  }
+
+  &.won {
+    background: rgba(46, 168, 107, 0.15);
+    color: #2ea86b;
+  }
+
+  &.lost {
+    background: rgba(140, 140, 140, 0.15);
+    color: #8c8c8c;
   }
 
   &.pending {
     background: rgba(254, 44, 85, 0.15);
     color: var(--douyin-primary);
-  }
-
-  &.completed {
-    background: rgba(46, 168, 107, 0.15);
-    color: #2ea86b;
   }
 }
