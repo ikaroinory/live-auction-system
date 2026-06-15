@@ -179,7 +179,7 @@ export const LiveRoom = () => {
         )
       } else if (payload.status === 'PUBLISHED') {
         try {
-          const productData = await productAPI.getProduct(payload.productId)
+          const productData = await productAPI.getProductDetail(payload.productId)
           setProducts((prevProducts) => {
             const exists = prevProducts.find((p) => p.id === payload.productId)
             if (exists) {
