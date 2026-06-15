@@ -1,7 +1,7 @@
 import { useProductMutations } from '@/hooks'
 import { IconMicrophone } from '@douyinfe/semi-icons'
 import { Button, Card, Image, Skeleton, Space, Tag, Toast, Typography } from '@douyinfe/semi-ui'
-import { Property } from 'csstype'
+
 import { useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
 import { ProductStatus, ProductAuctionStatus, ProductTag } from '@/types'
