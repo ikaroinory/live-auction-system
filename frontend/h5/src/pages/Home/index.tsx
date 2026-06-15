@@ -25,7 +25,9 @@ export const Home = () => {
 
   const navigate = useNavigate()
   const savedIndex = sessionStorage.getItem('liveRoomCurrentIndex')
-  const [currentIndex, setCurrentIndex] = useState<number>(savedIndex ? parseInt(savedIndex, 10) : 0)
+  const [currentIndex, setCurrentIndex] = useState<number>(
+    savedIndex ? parseInt(savedIndex, 10) : 0
+  )
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)

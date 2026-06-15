@@ -64,7 +64,7 @@ export const Login = () => {
       <Layout.Main>
         <div>
           <div className="logo">
-            <img src="https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/2025_0313_logo.png"/>
+            <img src="https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/2025_0313_logo.png" />
             <h1>抖音</h1>
           </div>
 

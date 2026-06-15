@@ -173,6 +173,14 @@ export const LiveRoom = () => {
 
     if (id) {
       websocketService.joinLiveRoom(id)
+      productAPI
+        .getCurrentExplaining(id)
+        .then((response) => {
+          if (response.success && response.productId) {
+            setExplainingProductId(response.productId)
+          }
+        })
+        .catch(console.error)
     }
 
     return () => {

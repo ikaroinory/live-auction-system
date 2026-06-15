@@ -24,13 +24,15 @@ export const ProductModal = ({
   explainingProductId,
 }: ProductModalProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [localProducts, setLocalProducts] = useState<Product[]>(products)
+  const [localProducts, setLocalProducts] = useState<Product[]>([])
   const { setCurrentAuction, updatePrice, updateBidCount, bidCount, remainingMs } =
     useAuctionRoomStore()
   const { user } = useUserStore()
 
   useEffect(() => {
-    setLocalProducts(products)
+    Promise.resolve().then(() => {
+      setLocalProducts(products)
+    })
   }, [products])
 
   useEffect(() => {
